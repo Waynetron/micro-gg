@@ -26,9 +26,7 @@ Levels can be drawn with ascii
 ■                     ■
 ■    P                ■
 ■■■■■■■■■■■■■■■^^^^■■■■
-```
-```
-### Legend ###
+
 P = Player
 ? = QuestionBrick
 □ = Brick
@@ -38,7 +36,7 @@ G = Goomba
 ```
 
 
-// Gravity function
+Gravity function
 ```
 Gravity = (Thing) ->
     [ Thing ] -> [ DOWN Thing ]
@@ -53,7 +51,7 @@ Apply gravity to both Player and Goomba
 Break brick with head
 ```[ Player.top ] [ Brick.bottom ] -> [ Player ] [ _ ]```
 
-// Hit question brick and spawn mushroom
+Hit question brick and spawn mushroom
 ```[ Player.top ] [ QuestionBrick.bottom ] -> [ Player ] [ SolidBrick ] [ Mushroom ]```
 
 ```[ > Player ] [ Spike ] -> [ _ ] [ Spike ]```
