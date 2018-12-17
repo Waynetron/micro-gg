@@ -17,6 +17,7 @@ in a little pixel editor to the side (haha, yeah right)
 Player, Brick, QuestionBrick, SolidBrick, Spike, Goomba
 
 Levels can be drawn with ascii
+```
 ■■■■■■■■■■■■■■■■■■■■■■■
 ■                     ■
 ■                     ■
@@ -25,13 +26,16 @@ Levels can be drawn with ascii
 ■                     ■
 ■    P                ■
 ■■■■■■■■■■■■■■■^^^^■■■■
-
+```
+```
+### Legend ###
 P = Player
 ? = QuestionBrick
 □ = Brick
 ■ = SolidBrick
 S = Spike
 G = Goomba
+```
 
 
 // Gravity function
