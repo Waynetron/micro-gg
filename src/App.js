@@ -1,29 +1,40 @@
 import React, { useState } from 'react';
-import './Game.js';
 import './App.css';
 
-const initialCode = `[ > Player ] [ Spike ] -> [ _ ] [ Spike ]
+const initialCode = `Player player.png
+[ > Player ] [ Spike ] -> [ _ ] [ Spike ]
 [ > Player ] [ Brick ] -> [ Player ] [ Brick ]`
+
 const tokenise = (line)=> line.match(/\[.*?\]/g);
-const ruleFromTokens = (tokens)=> {
-  return tokens;
-}
-const ruleFromLine = (line)=> {
+
+const isRule = (line)=> line.includes('->');
+
+const isSprite = (line)=> !line.includes('->');
+
+const parseRule = (line)=> {
   const [left, right] = line.split('->');
-  const leftTokens = tokenise(left);
-  const rightTokens = tokenise(right);
-  const rule = [leftTokens, rightTokens];
-  return rule;
+  return [tokenise(left), tokenise(right)];
 }
-const parse = (code)=> {
-  const rules = [];
-  const lines = code.split('\n');
-  for (const line of lines) {
-    const rule = ruleFromLine(line);
-    rules.push(rule);
-  }
-  return rules;
+const parseSprite = (line)=> {
+  const [name, src] = line.split(' ');
+  return {name, src};
 };
+
+const parseSprites = (code)=> (
+  code.split('\n')
+    .filter(isSprite)
+    .map(parseSprite)
+);
+
+const parseRules = (code)=> (
+  code.split('\n')
+    .filter(isRule)
+    .map(parseRule)
+);
+
+const run = ()=> {
+  console.log('this does nothing')
+}
 
 const App = ()=> {
   const [code, setCode] = useState(initialCode);
@@ -35,7 +46,7 @@ const App = ()=> {
   return (
     <div>
       <header>
-        <button>run</button>
+        <button onClick={run}>run</button>
       </header>
       <main>
         <div className="code">
@@ -45,7 +56,10 @@ const App = ()=> {
           />
         </div>
         <div id="game">
-          {parse(code).map((rule)=> <p>{rule}</p>)}
+          <h3>Sprites</h3>
+          {parseSprites(code).map((sprite)=> <p>{sprite.name}, {sprite.src}</p>)}
+          <h3>Rules</h3>
+          {parseRules(code).map((rule)=> <p>{rule}</p>)}
         </div>
       </main>
     </div>
