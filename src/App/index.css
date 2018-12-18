@@ -38,7 +38,8 @@ header button {
   background-color: #021E45;
   border: none;
   line-height: 1.2rem;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  font-family: monospace;
   padding: 1rem;
   width: 100%;
   color: white;
