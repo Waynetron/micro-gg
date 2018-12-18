@@ -18,20 +18,20 @@ Click on the name and you can edit the appearance in a little pixel editor to th
 
 Levels can be drawn with ascii
 ```
-■■■■■■■■■■■■■■■■■■■■■■■
-■                     ■
-■                     ■
-■          G          ■
-■     □□□?□□□         ■
-■                     ■
-■    P                ■
-■■■■■■■■■■■■■■■^^^^■■■■
+#######################
+#                     #
+#                     #
+#          G          #
+#     BBB?BBB         #
+#                     #
+#    P                #
+###############^^^^####
 
 P = Player
 ? = QuestionBrick
-□ = Brick
-■ = SolidBrick
-S = Spike
+B = Brick
+# = SolidBrick
+^ = Spike
 G = Goomba
 ```
 

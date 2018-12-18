@@ -1,14 +1,16 @@
 import React from 'react';
 import Sprite from './Sprite.js';
+import styles from './styles.css';
 
 const Game = ({sprites, rules})=> (
   <div id="game">
-    <h3>Sprites</h3>
-    {sprites.map((sprite)=>
-      <Sprite x={10} y={10} img={sprite.src} />
-    )}
+    <div className="stage">
+      {sprites.map((sprite)=>
+        <Sprite x={10} y={10} img={sprite.src} />
+      )}
+    </div>
     <h3>Rules</h3>
-    {rules.map((rule)=> <p>{rule}</p>)}
+      {rules.map((rule)=> <p>{rule}</p>)}
   </div>
 );
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const safelyLoadSrc = (img)=> {
-  const images = ['player'];
+  const images = ['player', 'brick', 'question-brick', 'spike', 'goomba'];
   return images.includes(img)
     ? require(`./images/${img}.png`)
     : null
@@ -12,10 +12,7 @@ const getPositionStyle = (x, y)=> ({
 });
 
 const Sprite = ({x, y, img})=> (
-  <div
-    id="sprite"
-    style={getPositionStyle(x, y)}
-  >
+  <div id="sprite" style={getPositionStyle(x, y)}>
     <img src={safelyLoadSrc(img)} />
   </div>
 );
