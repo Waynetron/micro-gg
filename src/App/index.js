@@ -4,7 +4,7 @@ import Code from '../Code';
 import {parseRules, parseSprites} from '../Parse/util.js';
 import './index.css';
 
-const initialCode = `Player player.png
+const initialCode = `Player player
 [ > Player ] [ Spike ] -> [ _ ] [ Spike ]
 [ > Player ] [ Brick ] -> [ Player ] [ Brick ]`
 
