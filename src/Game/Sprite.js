@@ -1,4 +1,5 @@
 import React from 'react';
+import './styles.css';
 
 const safelyLoadSrc = (img)=> {
   const images = ['player', 'brick', 'question-brick', 'spike', 'goomba'];
@@ -12,7 +13,7 @@ const getPositionStyle = (x, y)=> ({
 });
 
 const Sprite = ({x, y, img})=> (
-  <div id="sprite" style={getPositionStyle(x, y)}>
+  <div className="sprite" style={getPositionStyle(x, y)}>
     <img src={safelyLoadSrc(img)} />
   </div>
 );

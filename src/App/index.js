@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Game from '../Game';
 import Code from '../Code';
-import {parseRules, parseSprites, parseLegend} from '../Parse/util.js';
+import {parseRules, parseSprites} from '../Parse/util.js';
 import './index.css';
 
 const initialCode = `

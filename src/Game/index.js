@@ -6,7 +6,11 @@ const Game = ({sprites, rules})=> (
   <div id="game">
     <div className="stage">
       {sprites.map((sprite)=>
-        <Sprite x={10} y={10} img={sprite.src} />
+        <Sprite
+          x={sprite.tilePosition.col * 32}
+          y={sprite.tilePosition.row * 32}
+          img={sprite.src}
+        />
       )}
     </div>
     <h3>Rules</h3>

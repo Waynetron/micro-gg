@@ -31,7 +31,16 @@ header button {
   display: flex;
   flex-grow: 1;
   height: 100%;
-  width: 50vw;
+}
+
+#game {
+  min-width: 512px;
+}
+
+.stage {
+  background-color: black;
+  width: 512px;
+  height: 256px;
 }
 
 #code textarea {
