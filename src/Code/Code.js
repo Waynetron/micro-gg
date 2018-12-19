@@ -1,10 +1,10 @@
 import React from 'react';
 
-const Code = ({code, handleCodeChange})=> (
+const Code = ({code, onChange})=> (
   <div id="code">
     <textarea
       value={code}
-      onChange={handleCodeChange}
+      onChange={onChange}
     />
   </div>
 );

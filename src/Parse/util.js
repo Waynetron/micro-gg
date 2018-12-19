@@ -10,19 +10,19 @@ const parseRule = (line)=> {
   return [tokenise(left), tokenise(right)];
 }
 
-const parseSpriteImageMappings = (code)=> {
-  const spriteImageMappings = {};
+export const parseAssets = (code)=> {
+  const assets = {};
   code.split('\n')
     .filter(isSpriteImageMapping)
     .map((line)=> {
       const [name, src] = line.split(' ');
-      spriteImageMappings[name] = src;
+      assets[name] = src;
     });
 
-    return spriteImageMappings;
+    return assets;
 }
 
-const parseLegend = (code)=> {
+export const parseLegend = (code)=> {
   let legend = {};
 
   code.split('\n')
@@ -39,18 +39,21 @@ const removeEdges = (lines)=> (
   lines.slice(1, -1).map((line)=> line.slice(1, -1))
 );
 
-const parseLevel = (code)=> {
+export const parseLevel = (code)=> {
   const withEdges = code.split('\n')
     .filter(isLevel)
 
   return removeEdges(withEdges);
 };
 
-export const parseSprites = (code)=> {
-  const legend = parseLegend(code);
-  const spriteImageMappings = parseSpriteImageMappings(code);
-  const level = parseLevel(code);
+export const getLevelDimensions = (level)=> {
+  const width_in_tiles = level[0].length;
+  const height_in_tiles = level.length;
   
+  return [width_in_tiles, height_in_tiles];
+}
+
+export const parseSprites = (level, legend, assets)=> {
   const sprites = [];
   level.map((line, row)=> line.split('').map((char, col)=> {
     const name = legend[char];
@@ -58,7 +61,7 @@ export const parseSprites = (code)=> {
       sprites.push({
         name: name,
         tilePosition: {row, col},
-        src: spriteImageMappings[name]
+        src: assets[name]
       });
     }
   }));

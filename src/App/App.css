@@ -39,8 +39,6 @@ header button {
 
 .stage {
   background-color: black;
-  width: 512px;
-  height: 256px;
 }
 
 #code textarea {

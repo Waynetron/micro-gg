@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import Game from '../Game';
-import Code from '../Code';
-import {parseRules, parseSprites} from '../Parse/util.js';
-import './index.css';
+import Game from '../Game/Game.js';
+import Code from '../Code/Code.js';
+import {parseRules, parseSprites, parseLegend,
+  parseLevel, parseAssets, getLevelDimensions} from '../Parse/util.js';
+import './App.css';
 
 const initialCode = `
 Player player
@@ -38,10 +39,16 @@ const run = ()=> {
 
 const App = ()=> {
   const [code, setCode] = useState(initialCode);
-  const sprites = parseSprites(code);
+  const level = parseLevel(code);
+  const sprites = parseSprites(
+    level,
+    parseLegend(code),
+    parseAssets(code));
   const rules = parseRules(code);
+  
+  const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
-  const handleCodeChange = ({target})=> {
+  const updateCode = ({target})=> {
     setCode(target.value);
   };
 
@@ -51,8 +58,10 @@ const App = ()=> {
         <button onClick={run}>run</button>
       </header>
       <main>
-        <Code code={code} handleCodeChange={handleCodeChange} />
-        <Game sprites={sprites} rules={rules} />
+        <Code code={code} onChange={updateCode} />
+        <Game
+          sprites={sprites} rules={rules}
+          width_in_tiles={width_in_tiles} height_in_tiles={height_in_tiles} />
       </main>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles.css';
+import './Sprite.css';
 
 const safelyLoadSrc = (img)=> {
   const images = ['player', 'brick', 'question-brick', 'spike', 'goomba'];
