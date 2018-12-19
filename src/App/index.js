@@ -8,16 +8,18 @@ const initialCode = `
 Player player
 QuestionBrick question-brick
 Brick brick
+Spike spike
+Goomba goomba
 
 ##################
+#B              B#
+#         P      #
 #                #
-#                #
-#                #
-#                #
+#               #
 #          G     #
 #    BBBB?BBB    #
 #                #
-#   P         ^^ #
+#B  P         ^^ #
 ##################
 
 P = Player
