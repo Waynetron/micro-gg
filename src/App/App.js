@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, Fragment} from 'react';
 import Game from '../Game/Game.js';
 import Code from '../Code/Code.js';
 import {parseRules, parseSprites, parseLegend,
@@ -53,7 +53,7 @@ const App = ()=> {
   };
 
   return (
-    <div>
+    <Fragment>
       <header>
         <button onClick={run}>run</button>
       </header>
@@ -63,7 +63,7 @@ const App = ()=> {
           sprites={sprites} rules={rules}
           width_in_tiles={width_in_tiles} height_in_tiles={height_in_tiles} />
       </main>
-    </div>
+    </Fragment>
   );
 };
 
