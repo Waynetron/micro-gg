@@ -14,7 +14,7 @@ export const parseAssets = (code)=> {
   const assets = {};
   code.split('\n')
     .filter(isSpriteImageMapping)
-    .map((line)=> {
+    .forEach((line)=> {
       const [name, src] = line.split(' ');
       assets[name] = src;
     });
@@ -27,7 +27,7 @@ export const parseLegend = (code)=> {
 
   code.split('\n')
     .filter(isLegend)
-    .map((line)=> {
+    .forEach((line)=> {
       const [symbol, name] = line.split('=').map((str)=> str.trim());
       legend[symbol] = name;
     });
@@ -55,7 +55,7 @@ export const getLevelDimensions = (level)=> {
 
 export const parseSprites = (level, legend, assets)=> {
   const sprites = [];
-  level.map((line, row)=> line.split('').map((char, col)=> {
+  level.map((line, row)=> line.split('').forEach((char, col)=> {
     const name = legend[char];
     if (name) {
       sprites.push({

@@ -1,12 +1,33 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {updateCode} from './actions.js';
+import {connect} from 'react-redux'
 
-const Code = ({code, onChange})=> (
-  <div id="code">
+const Code = ({code, onChange})=> {
+  // manually trigger code change on first load
+  useEffect(() => {
+    onChange(code);
+  }, []);
+
+  return <div id="code">
     <textarea
       value={code}
-      onChange={onChange}
+      onChange={({target})=> onChange(target.value)}
+      onLoad={()=> console.log('i loaded')}
     />
   </div>
-);
+};
 
-export default Code;
+const mapStateToProps = ({code})=> {
+  return code
+}
+
+const mapDispatchToProps = (dispatch)=> ({
+  onChange: (code)=> {
+    dispatch(updateCode(code));
+  }
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Code);

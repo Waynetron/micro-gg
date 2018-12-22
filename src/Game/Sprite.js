@@ -14,7 +14,7 @@ const getPositionStyle = (x, y)=> ({
 
 const Sprite = ({x, y, img})=> (
   <div className="sprite" style={getPositionStyle(x, y)}>
-    <img src={safelyLoadSrc(img)} />
+    <img src={safelyLoadSrc(img)} alt='' />
   </div>
 );
 
