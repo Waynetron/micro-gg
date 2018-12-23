@@ -21,8 +21,9 @@ header {
   background-color: #20385B;
   padding: 0.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   color: white;
 }
 

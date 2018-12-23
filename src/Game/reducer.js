@@ -9,12 +9,15 @@ const defaultState = {
   rules: [],
   assets: [],
   width_in_tiles: 0,
-  height_in_tiles: 0
+  height_in_tiles: 0,
+  elapsed: Date.now(),
+  frame: 0,
 };
 
-const gameReducer = (state = defaultState, {type, code}) => {
-  switch (type) {
+const gameReducer = (state = defaultState, action) => {
+  switch (action.type) {
     case 'UPDATE_CODE':
+      const {code} = action;
       const level = parseLevel(code);
       const legend = parseLegend(code);
       const assets = parseAssets(code);
@@ -30,6 +33,13 @@ const gameReducer = (state = defaultState, {type, code}) => {
         assets,
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE,
+      }
+    case 'UPDATE_ELAPSED':
+      const {elapsed} = action;
+      return {
+          ...state,
+          elapsed: Date.now() - elapsed,
+          frame: state.frame += 1
       }
     default:
       return state

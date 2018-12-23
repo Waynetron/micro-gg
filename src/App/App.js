@@ -1,5 +1,6 @@
 import React, {Fragment} from 'react';
 import Game from '../Game/Game.js';
+import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import './App.css';
 
@@ -12,6 +13,7 @@ const App = ()=> {
     <Fragment>
       <header>
         <button onClick={run}>run</button>
+        <Loop />
       </header>
       <main>
         <Code />
