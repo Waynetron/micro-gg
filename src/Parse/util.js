@@ -1,3 +1,4 @@
+import {TILE_SIZE, GRAVITY} from '../Game/constants.js'
 
 const tokenise = (line)=> line.match(/\[.*?\]/g);
 const isRule = (line)=> line.includes('->');
@@ -60,8 +61,17 @@ export const parseSprites = (level, legend, assets)=> {
     if (name) {
       sprites.push({
         name: name,
-        tilePosition: {row, col},
-        src: assets[name]
+        src: assets[name],
+        position: {
+          x: col * TILE_SIZE,
+          y: row * TILE_SIZE
+        },
+        velocity: {x: 0, y: 0},
+        acceleration: {
+          x: 0,
+          y: name === 'Player' ? GRAVITY : 0
+        },
+        static: name === 'Player' ? false : true
       });
     }
   }));

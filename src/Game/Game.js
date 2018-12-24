@@ -2,15 +2,13 @@ import React from 'react';
 import Sprite from './Sprite.js';
 import {connect} from 'react-redux'
 
-const TILE_SIZE = 32;
-
 const Game = ({sprites, rules, width, height})=> (
   <div id="game">
     <div className="stage" style={{width, height}}>
       {sprites.map((sprite)=>
         <Sprite
-          x={sprite.tilePosition.col * TILE_SIZE}
-          y={sprite.tilePosition.row * TILE_SIZE}
+          x={sprite.position.x}
+          y={sprite.position.y}
           img={sprite.src}
         />
       )}

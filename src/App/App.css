@@ -49,6 +49,7 @@ header button {
 
 .stage {
   background-color: black;
+  overflow: hidden;
 }
 
 #code textarea {

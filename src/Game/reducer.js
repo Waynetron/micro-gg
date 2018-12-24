@@ -1,7 +1,6 @@
 import {parseRules, parseSprites, parseLegend,
   parseLevel, parseAssets, getLevelDimensions} from '../Parse/util.js';
-
-const TILE_SIZE = 32;
+import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
   sprites: [],
@@ -48,7 +47,24 @@ const gameReducer = (state = defaultState, action) => {
           elapsed: {
             sinceLastFrame: Date.now() - elapsed,
             totalFrames: state.elapsed.totalFrames + 1
-          }
+          },
+          sprites: state.sprites.map((sprite)=> {
+            if (sprite.static === false) {
+              return {
+                ...sprite,
+                velocity: {
+                  x: sprite.velocity.x + sprite.acceleration.x,
+                  y: sprite.velocity.y + sprite.acceleration.y
+                },
+                position: {
+                  x: sprite.position.x + sprite.velocity.x,
+                  y: sprite.position.y + sprite.velocity.y
+                }
+              }
+            }
+      
+            return sprite;
+          })
       }
     default:
       return state
