@@ -10,7 +10,10 @@ const defaultState = {
   assets: [],
   width_in_tiles: 0,
   height_in_tiles: 0,
-  elapsed: Date.now(),
+  elapsed: {
+    sinceLastFrame: Date.now(),
+    totalFrames: 0
+  },
   frame: 0,
 };
 
@@ -38,8 +41,14 @@ const gameReducer = (state = defaultState, action) => {
       const {elapsed} = action;
       return {
           ...state,
-          elapsed: Date.now() - elapsed,
-          frame: state.frame += 1
+          // Using object with a frame counter inside the object to make sure
+          // it always rerenders when used in components
+          // My thinking is that if I just use elapsed, then it's possible for the same elapsed value
+          // to fire twice in a row, and the 2nd render might not be called (optimised away)
+          elapsed: {
+            sinceLastFrame: Date.now() - elapsed,
+            totalFrames: state.elapsed.totalFrames + 1
+          }
       }
     default:
       return state
