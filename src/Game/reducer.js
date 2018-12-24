@@ -16,6 +16,22 @@ const defaultState = {
   frame: 0,
 };
 
+const applyAcceleration = (sprite)=> ({
+  ...sprite,
+  velocity: {
+    x: sprite.velocity.x + sprite.acceleration.x,
+    y: sprite.velocity.y + sprite.acceleration.y
+  }
+});
+
+const applyVelocity = (sprite)=> ({
+  ...sprite,
+  position: {
+    x: sprite.position.x + sprite.velocity.x,
+    y: sprite.position.y + sprite.velocity.y
+  }
+});
+
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'UPDATE_CODE':
@@ -50,17 +66,7 @@ const gameReducer = (state = defaultState, action) => {
           },
           sprites: state.sprites.map((sprite)=> {
             if (sprite.static === false) {
-              return {
-                ...sprite,
-                velocity: {
-                  x: sprite.velocity.x + sprite.acceleration.x,
-                  y: sprite.velocity.y + sprite.acceleration.y
-                },
-                position: {
-                  x: sprite.position.x + sprite.velocity.x,
-                  y: sprite.position.y + sprite.velocity.y
-                }
-              }
+              return sprite |> applyAcceleration |> applyVelocity;
             }
       
             return sprite;
