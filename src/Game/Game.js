@@ -7,6 +7,7 @@ const Game = ({sprites, rules, width, height})=> (
     <div className="stage" style={{width, height}}>
       {sprites.map((sprite)=>
         <Sprite
+          key={sprite.id}
           x={sprite.position.x}
           y={sprite.position.y}
           img={sprite.src}

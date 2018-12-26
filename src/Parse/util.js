@@ -40,12 +40,9 @@ const removeEdges = (lines)=> (
   lines.slice(1, -1).map((line)=> line.slice(1, -1))
 );
 
-export const parseLevel = (code)=> {
-  const withEdges = code.split('\n')
-    .filter(isLevel)
-
-  return removeEdges(withEdges);
-};
+export const parseLevel = (code)=> (
+  code.split('\n').filter(isLevel) |> removeEdges
+);
 
 export const getLevelDimensions = (level)=> {
   const width_in_tiles = level[0].length;
@@ -61,6 +58,7 @@ export const parseSprites = (level, legend, assets)=> {
     if (name) {
       sprites.push({
         name: name,
+        id: name + row + col,
         src: assets[name],
         position: {
           x: col * TILE_SIZE,
@@ -70,6 +68,12 @@ export const parseSprites = (level, legend, assets)=> {
         acceleration: {
           x: 0,
           y: name === 'Player' ? GRAVITY : 0
+        },
+        touching: {
+          top: false,
+          bottom: false,
+          left: false,
+          right: false
         },
         static: name === 'Player' ? false : true
       });
