@@ -104,6 +104,40 @@ const applyFloorCollision = (sprite)=> {
   }
 }};
 
+const containsState = (sprite, state)=> {
+  for (const entry of Object.entries(state)) {
+    const [key, val] = entry;
+    if (sprite[key] !== val) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const applyRules = (sprites, rules)=> {
+  for (const rule of rules) {
+    const matchState = {
+      name: 'Goomba'
+    }
+    const newState = {
+      acceleration: {
+        x: 1,
+        y: 0
+      }
+    }
+    // const [before, after] = rule;
+    return sprites.map((sprite)=> {
+      if (containsState(sprite, matchState)) {
+        const newSprite = {...sprite, ...newState}
+        return newSprite;
+      }
+
+      return sprite;
+    });
+  }
+}
+
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'UPDATE_CODE':
@@ -136,13 +170,15 @@ const gameReducer = (state = defaultState, action) => {
             sinceLastFrame: Date.now() - elapsed,
             totalFrames: state.elapsed.totalFrames + 1
           },
-          sprites: state.sprites.map((sprite)=> (
-            sprite
-              |> applyAcceleration
-              |> applyVelocity
-              |> (_ => applySpriteCollisions(_, state.sprites))
-              |> applyFloorCollision
-          ))
+          sprites: applyRules(state.sprites, state.rules)
+            .map((sprite)=> (
+              sprite
+                |> applyAcceleration
+                |> applyVelocity
+                |> (_ => applySpriteCollisions(_, state.sprites))
+                |> applyFloorCollision
+            )
+          )
       }
     default:
       return state
