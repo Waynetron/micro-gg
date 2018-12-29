@@ -1,5 +1,8 @@
-import {parseRules, parseSprites, parseLegend,
-  parseLevel, parseAssets, getLevelDimensions} from '../Parse/util.js';
+import {
+  parseRules, parseSprites, parseLegend,
+  parseLevel, parseAssets, getLevelDimensions,
+  ruleToState
+} from '../Parse/util.js';
 import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
@@ -104,7 +107,7 @@ const applyFloorCollision = (sprite)=> {
   }
 }};
 
-const containsState = (sprite, state)=> {
+const containsState = (state, sprite)=> {
   for (const entry of Object.entries(state)) {
     const [key, val] = entry;
     if (sprite[key] !== val) {
@@ -117,18 +120,10 @@ const containsState = (sprite, state)=> {
 
 const applyRules = (sprites, rules)=> {
   for (const rule of rules) {
-    const matchState = {
-      name: 'Goomba'
-    }
-    const newState = {
-      acceleration: {
-        x: 1,
-        y: 0
-      }
-    }
-    // const [before, after] = rule;
+    const [matchState, newState] = ruleToState(rule);
+
     return sprites.map((sprite)=> {
-      if (containsState(sprite, matchState)) {
+      if (containsState(matchState, sprite)) {
         const newSprite = {...sprite, ...newState}
         return newSprite;
       }

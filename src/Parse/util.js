@@ -1,14 +1,60 @@
 import {TILE_SIZE, GRAVITY} from '../Game/constants.js'
 
-const tokenise = (line)=> line.match(/\[.*?\]/g);
 const isRule = (line)=> line.includes('->');
 const isLevel = (line)=> line.match(/#.+#/g)
 const isLegend = (line)=> line.includes('=');
 const isSpriteImageMapping = (line)=> !line.includes('->');
 
-const parseRule = (line)=> {
-  const [left, right] = line.split('->');
-  return [tokenise(left), tokenise(right)];
+const trimBrackets = (string)=> string.replace('[', '').replace(']', '')
+const separateWords = (leftAndRightString)=> (
+  leftAndRightString.map((string)=>
+    trimBrackets(string).trim().split(' ')
+  )
+);
+export const ruleToState = (ruleString)=> {
+  // First, turn the rule string into an array of words
+  // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
+  // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
+  const [leftWords, rightWords] = ruleString.split('->')
+    |> separateWords;
+    
+  /* Turn those words into arrays of key value objects
+      [
+        [
+          {name: "Goomba"}
+        ],
+        [
+          {name: "Goomba"},
+          {acceleration: {x: 1, y: 0}}
+        ]}
+      ]
+  */
+  const [leftState, rightState] = [leftWords, rightWords].map(
+    (words)=> words.map((word)=> {
+      if (word === 'Goomba') {
+        return ({
+          name: 'Goomba'
+        });
+      }
+
+      if (word === 'RIGHT') {
+        return ({
+          acceleration: {x: 1, y: 0}
+        });
+      }
+   })
+  );
+
+  /* Finally merge it into single left and right objects
+    [
+      {name: "Goomba"},
+      {name: "Goomba", acceleration: {x: 1, y: 0}}
+    ]
+  */
+  return [
+    Object.assign({}, {}, ...leftState),
+    Object.assign({}, {}, ...rightState)
+  ];
 }
 
 export const parseAssets = (code)=> {
@@ -86,5 +132,4 @@ export const parseSprites = (level, legend, assets)=> {
 export const parseRules = (code)=> (
   code.split('\n')
     .filter(isRule)
-    .map(parseRule)
 );
