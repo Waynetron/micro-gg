@@ -11,7 +11,13 @@ const separateWords = (leftAndRightString)=> (
     trimBrackets(string).trim().split(' ')
   )
 );
-export const ruleToState = (ruleString)=> {
+const movementVectors = {
+  UP: {x: 0, y: -1},
+  DOWN: {x: 0, y: 1},
+  LEFT: {x: -1, y: 0},
+  RIGHT: {x: 1, y: 0}
+};
+export const ruleToState = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
   // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
@@ -31,17 +37,18 @@ export const ruleToState = (ruleString)=> {
   */
   const [leftState, rightState] = [leftWords, rightWords].map(
     (words)=> words.map((word)=> {
-      if (word === 'Goomba') {
+      if (names[word]) {
         return ({
-          name: 'Goomba'
+          name: word
         });
+      }
+      if (movementVectors[word]) {
+        return ({
+          acceleration: movementVectors[word]
+        })
       }
 
-      if (word === 'RIGHT') {
-        return ({
-          acceleration: {x: 1, y: 0}
-        });
-      }
+      return {};
    })
   );
 
@@ -111,10 +118,7 @@ export const parseSprites = (level, legend, assets)=> {
           y: row * TILE_SIZE
         },
         velocity: {x: 0, y: 0},
-        acceleration: {
-          x: 0,
-          y: name === 'Player' ? GRAVITY : 0
-        },
+        acceleration: {x: 0, y: 0},
         touching: {
           top: false,
           bottom: false,

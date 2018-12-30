@@ -7,7 +7,8 @@ import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
   sprites: [],
-  legend: [],
+  legend: {},
+  names: {},
   rules: [],
   assets: [],
   width_in_tiles: 0,
@@ -118,20 +119,27 @@ const containsState = (state, sprite)=> {
   return true;
 }
 
-const applyRules = (sprites, rules)=> {
-  for (const rule of rules) {
-    const [matchState, newState] = ruleToState(rule);
+const applyRules = (sprites, rules, names)=> (
 
-    return sprites.map((sprite)=> {
+  sprites.map((sprite)=> {
+    for (const rule of rules) {
+      const [matchState, newState] = ruleToState(rule, names);
+
       if (containsState(matchState, sprite)) {
         const newSprite = {...sprite, ...newState}
         return newSprite;
       }
+    }
 
-      return sprite;
-    });
-  }
-}
+    return sprite;
+  })
+);
+
+const arrayToObject = (array) =>
+   array.reduce((obj, item) => {
+     obj[item] = true
+     return obj
+   }, {})
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
@@ -139,6 +147,8 @@ const gameReducer = (state = defaultState, action) => {
       const {code} = action;
       const level = parseLevel(code);
       const legend = parseLegend(code);
+      // names is the legend mapped to have the values as keys. Used for fast name lookup.
+      const names = arrayToObject(Object.values(legend));
       const assets = parseAssets(code);
       const sprites = parseSprites(level, legend, assets);
       const rules = parseRules(code);
@@ -148,6 +158,7 @@ const gameReducer = (state = defaultState, action) => {
         ...state,
         sprites,
         legend,
+        names,
         rules,
         assets,
         width: width_in_tiles * TILE_SIZE,
@@ -165,7 +176,7 @@ const gameReducer = (state = defaultState, action) => {
             sinceLastFrame: Date.now() - elapsed,
             totalFrames: state.elapsed.totalFrames + 1
           },
-          sprites: applyRules(state.sprites, state.rules)
+          sprites: applyRules(state.sprites, state.rules, state.names)
             .map((sprite)=> (
               sprite
                 |> applyAcceleration
