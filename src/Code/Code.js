@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {updateCode, runCode} from './actions.js';
+import {updateCode, compile} from './actions.js';
 import {connect} from 'react-redux'
 
 const Code = ({code, onChange})=> {
@@ -24,7 +24,7 @@ const mapStateToProps = ({code})=> {
 const mapDispatchToProps = (dispatch)=> ({
   onChange: (code)=> {
     dispatch(updateCode(code));
-    dispatch(runCode(code));
+    dispatch(compile(code));
   }
 });
 

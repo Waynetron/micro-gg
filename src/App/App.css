@@ -22,7 +22,7 @@ header {
   padding: 0.5rem;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   color: white;
 }
@@ -36,6 +36,7 @@ header button {
   font-weight: 600;
   font-size: 0.8rem;
   width: 4.5rem;
+  margin-right: 1rem;
 }
 
 #code, #game {

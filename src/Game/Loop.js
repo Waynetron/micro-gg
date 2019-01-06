@@ -2,10 +2,12 @@ import React, {useEffect} from 'react';
 import {updateElapsed} from './actions.js';
 import {connect} from 'react-redux'
 
-const Loop = ({elapsed, onTimeChange})=> {
+const Loop = ({elapsed, onTimeChange, active})=> {
   useEffect(() => {
-    const newTime = Date.now()
-    requestAnimationFrame(()=> onTimeChange(newTime))
+    if (active) {
+      const newTime = Date.now()
+      requestAnimationFrame(()=> onTimeChange(newTime))
+    }
   });
 
   return <p>
@@ -15,7 +17,8 @@ const Loop = ({elapsed, onTimeChange})=> {
 };
 
 const mapStateToProps = ({game})=> ({
-  elapsed: game.elapsed
+  elapsed: game.elapsed,
+  active: game.active
 });
 
 const mapDispatchToProps = (dispatch)=> ({

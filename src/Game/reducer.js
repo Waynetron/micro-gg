@@ -18,7 +18,8 @@ const defaultState = {
   elapsed: {
     sinceLastFrame: Date.now(),
     totalFrames: 0
-  }
+  },
+  active: false
 };
 
 const containsState = (state, sprite)=> {
@@ -75,9 +76,11 @@ const arrayToObject = (array) =>
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
+    case 'SET_ACTIVE':
+      return {...state, active: action.active}
     case 'UPDATE_CODE':
       return {...state, code: action.code}
-    case 'RUN_CODE':
+    case 'COMPILE':
       const {code} = action;
       const level = parseLevel(code);
       const legend = parseLegend(code);

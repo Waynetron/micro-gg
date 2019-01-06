@@ -3,14 +3,19 @@ import {connect} from 'react-redux'
 import Game from '../Game/Game.js';
 import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
-import {runCode} from '../Code/actions';
+import {compile, setActive} from '../Code/actions';
 import './App.css';
+import gameReducer from '../Game/reducer.js';
 
-const App = ({code, onRun})=> {
+const App = ({code, compile, isGameActive, setGameActive})=> {
   return (
     <Fragment>
       <header>
-        <button onClick={()=> onRun(code)}>run</button>
+        <button onClick={()=> compile(code)}>reload</button>
+        {isGameActive
+          ? <button onClick={()=> setGameActive(false)}>pause</button>
+          : <button onClick={()=> setGameActive(true)}>run</button>
+        }
         <Loop />
       </header>
       <main>
@@ -21,13 +26,17 @@ const App = ({code, onRun})=> {
   );
 };
 
-const mapStateToProps = ({code})=> ({
-  code: code.code
+const mapStateToProps = ({code, game})=> ({
+  code: code.code,
+  isGameActive: game.active
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  onRun: (code)=> {
-    dispatch(runCode(code));
+  compile: (code)=> {
+    dispatch(compile(code));
+  },
+  setGameActive: (active)=> {
+    dispatch(setActive(active));
   }
 });
 

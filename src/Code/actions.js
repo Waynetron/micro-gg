@@ -4,7 +4,11 @@ export const updateCode = (code)=> ({
   code
 })
 
-export const runCode = (code)=> ({
-  type: 'RUN_CODE',
+export const compile = (code)=> ({
+  type: 'COMPILE',
   code
+})
+
+export const setActive = (active)=> ({
+  type: 'SET_ACTIVE', active
 })
