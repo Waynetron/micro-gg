@@ -1,19 +1,17 @@
 import React, {Fragment} from 'react';
+import {connect} from 'react-redux'
 import Game from '../Game/Game.js';
 import Loop from '../Game/Loop.js';
 import Physics from '../Game/Physics.js';
 import Code from '../Code/Code.js';
+import {runCode} from '../Code/actions';
 import './App.css';
 
-const run = ()=> {
-  console.log('this does nothing')
-}
-
-const App = ()=> {
+const App = ({code, onRun})=> {
   return (
     <Fragment>
       <header>
-        <button onClick={run}>run</button>
+        <button onClick={()=> onRun(code)}>run</button>
         <Loop />
         <Physics />
       </header>
@@ -25,4 +23,17 @@ const App = ()=> {
   );
 };
 
-export default App;
+const mapStateToProps = ({code})=> ({
+  code: code.code
+})
+
+const mapDispatchToProps = (dispatch)=> ({
+  onRun: (code)=> {
+    dispatch(runCode(code));
+  }
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

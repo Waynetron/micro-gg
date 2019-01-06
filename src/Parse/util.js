@@ -1,3 +1,4 @@
+import uniqid from 'uniqid';
 import {TILE_SIZE, GRAVITY} from '../Game/constants.js'
 
 const isRule = (line)=> line.includes('->');
@@ -11,13 +12,13 @@ const separateWords = (leftAndRightString)=> (
     trimBrackets(string).trim().split(' ')
   )
 );
-const movementVectors = {
+const movementVector = {
   UP: {x: 0, y: -1},
   DOWN: {x: 0, y: 1},
   LEFT: {x: -1, y: 0},
   RIGHT: {x: 1, y: 0}
 };
-export const ruleToState = (ruleString, names)=> {
+export const ruleToStateTransition = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
   // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
@@ -42,9 +43,9 @@ export const ruleToState = (ruleString, names)=> {
           name: word
         });
       }
-      if (movementVectors[word]) {
+      if (movementVector[word]) {
         return ({
-          acceleration: movementVectors[word]
+          acceleration: movementVector[word]
         })
       }
 
@@ -111,7 +112,7 @@ export const parseSprites = (level, legend, assets)=> {
     if (name) {
       sprites.push({
         name: name,
-        id: name + row + col,
+        id: uniqid(),
         src: assets[name],
         position: {
           x: col * TILE_SIZE,

@@ -1,7 +1,7 @@
 import {
   parseRules, parseSprites, parseLegend,
   parseLevel, parseAssets, getLevelDimensions,
-  ruleToState
+  ruleToStateTransition
 } from '../Parse/util.js';
 import {TILE_SIZE} from '../Game/constants.js'
 
@@ -16,8 +16,7 @@ const defaultState = {
   elapsed: {
     sinceLastFrame: Date.now(),
     totalFrames: 0
-  },
-  frame: 0,
+  }
 };
 
 const getEdges = (sprite) => ({
@@ -119,21 +118,40 @@ const containsState = (state, sprite)=> {
   return true;
 }
 
-const applyRules = (sprites, rules, names)=> (
+const mergeStates = (initialState, newState)=> {
+  let merged = initialState;
 
-  sprites.map((sprite)=> {
-    for (const rule of rules) {
-      const [matchState, newState] = ruleToState(rule, names);
-
-      if (containsState(matchState, sprite)) {
-        const newSprite = {...sprite, ...newState}
-        return newSprite;
-      }
+  for (const key of Reflect.ownKeys(newState)) {
+    if (key === 'acceleration') {
+      merged[key] = initialState[key];
+      merged[key].x += newState[key].x;
+      merged[key].y += newState[key].y;
     }
+    if (initialState[key]) {
+      merged[key] = newState[key];
+    }
+  }
 
-    return sprite;
-  })
-);
+  return merged;
+};
+
+const isMatching = (transitionA, transitionB)=> {
+  return transitionA.name === transitionB.name
+}
+
+const applyStateTransition = (sprite, transitions)=> {
+  let resultState = {...sprite};
+
+  for (const transition of transitions) {
+    const [matchState, newState] = transition;
+
+    if (containsState(matchState, sprite)) {
+      resultState = mergeStates(resultState, newState)
+    }
+  }
+
+  return resultState;
+};
 
 const arrayToObject = (array) =>
    array.reduce((obj, item) => {
@@ -144,6 +162,8 @@ const arrayToObject = (array) =>
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'UPDATE_CODE':
+      return {...state, code: action.code}
+    case 'RUN_CODE':
       const {code} = action;
       const level = parseLevel(code);
       const legend = parseLegend(code);
@@ -151,15 +171,20 @@ const gameReducer = (state = defaultState, action) => {
       const names = arrayToObject(Object.values(legend));
       const assets = parseAssets(code);
       const sprites = parseSprites(level, legend, assets);
+      
       const rules = parseRules(code);
+      // A rule consists of a before and an after state referred to as a state transition
+      const stateTransitions = rules.map((rule)=> ruleToStateTransition(rule, names)); // [leftState, rightState]
+
       const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
       return {
-        ...state,
+        ...defaultState,
         sprites,
         legend,
         names,
         rules,
+        stateTransitions,
         assets,
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE,
@@ -176,9 +201,9 @@ const gameReducer = (state = defaultState, action) => {
             sinceLastFrame: Date.now() - elapsed,
             totalFrames: state.elapsed.totalFrames + 1
           },
-          sprites: applyRules(state.sprites, state.rules, state.names)
-            .map((sprite)=> (
+          sprites: state.sprites.map((sprite)=> (
               sprite
+                |> (_ => applyStateTransition(_, state.stateTransitions))
                 |> applyAcceleration
                 |> applyVelocity
                 |> (_ => applySpriteCollisions(_, state.sprites))
