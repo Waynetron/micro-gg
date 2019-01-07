@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {TILE_SIZE, GRAVITY} from '../Game/constants.js'
+import {TILE_SIZE} from '../Game/constants.js'
 
 const isRule = (line)=> line.includes('->');
 const isLevel = (line)=> line.match(/#.+#/g)
@@ -12,11 +12,12 @@ const separateWords = (leftAndRightString)=> (
     trimBrackets(string).trim().split(' ')
   )
 );
-const movementVector = {
-  UP: {x: 0, y: -1},
-  DOWN: {x: 0, y: 1},
-  LEFT: {x: -1, y: 0},
-  RIGHT: {x: 1, y: 0}
+const states = {
+  UP: {acceleration: {x: 0, y: -1}},
+  DOWN: {acceleration: {x: 0, y: 1}},
+  LEFT: {acceleration: {x: -1, y: 0}},
+  RIGHT: {acceleration: {x: 1, y: 0}},
+  STATIC: {static: true}
 };
 export const ruleToStateTransition = (ruleString, names)=> {
   // First, turn the rule string into an array of words
@@ -26,15 +27,10 @@ export const ruleToStateTransition = (ruleString, names)=> {
     |> separateWords;
     
   /* Turn those words into arrays of key value objects
-      [
-        [
-          {name: "Goomba"}
-        ],
-        [
-          {name: "Goomba"},
-          {acceleration: {x: 1, y: 0}}
-        ]}
-      ]
+    [
+      [{name: "Goomba"}],
+      [{name: "Goomba"}, {acceleration: {x: 1, y: 0}}]}
+    ]
   */
   const [leftState, rightState] = [leftWords, rightWords].map(
     (words)=> words.map((word)=> {
@@ -43,9 +39,9 @@ export const ruleToStateTransition = (ruleString, names)=> {
           name: word
         });
       }
-      if (movementVector[word]) {
+      if (states[word]) {
         return ({
-          acceleration: {...movementVector[word]}
+          ...states[word]
         })
       }
 
@@ -53,7 +49,7 @@ export const ruleToStateTransition = (ruleString, names)=> {
    })
   );
 
-  /* Finally merge it into single left and right objects
+  /* Flatten it to a single array of objects
     [
       {name: "Goomba"},
       {name: "Goomba", acceleration: {x: 1, y: 0}}
@@ -126,7 +122,7 @@ export const parseSprites = (level, legend, assets)=> {
           left: false,
           right: false
         },
-        static: name === 'Player' ? false : true
+        static: false
       });
     }
   }));

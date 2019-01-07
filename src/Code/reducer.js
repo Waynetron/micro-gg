@@ -23,6 +23,9 @@ B = Brick
 G = Goomba
 ^ = Spike
 
+[ Brick ] -> [ STATIC Brick ]
+[ QuestionBrick ] -> [ STATIC QuestionBrick ]
+[ Spike ] -> [ STATIC Spike ]
 [ Goomba ] -> [ UP Goomba ]
 [ Goomba ] -> [ RIGHT Goomba ]
 [ Player ] -> [ DOWN Player ]

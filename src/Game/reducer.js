@@ -35,6 +35,36 @@ const containsState = (state, sprite)=> {
   return true;
 }
 
+const merge = (initialState, newState)=> {
+  if (typeof(initialState) !== typeof(newState)) {
+    console.error("initialState and newState types do not match");
+    return initialState;
+  }
+
+  let merged = {...initialState};
+
+  for (const key of Reflect.ownKeys(newState)) {
+    // Both states contain key, add them together and use that
+    if (merged[key] && typeof(merged[key]) === 'object') {
+      // Objects are added together, currently this is hard-coded to assume a vector like structure
+      merged[key] = {
+        x: initialState[key].x + newState[key].x,
+        y: initialState[key].y + newState[key].y
+      }
+    }
+    else if (merged[key] && typeof(merged[key]) === 'boolean') {
+      // Boolean values are replaced
+      merged[key] = newState[key];
+    }
+    else {
+      // initialState did not contain this key, so copy the whole thing from newState
+      merged[key] = {...newState[key]};
+    }
+  }
+
+  return merged
+}
+
 const mergeStates = (initialState, newState)=> {
   let merged = {...initialState};
 
