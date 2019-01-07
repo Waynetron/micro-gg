@@ -14,8 +14,6 @@ const Game = ({sprites, rules, width, height})=> (
         />
       )}
     </div>
-    <h3>Rules</h3>
-      {rules.map((rule)=> <p>{rule}</p>)}
   </div>
 )
 
