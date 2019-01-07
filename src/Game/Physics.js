@@ -1,4 +1,4 @@
-import {TILE_SIZE} from './constants.js'
+import {TILE_SIZE, FRICTION} from './constants.js'
 
 const getEdges = (sprite) => ({
   top: sprite.position.y,
@@ -77,9 +77,6 @@ export const applyAcceleration = (sprite)=> ({
   velocity: {
     x: sprite.velocity.x + sprite.acceleration.x,
     y: sprite.velocity.y + sprite.acceleration.y
-  },
-  acceleration: {
-    x: 0, y: 0
   }
 });
 
@@ -88,5 +85,13 @@ export const applyVelocity = (sprite)=> ({
   position: {
     x: sprite.position.x + sprite.velocity.x,
     y: sprite.position.y + sprite.velocity.y
+  }
+});
+
+export const applyFriction = (sprite)=> ({
+  ...sprite,
+  velocity: {
+    x: sprite.velocity.x * FRICTION,
+    y: sprite.velocity.y * FRICTION
   }
 });

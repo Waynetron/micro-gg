@@ -3,7 +3,8 @@ import {
   getLevelDimensions, ruleToStateTransition
 } from '../Parse/util.js';
 import {
-  applyAcceleration, applyVelocity, applySpriteCollisions, applyFloorCollision
+  applyAcceleration, applyVelocity, applyFriction,
+  applySpriteCollisions, applyFloorCollision
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
@@ -35,16 +36,19 @@ const containsState = (state, sprite)=> {
 }
 
 const mergeStates = (initialState, newState)=> {
-  let merged = initialState;
+  let merged = {...initialState};
 
   for (const key of Reflect.ownKeys(newState)) {
-    if (key === 'acceleration') {
-      merged[key] = initialState[key];
-      merged[key].x += newState[key].x;
-      merged[key].y += newState[key].y;
+    // Both states contain key, add them together and use that
+    if (merged[key]) {
+      merged[key] = {
+        x: initialState[key].x + newState[key].x,
+        y: initialState[key].y + newState[key].y
+      }
     }
-    if (initialState[key]) {
-      merged[key] = newState[key];
+    // initialState did not contain this key, so copy the whole thing from newState
+    else {
+      merged[key] = {...newState[key]};
     }
   }
 
@@ -124,6 +128,7 @@ const gameReducer = (state = defaultState, action) => {
                 |> (_ => applyStateTransition(_, state.stateTransitions))
                 |> applyAcceleration
                 |> applyVelocity
+                |> applyFriction
                 |> (_ => applySpriteCollisions(_, state.sprites))
                 |> applyFloorCollision
             )

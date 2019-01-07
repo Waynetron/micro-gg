@@ -25,6 +25,7 @@ G = Goomba
 
 [ Goomba ] -> [ UP Goomba ]
 [ Goomba ] -> [ RIGHT Goomba ]
+[ Player ] -> [ DOWN Player ]
 `
 }
 
