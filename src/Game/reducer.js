@@ -12,11 +12,12 @@ const defaultState = {
   legend: {},
   names: {},
   rules: [],
+  stateTransitions: [],
   assets: [],
   width_in_tiles: 0,
   height_in_tiles: 0,
   elapsed: {
-    sinceLastFrame: Date.now(),
+    sinceLastFrame: 0,
     totalFrames: 0
   },
   active: false

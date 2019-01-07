@@ -45,7 +45,7 @@ export const ruleToStateTransition = (ruleString, names)=> {
       }
       if (movementVector[word]) {
         return ({
-          acceleration: movementVector[word]
+          acceleration: {...movementVector[word]}
         })
       }
 
