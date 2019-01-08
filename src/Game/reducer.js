@@ -3,7 +3,7 @@ import {
   getLevelDimensions, ruleToStateTransition
 } from '../Parse/util.js';
 import {
-  applyAcceleration, applyVelocity, applyFriction,
+  storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   applySpriteCollisions, applyWallCollisions
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
@@ -143,6 +143,7 @@ const gameReducer = (state = defaultState, action) => {
       }
     case 'UPDATE_ELAPSED':
       const {elapsed} = action;
+      const previousState = {...state};
       return {
           ...state,
           // Using object with a frame counter inside the object to make sure
@@ -155,11 +156,12 @@ const gameReducer = (state = defaultState, action) => {
           },
           sprites: state.sprites.map((sprite)=> (
               sprite
+                |> storePreviousPosition
                 |> (_ => applyStateTransition(_, state.stateTransitions))
                 |> applyAcceleration
                 |> applyVelocity
                 |> applyFriction
-                |> (_ => applySpriteCollisions(_, state.sprites))
+                |> (_ => applySpriteCollisions(_, state.sprites, previousState))
                 |> (_ => applyWallCollisions(_, state.width, state.height))
             )
           )
