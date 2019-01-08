@@ -7,19 +7,19 @@ Spike spike
 Goomba goomba
 
 ##################
-#B              B#
+#                #
 #         P      #
 #                #
-#               #
-#          G     #
-#    BBBB?BBB    #
 #                #
-#B  P         ^^ #
+#          G     #
+#    ####?###    #
+#                #
+#   P         ^^ #
 ##################
 
 P = Player
 ? = QuestionBrick
-B = Brick
+# = Brick
 G = Goomba
 ^ = Spike
 

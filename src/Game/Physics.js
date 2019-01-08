@@ -59,18 +59,32 @@ export const applySpriteCollisions = (spriteA, sprites)=> {
   return spriteA
 };
 
-export const applyFloorCollision = (sprite)=> {
+const clamp = (value, min, max)=> {
+  if (value < min) {
+    return min;
+  }
+
+  if (value > max) {
+    return max;
+  }
+
+  return value;
+}
+
+export const applyWallCollisions = (sprite, width, height)=> {
   if (sprite.static) {
     return sprite;
   }
   
   return {
-  ...sprite,
-  position: {
-    ...sprite.position,
-    y: sprite.position.y > 224 ? 224: sprite.position.y
+    ...sprite,
+    position: {
+      ...sprite.position,
+      y: clamp(sprite.position.y, 0, height - TILE_SIZE),
+      x: clamp(sprite.position.x, 0, width - TILE_SIZE)
+    }
   }
-}};
+};
 
 export const applyAcceleration = (sprite)=> ({
   ...sprite,
