@@ -8,10 +8,10 @@ Goomba goomba
 
 ##################
 #                #
-#         P      #
 #                #
 #                #
-#          G     #
+#    P      G    #
+#                #
 #    ####?###    #
 #                #
 #   P         ^^ #
@@ -26,9 +26,10 @@ G = Goomba
 [ Brick ] -> [ STATIC Brick ]
 [ QuestionBrick ] -> [ STATIC QuestionBrick ]
 [ Spike ] -> [ STATIC Spike ]
-[ Goomba ] -> [ UP Goomba ]
-[ Goomba ] -> [ RIGHT Goomba ]
+[ Goomba ] -> [ DOWN Goomba ]
+[ Goomba ] -> [ LEFT Goomba ]
 [ Player ] -> [ DOWN Player ]
+[ Player ] -> [ RIGHT Player ]
 `
 }
 

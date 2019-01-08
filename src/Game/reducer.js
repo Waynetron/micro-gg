@@ -4,7 +4,7 @@ import {
 } from '../Parse/util.js';
 import {
   storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
-  applySpriteCollisions, applyWallCollisions
+  applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
@@ -161,6 +161,7 @@ const gameReducer = (state = defaultState, action) => {
                 |> applyAcceleration
                 |> applyVelocity
                 |> applyFriction
+                |> (_ => applySpriteCollisionsCrossMethod(_, state.sprites, previousState))
                 |> (_ => applySpriteCollisions(_, state.sprites, previousState))
                 |> (_ => applyWallCollisions(_, state.width, state.height))
             )
