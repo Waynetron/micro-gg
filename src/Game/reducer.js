@@ -56,11 +56,6 @@ const mergeStates = (initialState, newState)=> {
   return merged;
 };
 
-export const resetInputs = (sprite)=> ({
-  ...sprite,
-  inputs: {}
-});
-
 // custom merge rules
 const mergeCustomizer = (objValue, srcValue)=> {
   if (isNumber(objValue)) {
@@ -145,16 +140,26 @@ const gameReducer = (state = defaultState, action) => {
                 |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
                 |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
                 |> (sprite => applyWallCollisions(sprite, state.width, state.height))
-                |> resetInputs
             )
           )
       }
     case 'SET_INPUT':
-      const {input} = action;
       return {
         ...state,
         sprites: state.sprites.map(
-          (sprite)=> ({...sprite, inputs: {...sprite.inputs, [input]: true}})
+          (sprite)=> ({...sprite, inputs: {...sprite.inputs, [action.input]: true}})
+        )
+      };
+
+    case 'CANCEL_INPUT':
+      return {
+        ...state,
+        sprites: state.sprites.map(
+          (sprite)=> {
+            const newInputs = {...sprite.inputs};
+            newInputs[action.input] = undefined;
+            return {...sprite, inputs: newInputs}
+          }
         )
       };
 

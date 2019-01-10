@@ -27,9 +27,11 @@ G = Goomba
 [ QuestionBrick ] -> [ STATIC QuestionBrick ]
 [ Spike ] -> [ STATIC Spike ]
 [ Goomba ] -> [ DOWN Goomba ]
-[ Goomba ] -> [ LEFT Goomba ]
-[ Player ] -> [ DOWN Player ]
+
 [ <LEFT> Player ] -> [ LEFT Player ]
+[ <RIGHT> Player ] -> [ RIGHT Player ]
+[ <UP> Player ] -> [ UP Player ]
+[ <DOWN> Player ] -> [ DOWN Player ]
 [ <ACTION1> Player ] -> [ UP Player ]
 `
 }
