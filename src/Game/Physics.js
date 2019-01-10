@@ -208,7 +208,8 @@ export const applyAcceleration = (sprite)=> ({
   velocity: {
     x: sprite.velocity.x + sprite.acceleration.x,
     y: sprite.velocity.y + sprite.acceleration.y
-  }
+  },
+  acceleration: {x: 0, y: 0}
 });
 
 export const applyVelocity = (sprite)=> ({

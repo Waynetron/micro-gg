@@ -19,6 +19,15 @@ const states = {
   RIGHT: {acceleration: {x: 1, y: 0}},
   STATIC: {static: true}
 };
+
+const inputs = {
+  '<UP>': 'up',
+  '<DOWN>': 'down',
+  '<LEFT>': 'left',
+  '<RIGHT>': 'right',
+  '<ACTION1>': 'action1',
+  '<ACTION2>': 'action2'
+};
 export const ruleToStateTransition = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
@@ -37,6 +46,11 @@ export const ruleToStateTransition = (ruleString, names)=> {
       if (names[word]) {
         return ({
           name: word
+        });
+      }
+      if (inputs[word]) {
+        return ({
+          inputs: {[inputs[word]]: true}
         });
       }
       if (states[word]) {
@@ -122,7 +136,8 @@ export const parseSprites = (level, legend, assets)=> {
           left: false,
           right: false
         },
-        static: false
+        static: false,
+        inputs: {}
       });
     }
   }));

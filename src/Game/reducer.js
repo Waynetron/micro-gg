@@ -1,3 +1,4 @@
+import {matches, mergeWith, isNumber} from 'lodash-es';
 import {
   parseRules, parseSprites, parseLegend, parseLevel, parseAssets,
   getLevelDimensions, ruleToStateTransition
@@ -35,36 +36,6 @@ const containsState = (state, sprite)=> {
   return true;
 }
 
-const merge = (initialState, newState)=> {
-  if (typeof(initialState) !== typeof(newState)) {
-    console.error("initialState and newState types do not match");
-    return initialState;
-  }
-
-  let merged = {...initialState};
-
-  for (const key of Reflect.ownKeys(newState)) {
-    // Both states contain key, add them together and use that
-    if (merged[key] && typeof(merged[key]) === 'object') {
-      // Objects are added together, currently this is hard-coded to assume a vector like structure
-      merged[key] = {
-        x: initialState[key].x + newState[key].x,
-        y: initialState[key].y + newState[key].y
-      }
-    }
-    else if (merged[key] && typeof(merged[key]) === 'boolean') {
-      // Boolean values are replaced
-      merged[key] = newState[key];
-    }
-    else {
-      // initialState did not contain this key, so copy the whole thing from newState
-      merged[key] = {...newState[key]};
-    }
-  }
-
-  return merged
-}
-
 const mergeStates = (initialState, newState)=> {
   let merged = {...initialState};
 
@@ -85,18 +56,25 @@ const mergeStates = (initialState, newState)=> {
   return merged;
 };
 
-const isMatching = (transitionA, transitionB)=> {
-  return transitionA.name === transitionB.name
-}
+export const resetInputs = (sprite)=> ({
+  ...sprite,
+  inputs: {}
+});
 
+// custom merge rules
+const mergeCustomizer = (objValue, srcValue)=> {
+  if (isNumber(objValue)) {
+    return objValue + srcValue;
+  }
+}
 const applyStateTransition = (sprite, transitions)=> {
   let resultState = {...sprite};
 
   for (const transition of transitions) {
-    const [matchState, newState] = transition;
+    const [left, right] = transition;
 
-    if (containsState(matchState, sprite)) {
-      resultState = mergeStates(resultState, newState)
+    if (matches(left)(sprite)) {
+      resultState = mergeWith(resultState, right, mergeCustomizer)
     }
   }
 
@@ -113,8 +91,10 @@ const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'SET_ACTIVE':
       return {...state, active: action.active}
+      
     case 'UPDATE_CODE':
       return {...state, code: action.code}
+
     case 'COMPILE':
       const {code} = action;
       const level = parseLevel(code);
@@ -141,6 +121,7 @@ const gameReducer = (state = defaultState, action) => {
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE,
       }
+
     case 'UPDATE_ELAPSED':
       const {elapsed} = action;
       const previousState = {...state};
@@ -157,16 +138,26 @@ const gameReducer = (state = defaultState, action) => {
           sprites: state.sprites.map((sprite)=> (
               sprite
                 |> storePreviousPosition
-                |> (_ => applyStateTransition(_, state.stateTransitions))
+                |> ((sprite) => applyStateTransition(sprite, state.stateTransitions))
                 |> applyAcceleration
                 |> applyVelocity
                 |> applyFriction
-                |> (_ => applySpriteCollisionsCrossMethod(_, state.sprites, previousState))
-                |> (_ => applySpriteCollisions(_, state.sprites, previousState))
-                |> (_ => applyWallCollisions(_, state.width, state.height))
+                |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
+                |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
+                |> (sprite => applyWallCollisions(sprite, state.width, state.height))
+                |> resetInputs
             )
           )
       }
+    case 'SET_INPUT':
+      const {input} = action;
+      return {
+        ...state,
+        sprites: state.sprites.map(
+          (sprite)=> ({...sprite, inputs: {...sprite.inputs, [input]: true}})
+        )
+      };
+
     default:
       return state
   }

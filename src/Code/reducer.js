@@ -29,7 +29,8 @@ G = Goomba
 [ Goomba ] -> [ DOWN Goomba ]
 [ Goomba ] -> [ LEFT Goomba ]
 [ Player ] -> [ DOWN Player ]
-[ Player ] -> [ RIGHT Player ]
+[ <LEFT> Player ] -> [ LEFT Player ]
+[ <ACTION1> Player ] -> [ UP Player ]
 `
 }
 
