@@ -5,7 +5,8 @@ import {
 } from '../Parse/util.js';
 import {
   storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
-  applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions
+  applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions,
+  resetTouching
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
@@ -62,6 +63,7 @@ const mergeCustomizer = (objValue, srcValue)=> {
     return objValue + srcValue;
   }
 }
+
 const applyStateTransition = (sprite, transitions)=> {
   let resultState = {...sprite};
 
@@ -132,14 +134,15 @@ const gameReducer = (state = defaultState, action) => {
           },
           sprites: state.sprites.map((sprite)=> (
               sprite
+                |> resetTouching
                 |> storePreviousPosition
                 |> ((sprite) => applyStateTransition(sprite, state.stateTransitions))
                 |> applyAcceleration
                 |> applyVelocity
-                |> applyFriction
                 |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
                 |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
                 |> (sprite => applyWallCollisions(sprite, state.width, state.height))
+                |> applyFriction
             )
           )
       }
