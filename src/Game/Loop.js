@@ -2,22 +2,23 @@ import React, {useEffect} from 'react';
 import {updateElapsed} from './actions.js';
 import {connect} from 'react-redux'
 
-const Loop = ({elapsed, onTimeChange, active})=> {
+const Loop = ({onTimeChange, active})=> {
+  // recursively calls itself once per frame
+  const advanceFrame = ()=> {
+    onTimeChange(Date.now());
+    requestAnimationFrame(()=> advanceFrame());
+  }
+
   useEffect(() => {
     if (active) {
-      const newTime = Date.now()
-      requestAnimationFrame(()=> onTimeChange(newTime))
+      requestAnimationFrame(()=> advanceFrame());
     }
   });
 
-  return <p>
-    frame:<strong>{elapsed.totalFrames} </strong> 
-     —
-    elapsed:<strong>{elapsed.sinceLastFrame}</strong></p>;
+  return <p></p>;
 };
 
 const mapStateToProps = ({game})=> ({
-  elapsed: game.elapsed,
   active: game.active
 });
 
