@@ -26,13 +26,11 @@ G = Goomba
 [ Brick ] -> [ STATIC Brick ]
 [ QuestionBrick ] -> [ STATIC QuestionBrick ]
 [ Spike ] -> [ STATIC Spike ]
-[ Goomba ] -> [ DOWN Goomba ]
-
+[ Goomba ] -> [ SLOW_DOWN Goomba ]
+[ Player ] -> [ SLOW_DOWN Player ]
 [ <LEFT> Player ] -> [ LEFT Player ]
 [ <RIGHT> Player ] -> [ RIGHT Player ]
-[ <UP> Player ] -> [ UP Player ]
-[ <DOWN> Player ] -> [ DOWN Player ]
-[ <ACTION1> Player ] -> [ UP Player ]
+[ <UP> Player ] -> [ JUMP Player ]
 `
 }
 

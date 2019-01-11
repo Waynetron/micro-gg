@@ -13,10 +13,22 @@ const separateWords = (leftAndRightString)=> (
   )
 );
 const states = {
-  UP: {acceleration: {x: 0, y: -3}},
-  DOWN: {acceleration: {x: 0, y: 3}},
-  LEFT: {acceleration: {x: -3, y: 0}},
-  RIGHT: {acceleration: {x: 3, y: 0}},
+  UP: {acceleration: {y: -2}},
+  DOWN: {acceleration: {y: 2}},
+  LEFT: {acceleration: {x: -2}},
+  RIGHT: {acceleration: {x: 2}},
+  SLOW_UP: {acceleration: {y: -1}},
+  SLOW_DOWN: {acceleration: {y: 1}},
+  SLOW_LEFT: {acceleration: {x: -1}},
+  SLOW_RIGHT: {acceleration: {x: 1}},
+  FAST_UP: {acceleration: {y: -6}},
+  FAST_DOWN: {acceleration: {y: 6}},
+  FAST_LEFT: {acceleration: {x: -6}},
+  FAST_RIGHT: {acceleration: {x: 6}},
+  JUMP: {
+    velocity: {y: -50},
+    inputs: {up: false}
+  },
   STATIC: {static: true}
 };
 
@@ -129,7 +141,7 @@ export const parseSprites = (level, legend, assets)=> {
           y: row * TILE_SIZE
         },
         velocity: {x: 0, y: 0},
-        maxVelocity: {x: 10, y: 10},
+        maxVelocity: {x: 15, y: 15},
         acceleration: {x: 0, y: 0},
         touching: {
           top: false,
