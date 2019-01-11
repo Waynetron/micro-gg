@@ -1,4 +1,7 @@
-import {TILE_SIZE, FRICTION, TOP, BOTTOM, LEFT, RIGHT} from './constants.js'
+import {
+  TILE_SIZE, GROUND_FRICTION, AIR_FRICTION,
+  TOP, BOTTOM, LEFT, RIGHT
+} from './constants.js'
 
 const getEdges = (sprite) => ({
   top: sprite.position.y,
@@ -249,7 +252,11 @@ export const resetTouching = (sprite)=> ({
 export const applyFriction = (sprite)=> ({
   ...sprite,
   velocity: {
-    x: (sprite.touching.top || sprite.touching.bottom) ? sprite.velocity.x * FRICTION : sprite.velocity.x,
-    y: (sprite.touching.left || sprite.touching.right) ? sprite.velocity.y * FRICTION : sprite.velocity.y,
+    x: (sprite.touching.top || sprite.touching.bottom)
+      ? sprite.velocity.x * GROUND_FRICTION
+      : sprite.velocity.x * AIR_FRICTION,
+    y: (sprite.touching.left || sprite.touching.right)
+      ? sprite.velocity.y * GROUND_FRICTION
+      : sprite.velocity.y * AIR_FRICTION,
   }
 });
