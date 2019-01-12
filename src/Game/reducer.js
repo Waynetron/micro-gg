@@ -137,12 +137,12 @@ const gameReducer = (state = defaultState, action) => {
                 |> resetTouching
                 |> storePreviousPosition
                 |> ((sprite) => applyStateTransition(sprite, state.stateTransitions))
+                |> applyFriction
                 |> applyAcceleration
                 |> applyVelocity
                 |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
                 |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
                 |> (sprite => applyWallCollisions(sprite, state.width, state.height))
-                |> applyFriction
             )
           )
       }

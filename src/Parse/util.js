@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {TILE_SIZE} from '../Game/constants.js'
+import {TILE_SIZE, MAX_VELOCITY} from '../Game/constants.js'
 
 const isRule = (line)=> line.includes('->');
 const isLevel = (line)=> line.match(/#.+#/g)
@@ -13,20 +13,16 @@ const separateWords = (leftAndRightString)=> (
   )
 );
 const states = {
-  UP: {acceleration: {y: -2}},
-  DOWN: {acceleration: {y: 2}},
-  LEFT: {acceleration: {x: -2}},
-  RIGHT: {acceleration: {x: 2}},
-  SLOW_UP: {acceleration: {y: -1}},
-  SLOW_DOWN: {acceleration: {y: 1}},
-  SLOW_LEFT: {acceleration: {x: -1}},
-  SLOW_RIGHT: {acceleration: {x: 1}},
+  UP: {acceleration: {y: -1}},
+  DOWN: {acceleration: {y: 1}},
+  LEFT: {acceleration: {x: -1}},
+  RIGHT: {acceleration: {x: 1}},
   FAST_UP: {acceleration: {y: -6}},
   FAST_DOWN: {acceleration: {y: 6}},
   FAST_LEFT: {acceleration: {x: -6}},
   FAST_RIGHT: {acceleration: {x: 6}},
   JUMP: {
-    velocity: {y: -50},
+    velocity: {y: -250},
     inputs: {up: false}
   },
   STATIC: {static: true}
@@ -141,7 +137,7 @@ export const parseSprites = (level, legend, assets)=> {
           y: row * TILE_SIZE
         },
         velocity: {x: 0, y: 0},
-        maxVelocity: {x: 15, y: 15},
+        maxVelocity: {x: MAX_VELOCITY, y: MAX_VELOCITY},
         acceleration: {x: 0, y: 0},
         touching: {
           top: false,
