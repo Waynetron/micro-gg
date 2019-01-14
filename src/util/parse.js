@@ -1,10 +1,12 @@
 import uniqid from 'uniqid';
 import {TILE_SIZE, MAX_VELOCITY} from '../Game/constants.js'
 
-const isRule = (line)=> line.includes('->');
+const isCollisionRule = (line)=> line.includes('|');
+const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
 const isLevel = (line)=> line.match(/#.+#/g)
 const isLegend = (line)=> line.includes('=');
-const isSpriteImageMapping = (line)=> !line.includes('->');
+const isSpriteImageMapping = (line)=>
+  !isRule(line) && !isCollisionRule(line) && !isLevel(line) && !isLegend(line);
 
 export const parseAssets = (code)=> {
   const assets = {};
@@ -77,7 +79,7 @@ export const parseSprites = (level, legend, assets)=> {
   return sprites;
 };
 
-export const parseRules = (code)=> (
-  code.split('\n')
-    .filter(isRule)
-);
+export const parseRules = (code)=> ([
+  code.split('\n').filter(isRule),
+  code.split('\n').filter(isCollisionRule)
+]);

@@ -31,40 +31,100 @@ const inputs = {
   '<ACTION1>': 'action1',
   '<ACTION2>': 'action2'
 };
-export const ruleToStateTransition = (ruleString, names)=> {
+
+/*
+Starts with 
+  [ UP Player | Spike ] -> [ DEAD Player | Spike ]
+Breaks up into 2 rules
+  [ UP Player] -> [ DEAD Player]
+  [ Spike ] -> [ Spike ]
+Evaluate both rules into a pair of state transitions
+[
+  {name: "Player", acceleration: {x: 1, y: 0}},
+  {name: "Player", dead: true}
+]
+[
+  {name: "Spike"},
+  {name: "Spike"}
+]
+// Finally adds a colliding property to the left side each state transition
+[
+  {
+    name: "Player", acceleration: {x: 1, y: 0},
+    colliding: {
+      top: {name:'Spike'}, bottom: {name:'Spike'},
+      left: {name:'Spike'}, right: {name:'Spike'}
+    }
+  },
+  {name: "Player", dead: true}
+]
+[
+  {
+    name: "Spike",
+    colliding: {
+      top: {name:'Player'}, bottom: {name:'Player'},
+      left: {name:'Player'}, right: {name:'Player'}
+    }
+  }
+  {name: "Spike"}
+]
+*/
+export const collisionRuleToStateTransitions = (ruleString, names)=> {
   // First, turn the rule string into an array of words
-  // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
-  // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
-  const [leftWords, rightWords] = ruleString.split('->')
-    |> separateWords;
-    
+  // "[ Player | Goomba ] -> [ DEAD Player | Goomba ]"
+  const [leftRule, rightRule] = ruleString.split('->');
+  const [leftWordsA, leftWordsB] = leftRule.split('|') |> separateWords;
+  const [rightWordsA, rightWordsB] = rightRule.split('|') |> separateWords;
+
+  const leftStateA = wordsToState(leftWordsA, names);
+  const leftStateB = wordsToState(leftWordsB, names);
+  const rightStateA = wordsToState(rightWordsA, names);
+  const rightStateB = wordsToState(rightWordsB, names);
+
+  const collidingA = {
+    'top': [{...leftStateA}]
+  }
+  const collidingB = {
+    'bottom': [{...leftStateB}]
+  }
+  const pairA = [
+    {...leftStateA, colliding: collidingB},
+    rightStateA
+  ];
+  const pairB = [
+    {...leftStateB, colliding: {...collidingA}},
+    rightStateB
+  ];
+
+  return [pairA, pairB];
+}
+
+const wordsToState = (words, names)=> {
   /* Turn those words into arrays of key value objects
     [
       [{name: "Goomba"}],
       [{name: "Goomba"}, {acceleration: {x: 1, y: 0}}]}
     ]
   */
-  const [leftState, rightState] = [leftWords, rightWords].map(
-    (words)=> words.map((word)=> {
-      if (names[word]) {
-        return ({
-          name: word
-        });
-      }
-      if (inputs[word]) {
-        return ({
-          inputs: {[inputs[word]]: true}
-        });
-      }
-      if (states[word]) {
-        return ({
-          ...states[word]
-        })
-      }
+  const statesArr = words.map((word)=> {
+    if (names[word]) {
+      return ({
+        name: word
+      });
+    }
+    if (inputs[word]) {
+      return ({
+        inputs: {[inputs[word]]: true}
+      });
+    }
+    if (states[word]) {
+      return ({
+        ...states[word]
+      })
+    }
 
-      return {};
-   })
-  );
+    return {};
+  });
 
   /* Flatten it to a single array of objects
     [
@@ -72,10 +132,20 @@ export const ruleToStateTransition = (ruleString, names)=> {
       {name: "Goomba", acceleration: {x: 1, y: 0}}
     ]
   */
-  return [
-    Object.assign({}, {}, ...leftState),
-    Object.assign({}, {}, ...rightState)
-  ];
+  return Object.assign({}, {}, ...statesArr);
+};
+
+export const ruleToStateTransition = (ruleString, names)=> {
+  // First, turn the rule string into an array of words
+  // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
+  // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
+  const [leftWords, rightWords] = ruleString.split('->')
+    |> separateWords;
+    
+  const leftState = wordsToState(leftWords, names);
+  const rightState = wordsToState(rightWords, names);
+
+  return [leftState, rightState];
 }
 
 // custom merge rules

@@ -1,6 +1,7 @@
+import {flatten} from 'lodash-es';
 import {parseRules, parseSprites, parseLegend, parseLevel, parseAssets,
   getLevelDimensions} from '../util/parse.js';
-import {ruleToStateTransition, applyStateTransition,
+import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransition,
   isAlive} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions,
@@ -46,9 +47,15 @@ const gameReducer = (state = defaultState, action) => {
       const assets = parseAssets(code);
       const sprites = parseSprites(level, legend, assets);
       
-      const rules = parseRules(code);
       // A rule consists of a before and an after state referred to as a state transition
+      const [rules, collisionRules] = parseRules(code);
       const stateTransitions = rules.map((rule)=> ruleToStateTransition(rule, names)); // [leftState, rightState]
+
+      // collisionRules are a bit more complicated
+      const collisionStateTransitionPairs = collisionRules.map(
+        (rule)=> collisionRuleToStateTransitions(rule, names)
+      );
+      const collisionStateTransitions = flatten(collisionStateTransitionPairs);
 
       const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
@@ -58,7 +65,7 @@ const gameReducer = (state = defaultState, action) => {
         legend,
         names,
         rules,
-        stateTransitions,
+        stateTransitions: [...stateTransitions, ...collisionStateTransitions],
         assets,
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE,
@@ -79,12 +86,12 @@ const gameReducer = (state = defaultState, action) => {
           },
           sprites: state.sprites.filter(isAlive)
             .map((sprite)=> (sprite
-              |> resetTouching
               |> storePreviousPosition
               |> ((sprite) => applyStateTransition(sprite, state.stateTransitions))
               |> applyFriction
               |> applyAcceleration
               |> applyVelocity
+              |> resetTouching
               |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
               |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
               |> (sprite => applyWallCollisions(sprite, state.width, state.height))
