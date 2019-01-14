@@ -5,7 +5,6 @@ import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import {compile, setActive} from '../Code/actions';
 import './App.css';
-import gameReducer from '../Game/reducer.js';
 
 const App = ({code, compile, isGameActive, setGameActive})=> {
   return (

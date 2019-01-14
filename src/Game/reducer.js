@@ -1,13 +1,10 @@
-import {matches, mergeWith, isNumber} from 'lodash-es';
-import {
-  parseRules, parseSprites, parseLegend, parseLevel, parseAssets,
-  getLevelDimensions, ruleToStateTransition
-} from '../Parse/util.js';
-import {
-  storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
+import {parseRules, parseSprites, parseLegend, parseLevel, parseAssets,
+  getLevelDimensions} from '../util/parse.js';
+import {ruleToStateTransition, applyStateTransition,
+  isAlive} from '../util/state.js'
+import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions,
-  resetTouching
-} from './physics';
+  resetTouching} from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
@@ -24,58 +21,6 @@ const defaultState = {
     totalFrames: 0
   },
   active: false
-};
-
-const containsState = (state, sprite)=> {
-  for (const entry of Object.entries(state)) {
-    const [key, val] = entry;
-    if (sprite[key] !== val) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-const mergeStates = (initialState, newState)=> {
-  let merged = {...initialState};
-
-  for (const key of Reflect.ownKeys(newState)) {
-    // Both states contain key, add them together and use that
-    if (merged[key]) {
-      merged[key] = {
-        x: initialState[key].x + newState[key].x,
-        y: initialState[key].y + newState[key].y
-      }
-    }
-    // initialState did not contain this key, so copy the whole thing from newState
-    else {
-      merged[key] = {...newState[key]};
-    }
-  }
-
-  return merged;
-};
-
-// custom merge rules
-const mergeCustomizer = (objValue, srcValue)=> {
-  if (isNumber(objValue)) {
-    return objValue + srcValue;
-  }
-}
-
-const applyStateTransition = (sprite, transitions)=> {
-  let resultState = {...sprite};
-
-  for (const transition of transitions) {
-    const [left, right] = transition;
-
-    if (matches(left)(sprite)) {
-      resultState = mergeWith(resultState, right, mergeCustomizer)
-    }
-  }
-
-  return resultState;
 };
 
 const arrayToObject = (array) =>
@@ -132,17 +77,17 @@ const gameReducer = (state = defaultState, action) => {
             sinceLastFrame: Date.now() - elapsed,
             totalFrames: state.elapsed.totalFrames + 1
           },
-          sprites: state.sprites.map((sprite)=> (
-              sprite
-                |> resetTouching
-                |> storePreviousPosition
-                |> ((sprite) => applyStateTransition(sprite, state.stateTransitions))
-                |> applyFriction
-                |> applyAcceleration
-                |> applyVelocity
-                |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
-                |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
-                |> (sprite => applyWallCollisions(sprite, state.width, state.height))
+          sprites: state.sprites.filter(isAlive)
+            .map((sprite)=> (sprite
+              |> resetTouching
+              |> storePreviousPosition
+              |> ((sprite) => applyStateTransition(sprite, state.stateTransitions))
+              |> applyFriction
+              |> applyAcceleration
+              |> applyVelocity
+              |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
+              |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
+              |> (sprite => applyWallCollisions(sprite, state.width, state.height))
             )
           )
       }

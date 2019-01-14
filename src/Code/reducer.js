@@ -31,6 +31,7 @@ G = Goomba
 [ <LEFT> Player ] -> [ LEFT Player ]
 [ <RIGHT> Player ] -> [ RIGHT Player ]
 [ <UP> Player ] -> [ JUMP Player ]
+[ Player | Spike ] -> [ DEAD Player | Spike ]
 `
 }
 
