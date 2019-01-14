@@ -93,27 +93,24 @@ const getAxisFromEdge = (edge)=> {
 const getCollideState = (edgeA, spriteA, spriteB)=> {
   const edgesB = getEdges(spriteB);
   const touching = {...spriteA.touching, [edgeA]: true};
-  const position = {...spriteA.position};
+  const velocity = {...spriteA.velocity, [getAxisFromEdge(edgeA)]: 0};
+
+  let position = {...spriteA.position};
   if (edgeA === TOP) {
-    position.y = edgesB[BOTTOM]
+    position.y = edgesB[BOTTOM];
   }
   else if (edgeA === BOTTOM) {
-    position.y = edgesB[TOP] - TILE_SIZE
+    position.y = edgesB[TOP] - TILE_SIZE;
   }
   else if (edgeA === LEFT) {
-    position.x = edgesB[RIGHT]
+    position.x = edgesB[RIGHT];
   }
   else if (edgeA === RIGHT) {
-    position.x = edgesB[LEFT] - TILE_SIZE
+    position.x = edgesB[LEFT] - TILE_SIZE;
   }
 
-  const velocity = {...spriteA.velocity, [getAxisFromEdge(edgeA)]: 0};
-  const colliding = {
-    top: [{name: spriteB.name}],
-    bottom: [{name: spriteB.name}],
-    left: [{name: spriteB.name}],
-    right: [{name: spriteB.name}]
-  }
+  let colliding = {...spriteA.colliding};
+  colliding[edgeA] = [...spriteA.colliding[edgeA], {name: spriteB.name}];
 
   return {touching, position, velocity, colliding};
 }
