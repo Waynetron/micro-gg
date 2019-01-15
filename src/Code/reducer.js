@@ -23,15 +23,9 @@ P = Player
 G = Goomba
 ^ = Spike
 
-[ Brick ] -> [ STATIC Brick ]
-[ QuestionBrick ] -> [ STATIC QuestionBrick ]
-[ Spike ] -> [ STATIC Spike ]
-[ Goomba ] -> [ DOWN Goomba ]
-[ Player ] -> [ DOWN Player ]
-[ <LEFT> Player ] -> [ LEFT Player ]
 [ <RIGHT> Player ] -> [ RIGHT Player ]
-[ <UP> Player ] -> [ JUMP Player ]
-[ Player | Spike ] -> [ DEAD Player | Spike ]
+[ <DOWN> Player ] -> [ DOWN Player ]
+[ BOTTOM Player | TOP Spike ] ->  [ Player | DEAD Spike ]
 `
 }
 

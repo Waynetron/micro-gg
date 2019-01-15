@@ -32,6 +32,29 @@ const inputs = {
   '<ACTION2>': 'action2'
 };
 
+const collisionFilterWords = {
+  TOP: true,
+  BOTTOM: true,
+  LEFT: true,
+  RIGHT: true,
+  ANY: true
+  // Note: if you add anything here, make sure to update getCollisionFilterWords
+  // and make sure it doesn't accidentally use the new words
+}
+
+const getCollisionFilterWords = (words)=> {
+  const filterWords = words.filter((word)=> collisionFilterWords[word]);
+  
+  // These are the words the sprite will collide against (eg: TOP, BOTTOM)
+  if (filterWords.length > 0) {
+    return filterWords;
+  }
+
+  // No filter words specified, return ANY
+  // TODO: remove this code and put it into a desugaring step
+  return ['ANY'];
+}
+
 /*
 Starts with 
   [ UP Player | Spike ] -> [ DEAD Player | Spike ]
@@ -70,23 +93,31 @@ Evaluate both rules into a pair of state transitions
 ]
 */
 export const collisionRuleToStateTransitions = (ruleString, names)=> {
-  // First, turn the rule string into an array of words
-  // "[ Player | Goomba ] -> [ DEAD Player | Goomba ]"
   const [leftRule, rightRule] = ruleString.split('->');
   const [leftWordsA, leftWordsB] = leftRule.split('|') |> separateWords;
   const [rightWordsA, rightWordsB] = rightRule.split('|') |> separateWords;
+
+  // Isolate the filter words from the left sides eg: TOP, BOTTOM
+  const filterWordsA = getCollisionFilterWords(leftWordsA);
+  const filterWordsB = getCollisionFilterWords(leftWordsB);
 
   const leftStateA = wordsToState(leftWordsA, names);
   const leftStateB = wordsToState(leftWordsB, names);
   const rightStateA = wordsToState(rightWordsA, names);
   const rightStateB = wordsToState(rightWordsB, names);
 
-  const collidingA = {
-    'top': [{...leftStateA}]
+  // Pay close attention to the flipping of A and B for certain variables.
+  // collidingA is used as the colliding state for spriteB and vice-a-versa
+  let collidingA = {};
+  for (const word of filterWordsB) {
+    collidingA[word.toLowerCase()] = [{...leftStateA}]
   }
-  const collidingB = {
-    'bottom': [{...leftStateB}]
+
+  let collidingB = {};
+  for (const word of filterWordsA) {
+    collidingB[word.toLowerCase()] = [{...leftStateB}]
   }
+
   const pairA = [
     {...leftStateA, colliding: collidingB},
     rightStateA
