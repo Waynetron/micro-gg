@@ -1,11 +1,12 @@
 import {flatten} from 'lodash-es';
-import {parseRules, parseSprites, parseLegend, parseLevel, parseAssets,
+import {parseRules, parseSprites, parseLegend, parseLevel,
   getLevelDimensions} from '../util/parse.js';
 import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransition,
   isAlive} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
-  applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions,
-  resetColliding} from './physics';
+  updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
+  applySpriteCollisionsCrossMethod, applyWallCollisions, resetColliding
+} from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
@@ -14,7 +15,6 @@ const defaultState = {
   names: {},
   rules: [],
   stateTransitions: [],
-  assets: [],
   width_in_tiles: 0,
   height_in_tiles: 0,
   elapsed: {
@@ -44,8 +44,7 @@ const gameReducer = (state = defaultState, action) => {
       const legend = parseLegend(code);
       // names is the legend mapped to have the values as keys. Used for fast name lookup.
       const names = arrayToObject(Object.values(legend));
-      const assets = parseAssets(code);
-      const sprites = parseSprites(level, legend, assets);
+      const sprites = parseSprites(level, legend);
       
       // A rule consists of a before and an after state referred to as a state transition
       const [rules, collisionRules] = parseRules(code);
@@ -66,7 +65,6 @@ const gameReducer = (state = defaultState, action) => {
         names,
         rules,
         stateTransitions: [...stateTransitions, ...collisionStateTransitions],
-        assets,
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE,
       }
@@ -92,9 +90,13 @@ const gameReducer = (state = defaultState, action) => {
               |> applyAcceleration
               |> applyVelocity
               |> resetColliding
-              |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
+              |> (sprite => updateSpriteCollidingState(sprite, state.sprites))
               |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
+              |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
+              |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
+              // |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
               |> (sprite => applyWallCollisions(sprite, state.width, state.height))
+              |> roundToPixels
             )
           )
       }

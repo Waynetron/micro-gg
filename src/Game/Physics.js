@@ -3,7 +3,15 @@ import {
   TOP, BOTTOM, LEFT, RIGHT
 } from './constants.js'
 
-const getEdges = (sprite) => ({
+export const roundToPixels = (sprite)=> ({
+  ...sprite,
+  position: {
+    x: Math.round(sprite.position.x),
+    y: Math.round(sprite.position.y),
+  }
+});
+
+const getEdges = (sprite)=> ({
   top: sprite.position.y,
   bottom: sprite.position.y + TILE_SIZE,
   left: sprite.position.x,
@@ -22,32 +30,55 @@ const isOverlapping = (spriteA, spriteB)=> {
   );
 };
 
-const getPointForSide = (side, sprite)=> {
+const getPointsForSide = (side, sprite)=> {
   if (side === LEFT) {
-    return {x: sprite.position.x, y: sprite.position.y + TILE_SIZE / 2}
+    return [
+      {x: sprite.position.x, y: sprite.position.y},
+      {x: sprite.position.x, y: sprite.position.y + TILE_SIZE}
+    ]
   }
   if (side === RIGHT) {
-    return {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + TILE_SIZE / 2}
+    return [
+      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y},
+      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + TILE_SIZE}
+    ]
   }
   if (side === TOP) {
-    return {x: sprite.position.x + TILE_SIZE / 2, y: sprite.position.y}
+    return [
+      {x: sprite.position.x, y: sprite.position.y},
+      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y}
+    ]
   }
   if (side === BOTTOM) {
-    return {x: sprite.position.x + TILE_SIZE / 2, y: sprite.position.y + TILE_SIZE}
+    return [
+      {x: sprite.position.x, y: sprite.position.y + TILE_SIZE},
+      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + TILE_SIZE}
+    ]
   }
 }
 
-const isOverlappingSide = (side, spriteA, spriteB)=> {
-  const point = getPointForSide(side, spriteA);
+const isOverlappingPoint = (point, spriteA, spriteB)=> {
   const {x, y} = point;
   const {top, bottom, left, right} = getEdges(spriteB);
-  
+
   return (
     y > top &&
     y < bottom &&
     x > left &&
     x < right
   );
+}
+
+const isOverlappingSide = (side, spriteA, spriteB)=> {
+  const points = getPointsForSide(side, spriteA);
+
+  for (const point of points) {
+    if (isOverlappingPoint(point, spriteA, spriteB)) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 
@@ -58,14 +89,14 @@ const getCollidedEdges = (spriteA, spriteB)=> {
 
   // by checking if an edge was not overlapping last frame but is this frame
   // we can see which edge is colliding
-  if (prevEdgesA.top > edgesB.bottom) {
+  if (prevEdgesA.top >= edgesB.bottom) {
     collidedEdges[TOP] = true;
   }
   else if (prevEdgesA.bottom <= edgesB.top) {
     collidedEdges[BOTTOM] = true;
   }
 
-  if (prevEdgesA.left > edgesB.right) {
+  if (prevEdgesA.left >= edgesB.right) {
     collidedEdges[LEFT] = true;
   }
   else if (prevEdgesA.right <= edgesB.left) {
@@ -77,10 +108,10 @@ const getCollidedEdges = (spriteA, spriteB)=> {
 
 const getAxisFromEdge = (edge)=> {
   const edgeAxisMap = {
-    LEFT: 'x',
-    RIGHT: 'x',
-    TOP: 'y',
-    BOTTOM: 'y'
+    left: 'x',
+    right: 'x',
+    top: 'y',
+    bottom: 'y'
   };
 
   return edgeAxisMap[edge];
@@ -107,12 +138,27 @@ const getSeparatedState = (edgeA, spriteA, spriteB)=> {
   return {position, velocity};
 }
 
-const getCollideState = (edgeA, spriteA, spriteB)=> {
-  let colliding = {...spriteA.colliding};
-  colliding[edgeA] = [...spriteA.colliding[edgeA], {name: spriteB.name}];
+export const updateSpriteCollidingState = (spriteA, sprites)=> {
+  if (spriteA.static) {
+    return spriteA;
+  }
 
-  return {colliding};
-}
+  let colliding = {...spriteA.colliding};
+
+  for (const spriteB of sprites) {
+    if (spriteA.id === spriteB.id) {
+      continue;
+    }
+
+    for (const edge of [TOP, BOTTOM, LEFT, RIGHT]) {
+      if (isOverlappingSide(edge, spriteA, spriteB)) {
+        colliding[edge].push({name: spriteB.name});
+      }
+    }
+  }
+
+  return {...spriteA, colliding};
+};
 
 export const applySpriteCollisions = (spriteA, sprites)=> {
   if (spriteA.static) {
@@ -131,14 +177,12 @@ export const applySpriteCollisions = (spriteA, sprites)=> {
       if (collidedEdges[TOP]) {
         newSpriteA = {
           ...newSpriteA,
-          ...getCollideState(TOP, spriteA, spriteB),
           ...getSeparatedState(TOP, spriteA, spriteB)
         }
       }
       else if (collidedEdges[BOTTOM]) {
         newSpriteA = {
           ...newSpriteA,
-          ...getCollideState(BOTTOM, spriteA, spriteB),
           ...getSeparatedState(BOTTOM, spriteA, spriteB)
         }
       }
@@ -150,14 +194,12 @@ export const applySpriteCollisions = (spriteA, sprites)=> {
         if (collidedEdges[LEFT]) {
           newSpriteA = {
             ...newSpriteA,
-            ...getCollideState(LEFT, spriteA, spriteB),
             ...getSeparatedState(LEFT, spriteA, spriteB)
           }
         }
         else if (collidedEdges[RIGHT]) {
           newSpriteA = {
             ...newSpriteA,
-            ...getCollideState(RIGHT, spriteA, spriteB),
             ...getSeparatedState(RIGHT, spriteA, spriteB)
           }
         }
@@ -186,7 +228,6 @@ export const applySpriteCollisionsCrossMethod = (spriteA, sprites)=> {
     if (isOverlappingSide(LEFT, spriteA, spriteB)) {
       newSprite = {
         ...newSprite,
-        ...getCollideState(LEFT, spriteA, spriteB),
         ...getSeparatedState(LEFT, spriteA, spriteB)
       };
       didOverlap = true;
@@ -194,7 +235,6 @@ export const applySpriteCollisionsCrossMethod = (spriteA, sprites)=> {
     else if (isOverlappingSide(RIGHT, spriteA, spriteB)) {
       newSprite = {
         ...newSprite,
-        ...getCollideState(RIGHT, spriteA, spriteB),
         ...getSeparatedState(RIGHT, spriteA, spriteB)
       };
       didOverlap = true;
@@ -203,7 +243,6 @@ export const applySpriteCollisionsCrossMethod = (spriteA, sprites)=> {
     if (isOverlappingSide(TOP, spriteA, spriteB)) {
       newSprite = {
         ...newSprite,
-        ...getCollideState(TOP, spriteA, spriteB),
         ...getSeparatedState(TOP, spriteA, spriteB)
       };
       didOverlap = true;
@@ -211,7 +250,6 @@ export const applySpriteCollisionsCrossMethod = (spriteA, sprites)=> {
     else if (isOverlappingSide(BOTTOM, spriteA, spriteB)) {
       newSprite = {
         ...newSprite,
-        ...getCollideState(BOTTOM, spriteA, spriteB),
         ...getSeparatedState(BOTTOM, spriteA, spriteB)
       };
       didOverlap = true;
@@ -281,7 +319,8 @@ export const applyVelocity = (sprite)=> ({
 
 export const resetColliding = (sprite)=> ({
   ...sprite,
-  colliding: {top: [], bottom: [], left: [], right: []}
+  colliding: {top: [], bottom: [], left: [], right: []},
+
 });
 
 export const applyFriction = (sprite)=> ({
