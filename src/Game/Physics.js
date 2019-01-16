@@ -86,13 +86,8 @@ const getAxisFromEdge = (edge)=> {
   return edgeAxisMap[edge];
 }
 
-// newSprite.touching.bottom = true;
-// newSprite.position.y = edgesB[TOP] - TILE_SIZE;
-// newSprite.velocity.y = 0;
-
-const getCollideState = (edgeA, spriteA, spriteB)=> {
+const getSeparatedState = (edgeA, spriteA, spriteB)=> {
   const edgesB = getEdges(spriteB);
-  const touching = {...spriteA.touching, [edgeA]: true};
   const velocity = {...spriteA.velocity, [getAxisFromEdge(edgeA)]: 0};
 
   let position = {...spriteA.position};
@@ -109,10 +104,14 @@ const getCollideState = (edgeA, spriteA, spriteB)=> {
     position.x = edgesB[LEFT] - TILE_SIZE;
   }
 
+  return {position, velocity};
+}
+
+const getCollideState = (edgeA, spriteA, spriteB)=> {
   let colliding = {...spriteA.colliding};
   colliding[edgeA] = [...spriteA.colliding[edgeA], {name: spriteB.name}];
 
-  return {touching, position, velocity, colliding};
+  return {colliding};
 }
 
 export const applySpriteCollisions = (spriteA, sprites)=> {
@@ -127,28 +126,44 @@ export const applySpriteCollisions = (spriteA, sprites)=> {
 
     if (isOverlapping(spriteA, spriteB)) {    
       const collidedEdges = getCollidedEdges(spriteA, spriteB);
-      let newSprite = {...spriteA};
+      let newSpriteA = {...spriteA};
       
       if (collidedEdges[TOP]) {
-        newSprite = {...newSprite, ...getCollideState(TOP, spriteA, spriteB)}
+        newSpriteA = {
+          ...newSpriteA,
+          ...getCollideState(TOP, spriteA, spriteB),
+          ...getSeparatedState(TOP, spriteA, spriteB)
+        }
       }
       else if (collidedEdges[BOTTOM]) {
-        newSprite = {...newSprite, ...getCollideState(BOTTOM, spriteA, spriteB)}
+        newSpriteA = {
+          ...newSpriteA,
+          ...getCollideState(BOTTOM, spriteA, spriteB),
+          ...getSeparatedState(BOTTOM, spriteA, spriteB)
+        }
       }
 
       // Check if overlap has been resolved before resolving horizontal collisions
       // This is a cheap trick to prevent sprite from catching on the corners
       // of adjacent tiles (vertical is resolved first & the horizontal is avoided)
-      if (isOverlapping(newSprite, spriteB)) {
+      if (isOverlapping(newSpriteA, spriteB)) {
         if (collidedEdges[LEFT]) {
-          newSprite = {...newSprite, ...getCollideState(LEFT, spriteA, spriteB)}
+          newSpriteA = {
+            ...newSpriteA,
+            ...getCollideState(LEFT, spriteA, spriteB),
+            ...getSeparatedState(LEFT, spriteA, spriteB)
+          }
         }
         else if (collidedEdges[RIGHT]) {
-          newSprite = {...newSprite, ...getCollideState(RIGHT, spriteA, spriteB)}
+          newSpriteA = {
+            ...newSpriteA,
+            ...getCollideState(RIGHT, spriteA, spriteB),
+            ...getSeparatedState(RIGHT, spriteA, spriteB)
+          }
         }
       }
       
-      return newSprite;
+      return newSpriteA;
     }
   }
 
@@ -169,20 +184,36 @@ export const applySpriteCollisionsCrossMethod = (spriteA, sprites)=> {
     let didOverlap = false;
 
     if (isOverlappingSide(LEFT, spriteA, spriteB)) {
-      newSprite = {...newSprite, ...getCollideState(LEFT, spriteA, spriteB)};
+      newSprite = {
+        ...newSprite,
+        ...getCollideState(LEFT, spriteA, spriteB),
+        ...getSeparatedState(LEFT, spriteA, spriteB)
+      };
       didOverlap = true;
     }
     else if (isOverlappingSide(RIGHT, spriteA, spriteB)) {
-      newSprite = {...newSprite, ...getCollideState(RIGHT, spriteA, spriteB)};
+      newSprite = {
+        ...newSprite,
+        ...getCollideState(RIGHT, spriteA, spriteB),
+        ...getSeparatedState(RIGHT, spriteA, spriteB)
+      };
       didOverlap = true;
     }
 
     if (isOverlappingSide(TOP, spriteA, spriteB)) {
-      newSprite = {...newSprite, ...getCollideState(TOP, spriteA, spriteB)};
+      newSprite = {
+        ...newSprite,
+        ...getCollideState(TOP, spriteA, spriteB),
+        ...getSeparatedState(TOP, spriteA, spriteB)
+      };
       didOverlap = true;
     }
     else if (isOverlappingSide(BOTTOM, spriteA, spriteB)) {
-      newSprite = {...newSprite, ...getCollideState(BOTTOM, spriteA, spriteB)};
+      newSprite = {
+        ...newSprite,
+        ...getCollideState(BOTTOM, spriteA, spriteB),
+        ...getSeparatedState(BOTTOM, spriteA, spriteB)
+      };
       didOverlap = true;
     }
 
@@ -200,32 +231,26 @@ export const applyWallCollisions = (sprite, width, height)=> {
   }
 
   const newPosition = {...sprite.position};
-  const newTouching = {...sprite.touching};
 
   if (sprite.position.y > height - TILE_SIZE) {
     newPosition.y = height - TILE_SIZE;
-    newTouching.bottom = true;
   }
 
   if (sprite.position.y < 0) {
     newPosition.y = 0;
-    newTouching.top = true;
   }
 
   if (sprite.position.x > width - TILE_SIZE) {
     newPosition.x = width - TILE_SIZE;
-    newTouching.right = true;
   }
 
   if (sprite.position.x < 0) {
     newPosition.x = 0;
-    newTouching.left = true;
   }
   
   return {
     ...sprite,
-    position: newPosition,
-    touching: newTouching
+    position: newPosition
   }
 };
 
@@ -254,19 +279,18 @@ export const applyVelocity = (sprite)=> ({
   }
 });
 
-export const resetTouching = (sprite)=> ({
+export const resetColliding = (sprite)=> ({
   ...sprite,
-  touching: {top: false, bottom: false, left: false, right: false},
   colliding: {top: [], bottom: [], left: [], right: []}
 });
 
 export const applyFriction = (sprite)=> ({
   ...sprite,
   velocity: {
-    x: (sprite.touching.top || sprite.touching.bottom)
+    x: (sprite.colliding.top.length > 0 || sprite.colliding.bottom.length > 0)
       ? sprite.velocity.x * GROUND_FRICTION
       : sprite.velocity.x * AIR_FRICTION,
-    y: (sprite.touching.left || sprite.touching.right)
+    y: (sprite.colliding.left.length > 0 || sprite.colliding.right.length > 0)
       ? sprite.velocity.y * GROUND_FRICTION
       : sprite.velocity.y * AIR_FRICTION,
   }

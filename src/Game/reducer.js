@@ -5,7 +5,7 @@ import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransi
   isAlive} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   applySpriteCollisions, applySpriteCollisionsCrossMethod, applyWallCollisions,
-  resetTouching} from './physics';
+  resetColliding} from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
@@ -91,7 +91,7 @@ const gameReducer = (state = defaultState, action) => {
               |> applyFriction
               |> applyAcceleration
               |> applyVelocity
-              |> resetTouching
+              |> resetColliding
               |> (sprite => applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState))
               |> (sprite => applySpriteCollisions(sprite, state.sprites, previousState))
               |> (sprite => applyWallCollisions(sprite, state.width, state.height))

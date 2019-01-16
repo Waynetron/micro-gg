@@ -64,11 +64,11 @@ export const parseSprites = (level, legend, assets)=> {
         velocity: {x: 0, y: 0},
         maxVelocity: {x: MAX_VELOCITY, y: MAX_VELOCITY},
         acceleration: {x: 0, y: 0},
-        touching: {
-          top: false,
-          bottom: false,
-          left: false,
-          right: false
+        colliding: {
+          top: [],
+          bottom: [],
+          left: [],
+          right: []
         },
         static: false,
         inputs: {}
