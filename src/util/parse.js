@@ -8,18 +8,6 @@ const isLegend = (line)=> line.includes('=');
 const isSpriteImageMapping = (line)=>
   !isRule(line) && !isCollisionRule(line) && !isLevel(line) && !isLegend(line);
 
-export const parseAssets = (code)=> {
-  const assets = {};
-  code.split('\n')
-    .filter(isSpriteImageMapping)
-    .forEach((line)=> {
-      const [name, src] = line.split(' ');
-      assets[name] = src;
-    });
-
-    return assets;
-}
-
 export const parseLegend = (code)=> {
   let legend = {};
 
@@ -48,7 +36,7 @@ export const getLevelDimensions = (level)=> {
   return [width_in_tiles, height_in_tiles];
 }
 
-export const parseSprites = (level, legend, assets)=> {
+export const parseSprites = (level, legend)=> {
   const sprites = [];
   level.map((line, row)=> line.split('').forEach((char, col)=> {
     const name = legend[char];
@@ -56,7 +44,6 @@ export const parseSprites = (level, legend, assets)=> {
       sprites.push({
         name: name,
         id: uniqid(),
-        src: assets[name],
         position: {
           x: col * TILE_SIZE,
           y: row * TILE_SIZE

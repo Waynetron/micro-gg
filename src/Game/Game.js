@@ -45,7 +45,7 @@ const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
             key={sprite.id}
             x={sprite.position.x}
             y={sprite.position.y}
-            img={sprite.src}
+            img={sprite.name.toLowerCase()}
           />
         )}
       </div>
