@@ -33,13 +33,19 @@ const inputs = {
 };
 
 const collisionFilterWords = {
-  TOP: true,
-  BOTTOM: true,
-  LEFT: true,
-  RIGHT: true,
-  ANY: true
+  COLLIDE_TOP: true,
+  COLLIDE_BOTTOM: true,
+  COLLIDE_LEFT: true,
+  COLLIDE_RIGHT: true
   // Note: if you add anything here, make sure to update getCollisionFilterWords
   // and make sure it doesn't accidentally use the new words
+}
+
+const collisionFilterWordsToSide = {
+  COLLIDE_TOP: 'top',
+  COLLIDE_BOTTOM: 'bottom',
+  COLLIDE_LEFT: 'left',
+  COLLIDE_RIGHT: 'right'
 }
 
 const getCollisionFilterWords = (words)=> {
@@ -52,7 +58,7 @@ const getCollisionFilterWords = (words)=> {
 
   // No filter words specified, return ANY
   // TODO: remove this code and put it into a desugaring step
-  return ['ANY'];
+  return ['COLLIDE_ANY'];
 }
 
 /*
@@ -110,12 +116,12 @@ export const collisionRuleToStateTransitions = (ruleString, names)=> {
   // collidingA is used as the colliding state for spriteB and vice-a-versa
   let collidingA = {};
   for (const word of filterWordsB) {
-    collidingA[word.toLowerCase()] = [{...leftStateA}]
+    collidingA[collisionFilterWordsToSide[word]] = [{...leftStateA}]
   }
 
   let collidingB = {};
   for (const word of filterWordsA) {
-    collidingB[word.toLowerCase()] = [{...leftStateB}]
+    collidingB[collisionFilterWordsToSide[word]] = [{...leftStateB}]
   }
 
   const pairA = [

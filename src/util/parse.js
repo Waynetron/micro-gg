@@ -5,8 +5,6 @@ const isCollisionRule = (line)=> line.includes('|');
 const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
 const isLevel = (line)=> line.match(/#.+#/g)
 const isLegend = (line)=> line.includes('=');
-const isSpriteImageMapping = (line)=>
-  !isRule(line) && !isCollisionRule(line) && !isLevel(line) && !isLegend(line);
 
 export const parseLegend = (code)=> {
   let legend = {};

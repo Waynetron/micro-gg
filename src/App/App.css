@@ -53,6 +53,21 @@ header button {
   overflow: hidden;
 }
 
+.debugCircle {
+  background-color: yellow;
+  width: 0;
+  height: 0;
+  position: relative;
+}
+.debugCircle p {
+  background-color: rebeccapurple;
+  text-align: center;
+  vertical-align: middle;
+  position: absolute;
+  height: 20px;
+  width: 10px;
+}
+
 #code textarea {
   background-color: #021E45;
   border: none;

@@ -31,28 +31,30 @@ const isOverlapping = (spriteA, spriteB)=> {
 };
 
 const getPointsForSide = (side, sprite)=> {
+  const INSET = 5;
+
   if (side === LEFT) {
     return [
-      {x: sprite.position.x, y: sprite.position.y},
-      {x: sprite.position.x, y: sprite.position.y + TILE_SIZE}
+      {x: sprite.position.x, y: sprite.position.y + INSET},
+      {x: sprite.position.x, y: sprite.position.y + TILE_SIZE - INSET}
     ]
   }
   if (side === RIGHT) {
     return [
-      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y},
-      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + TILE_SIZE}
+      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + INSET},
+      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + TILE_SIZE - INSET}
     ]
   }
   if (side === TOP) {
     return [
-      {x: sprite.position.x, y: sprite.position.y},
-      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y}
+      {x: sprite.position.x + INSET, y: sprite.position.y},
+      {x: sprite.position.x + TILE_SIZE - INSET, y: sprite.position.y}
     ]
   }
   if (side === BOTTOM) {
     return [
-      {x: sprite.position.x, y: sprite.position.y + TILE_SIZE},
-      {x: sprite.position.x + TILE_SIZE, y: sprite.position.y + TILE_SIZE}
+      {x: sprite.position.x + INSET, y: sprite.position.y + TILE_SIZE},
+      {x: sprite.position.x + TILE_SIZE - INSET, y: sprite.position.y + TILE_SIZE}
     ]
   }
 }

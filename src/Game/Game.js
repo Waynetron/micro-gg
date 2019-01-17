@@ -39,7 +39,7 @@ const handlers = (onSetInput, onCancelInput)=> ({
 const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
   <HotKeys handlers={handlers(onSetInput, onCancelInput)} keyMap={keyMap}>
     <div id="game">
-      <div className="stage" style={{width, height}}>
+      <div className='stage' style={{width, height}}>
         {sprites.map((sprite)=>
           <Sprite
             key={sprite.id}
@@ -47,6 +47,13 @@ const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
             y={sprite.position.y}
             img={sprite.name.toLowerCase()}
           />
+        )}
+        {sprites.map((sprite)=>
+          Object.values(sprite.colliding).map((value, index)=> 
+            <div className='debugCircle' style={{left: sprite.position.x + index * 10, top: sprite.position.y}}>
+              <p>{value.length}</p>
+            </div>
+          )
         )}
       </div>
     </div>
