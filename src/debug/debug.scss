@@ -1,0 +1,41 @@
+.debug-colliding {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  top: -32px;
+}
+
+.number {
+  text-align: center;
+  vertical-align: middle;
+  position: absolute;
+  font-size: .9rem;
+  line-height: .9rem;
+  padding: 0 2px;
+  opacity: 0;
+}
+
+$offsetY: 17px;
+$size: 19px;
+
+.number.top {
+  top: 0px - $offsetY;
+  left: $size / 2;
+}
+.number.bottom {
+  top: $size - $offsetY;
+  left: $size / 2;
+}
+.number.left {
+  top: $size / 2 - $offsetY;
+  left: 0px;
+}
+.number.right {
+  top: $size / 2 - $offsetY;
+  left: $size;
+}
+
+.active {
+  background-color: deeppink;
+  opacity: 1;
+}

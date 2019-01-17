@@ -28,7 +28,7 @@ G = Goomba
 [ <LEFT> Player ] -> [ LEFT Player ]
 [ <RIGHT> Player ] -> [ RIGHT Player ]
 [ <UP> Player ] -> [ JUMP Player ]
-[ COLLIDE_RIGHT Player | COLLIDE_LEFT GOOMBA ] -> [ DEAD Player | DEAD Goomba ]  
+[ COLLIDE_RIGHT Player | COLLIDE_LEFT Goomba ] -> [ DEAD Player | DEAD Goomba ]  
 `
 }
 

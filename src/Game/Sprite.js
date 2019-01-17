@@ -1,4 +1,5 @@
 import React from 'react';
+import {DebugColliding} from '../debug/DebugColliding.js';
 import './Sprite.css';
 
 const safelyLoadSrc = (img)=> {
@@ -12,9 +13,10 @@ const getPositionStyle = (x, y)=> ({
   position: 'relative', left: x, top: y
 });
 
-const Sprite = ({x, y, img})=> (
+const Sprite = ({x, y, img, sprite})=> (
   <div className="sprite" style={getPositionStyle(x, y)}>
     <img src={safelyLoadSrc(img)} alt='' />
+    <DebugColliding sprite={sprite} />
   </div>
 );
 

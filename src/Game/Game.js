@@ -46,14 +46,8 @@ const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
             x={sprite.position.x}
             y={sprite.position.y}
             img={sprite.name.toLowerCase()}
+            sprite={sprite} // used for debug visualisation
           />
-        )}
-        {sprites.map((sprite)=>
-          Object.values(sprite.colliding).map((value, index)=> 
-            <div className='debugCircle' style={{left: sprite.position.x + index * 10, top: sprite.position.y}}>
-              <p>{value.length}</p>
-            </div>
-          )
         )}
       </div>
     </div>
