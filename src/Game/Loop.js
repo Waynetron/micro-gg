@@ -2,16 +2,18 @@ import React, {useEffect} from 'react';
 import {updateElapsed} from './actions.js';
 import {connect} from 'react-redux'
 
-const Loop = ({onTimeChange, active})=> {
+const Loop = ({onTimeChange})=> {
   // recursively calls itself once per frame
+  let request;
   const advanceFrame = ()=> {
     onTimeChange(Date.now());
-    requestAnimationFrame(()=> advanceFrame());
+    request = requestAnimationFrame(()=> advanceFrame());
   }
 
   useEffect(() => {
-    if (active) {
-      requestAnimationFrame(()=> advanceFrame());
+    request = requestAnimationFrame(()=> advanceFrame());
+    return function cleanup() {
+      cancelAnimationFrame(request);
     }
   });
 

@@ -10,12 +10,9 @@ const App = ({code, compile, isGameActive, setGameActive})=> {
   return (
     <Fragment>
       <header>
-        <button onClick={()=> compile(code)}>reload</button>
-        {isGameActive
-          ? <button onClick={()=> setGameActive(false)}>pause</button>
-          : <button onClick={()=> setGameActive(true)}>run</button>
-        }
-        <Loop />
+        <button onClick={()=> compile(code)}>reset</button>
+        <button onClick={()=> setGameActive(!isGameActive)}>{isGameActive ? 'pause' : 'run'}</button>
+        {isGameActive && <Loop />}
       </header>
       <main>
         <Code />
