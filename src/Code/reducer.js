@@ -11,6 +11,8 @@ const defaultState = {
 #  P             G    #
 #######################
 
+debug
+
 P = Player
 ? = QuestionBrick
 # = Brick

@@ -36,7 +36,7 @@ const handlers = (onSetInput, onCancelInput)=> ({
   'cancel_action2': ()=> onCancelInput('action2'),
 });
 
-const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
+const Game = ({sprites, rules, width, height, debug, onSetInput, onCancelInput})=> (
   <HotKeys handlers={handlers(onSetInput, onCancelInput)} keyMap={keyMap}>
     <div id="game">
       <div className='stage' style={{width, height}}>
@@ -47,6 +47,7 @@ const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
             y={sprite.position.y}
             img={sprite.name.toLowerCase()}
             sprite={sprite} // used for debug visualisation
+            debug={debug}
           />
         )}
       </div>
@@ -55,12 +56,13 @@ const Game = ({sprites, rules, width, height, onSetInput, onCancelInput})=> (
 )
 
 const mapStateToProps = ({game})=> {
-  const {sprites, rules, width, height} = game;
+  const {sprites, rules, width, height, debug} = game;
   return {
     sprites,
     rules,
     width,
     height,
+    debug
   }
 }
 

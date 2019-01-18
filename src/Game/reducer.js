@@ -1,11 +1,11 @@
 import {flatten} from 'lodash-es';
-import {parseRules, parseSprites, parseLegend, parseLevel,
+import {parseRules, parseSprites, parseLegend, parseLevel, parseDebug,
   getLevelDimensions} from '../util/parse.js';
 import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransition,
   isAlive} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
-  applySpriteCollisionsCrossMethod, applyWallCollisions, resetColliding
+  applyWallCollisions, resetColliding
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 
@@ -42,6 +42,7 @@ const gameReducer = (state = defaultState, action) => {
       const {code} = action;
       const level = parseLevel(code);
       const legend = parseLegend(code);
+      const debug = parseDebug(code).length > 0;
       // names is the legend mapped to have the values as keys. Used for fast name lookup.
       const names = arrayToObject(Object.values(legend));
       const sprites = parseSprites(level, legend);
@@ -67,6 +68,7 @@ const gameReducer = (state = defaultState, action) => {
         stateTransitions: [...stateTransitions, ...collisionStateTransitions],
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE,
+        debug
       }
 
     case 'UPDATE_ELAPSED':
@@ -84,7 +86,9 @@ const gameReducer = (state = defaultState, action) => {
           },
           sprites: state.sprites.filter(isAlive)
               |> ((sprites)=> sprites.map(resetColliding))
-              |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(sprite, state.sprites)))
+              |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(
+                sprite, state.sprites, state.width, state.height
+              )))
               |> ((sprites)=> sprites.map(storePreviousPosition))
               |> ((sprites)=> sprites.map((sprite)=> applyStateTransition(sprite, state.stateTransitions)))
               |> ((sprites)=> sprites.map(applyFriction))
@@ -94,7 +98,7 @@ const gameReducer = (state = defaultState, action) => {
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
               // |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState)))
-              |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.sprites, state.height)))
+              |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
               |> ((sprites)=> sprites.map(roundToPixels))
       }
     case 'SET_INPUT':

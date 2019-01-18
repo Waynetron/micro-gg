@@ -13,10 +13,10 @@ const getPositionStyle = (x, y)=> ({
   position: 'relative', left: x, top: y
 });
 
-const Sprite = ({x, y, img, sprite})=> (
+const Sprite = ({x, y, img, sprite, debug})=> (
   <div className="sprite" style={getPositionStyle(x, y)}>
     <img src={safelyLoadSrc(img)} alt='' />
-    <DebugColliding sprite={sprite} />
+    {debug && <DebugColliding sprite={sprite} />}
   </div>
 );
 

@@ -99,7 +99,6 @@ const overlapsSide = (side, spriteA, spriteB)=> {
   return false;
 };
 
-
 const getCollidedEdges = (spriteA, spriteB)=> {
   const prevEdgesA = getEdges({position: {...spriteA.prevPosition}});
   const prevEdgesB = getEdges({position: {...spriteB.prevPosition}});
@@ -156,13 +155,14 @@ const getSeparatedState = (edgeA, spriteA, spriteB)=> {
   return {position, velocity};
 }
 
-export const updateSpriteCollidingState = (spriteA, sprites)=> {
+export const updateSpriteCollidingState = (spriteA, sprites, width, height)=> {
   if (spriteA.static) {
     return spriteA;
   }
 
   let colliding = {...spriteA.colliding};
 
+  // sprites
   for (const spriteB of sprites) {
     if (spriteA.id === spriteB.id) {
       continue;
@@ -173,6 +173,21 @@ export const updateSpriteCollidingState = (spriteA, sprites)=> {
         colliding[edge].push({name: spriteB.name});
       }
     }
+  }
+
+  // walls
+  const padding = 1;
+  if (spriteA.position.x < 0 + padding) {
+    colliding[LEFT].push({name: 'Wall'});
+  }
+  if (spriteA.position.x > width - TILE_SIZE - padding) {
+    colliding[RIGHT].push({name: 'Wall'});
+  }
+  if (spriteA.position.y < 0 + padding) {
+    colliding[TOP].push({name: 'Wall'});
+  }
+  if (spriteA.position.y > height - TILE_SIZE - padding) {
+    colliding[BOTTOM].push({name: 'Wall'});
   }
 
   return {...spriteA, colliding};
