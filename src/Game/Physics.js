@@ -31,6 +31,10 @@ const isOverlapping = (spriteA, spriteB)=> {
 };
 
 const getPointsForSide = (side, sprite)=> {
+  // INSET is to prevent situations such as both TOP and LEFT/RIGHT colliding when 2 sprites are standing
+  // next to each other.
+  // It's not ideal because it means you do things like stand on a sprite just on the very outmost edge
+  // without triggering any UP DOWN collisions.
   const INSET = 5;
 
   if (side === LEFT) {
@@ -63,11 +67,15 @@ const isOverlappingPoint = (point, spriteA, spriteB)=> {
   const {x, y} = point;
   const {top, bottom, left, right} = getEdges(spriteB);
 
+  // Added +/- 1 to have things collide when they are perfectly next to each other but not overlapping
+  // This is a temporary fix for a bug that is causing non-moving sprites to not register collisions
+  // In fact that bug is still present, and now, combined with this means that a spriteA will need to jump on a DOWN moving
+  // spriteB twice to trigger the collision on spriteB's COLLIDE_TOP.
   return (
-    y > top &&
-    y < bottom &&
-    x > left &&
-    x < right
+    y > top - 1 &&
+    y < bottom + 1 &&
+    x > left - 1 &&
+    x < right + 1
   );
 }
 

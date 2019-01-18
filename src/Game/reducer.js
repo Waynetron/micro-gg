@@ -89,12 +89,12 @@ const gameReducer = (state = defaultState, action) => {
               |> ((sprites)=> sprites.map(applyAcceleration))
               |> ((sprites)=> sprites.map(applyVelocity))
               |> ((sprites)=> sprites.map(resetColliding))
-              |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(sprite, state.sprites)))
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-              |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState)))
+              // |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.sprites, state.height)))
+              |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(sprite, state.sprites)))
               |> ((sprites)=> sprites.map(roundToPixels))
       }
     case 'SET_INPUT':

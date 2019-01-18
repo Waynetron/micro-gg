@@ -3,7 +3,7 @@ import {DebugColliding} from '../debug/DebugColliding.js';
 import './Sprite.css';
 
 const safelyLoadSrc = (img)=> {
-  const images = ['player', 'brick', 'question-brick', 'spike', 'goomba'];
+  const images = ['player', 'brick', 'questionbrick', 'spike', 'goomba'];
   return images.includes(img)
     ? require(`./images/${img}.png`)
     : null

@@ -1,21 +1,15 @@
 const defaultState = {
   code: `
-Player player
-QuestionBrick question-brick
-Brick brick
-Spike spike
-Goomba goomba
-
-##################
-#                #
-#                #
-#                #
-#    P      G    #
-#                #
-#       ^        #
-#                #
-#                #
-##################
+#######################
+#                     #
+#                     #
+#                     #
+#                     #
+#                     #
+#       ^             #
+#   ###?#             #
+#  P           G      #
+#######################
 
 P = Player
 ? = QuestionBrick
@@ -28,7 +22,9 @@ G = Goomba
 [ <LEFT> Player ] -> [ LEFT Player ]
 [ <RIGHT> Player ] -> [ RIGHT Player ]
 [ <UP> Player ] -> [ JUMP Player ]
-[ COLLIDE_RIGHT Player | COLLIDE_LEFT Goomba ] -> [ DEAD Player | DEAD Goomba ]  
+[ COLLIDE_RIGHT Player | COLLIDE_LEFT Goomba ] -> [ DEAD Player | Goomba ]
+[ COLLIDE_LEFT Player | COLLIDE_RIGHT Goomba ] -> [ DEAD Player | Goomba ]
+[ COLLIDE_BOTTOM Player | COLLIDE_TOP Goomba ] -> [ Player | DEAD Goomba ]
 `
 }
 
