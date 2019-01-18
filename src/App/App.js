@@ -24,13 +24,15 @@ const keyMap = {
   'cancel_action2': {sequence: 'action2', action: 'keyup'},
 };
 
-const handlers = (onSetInput, onCancelInput)=> ({
+const handlers = (onSetInput, onCancelInput, onReset, onRun, isGameActive)=> ({
   'up': ()=> onSetInput('up'),
   'down': ()=> onSetInput('down'),
   'left': ()=> onSetInput('left'),
   'right': ()=> onSetInput('right'),
   'action1': ()=> onSetInput('action1'),
   'action2': ()=> onSetInput('action2'),
+  'r': ()=> onReset(),
+  'space': ()=> onRun(!isGameActive),
 
   'cancel_up': ()=> onCancelInput('up'),
   'cancel_down': ()=> onCancelInput('down'),
@@ -42,10 +44,21 @@ const handlers = (onSetInput, onCancelInput)=> ({
 
 const App = ({code, compile, isGameActive, setGameActive, onSetInput, onCancelInput})=> {
   return (
-    <HotKeys handlers={handlers(onSetInput, onCancelInput)} keyMap={keyMap}>
+    <HotKeys
+      handlers={handlers(
+        onSetInput,
+        onCancelInput,
+        ()=> compile(code),
+        (active)=> setGameActive(active),
+        isGameActive
+      )}
+      keyMap={keyMap}
+    >
       <header>
         <button onClick={()=> compile(code)}>reset</button>
-        <button onClick={()=> setGameActive(!isGameActive)}>{isGameActive ? 'pause' : 'run'}</button>
+        <button onClick={()=> setGameActive(!isGameActive)}>
+          {isGameActive ? 'pause' : 'run'}
+        </button>
         {isGameActive && <Loop />}
       </header>
       <div className="content">
