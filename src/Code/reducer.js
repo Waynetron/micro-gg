@@ -6,9 +6,9 @@ const defaultState = {
 #                     #
 #                     #
 #                     #
-#       ^             #
-#   ###?#             #
-#  P           G      #
+#     ###?#           #
+#                     #
+#  P             G    #
 #######################
 
 P = Player
@@ -19,10 +19,19 @@ G = Goomba
 
 [ Goomba ] -> [ DOWN Goomba ]
 [ Player ] -> [ DOWN Player ]
+
 [ <LEFT> Player ] -> [ LEFT Player ]
 [ <RIGHT> Player ] -> [ RIGHT Player ]
 [ <UP> Player ] -> [ JUMP Player ]
+
+
+[ COLLIDE_LEFT Player | COLLIDE_RIGHT Goomba ] -> [ DEAD Player | Goomba ]
+[ COLLIDE_RIGHT Player | COLLIDE_LEFT Goomba ] -> [ DEAD Player | Goomba ]
+[ COLLIDE_TOP Player | COLLIDE_BOTTOM Goomba ] -> [ DEAD Player | Goomba ]
 [ COLLIDE_BOTTOM Player | COLLIDE_TOP Goomba ] -> [ JUMP Player | DEAD Goomba ]
+
+[ COLLIDE_TOP Player | COLLIDE_BOTTOM Brick ] -> [ Player | DEAD Brick ]
+[ COLLIDE_TOP Player | COLLIDE_BOTTOM QuestionBrick ] -> [ Player | JUMP Goomba ]
 `
 }
 

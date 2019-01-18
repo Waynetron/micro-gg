@@ -52,13 +52,7 @@ const getCollisionFilterWords = (words)=> {
   const filterWords = words.filter((word)=> collisionFilterWords[word]);
   
   // These are the words the sprite will collide against (eg: TOP, BOTTOM)
-  if (filterWords.length > 0) {
-    return filterWords;
-  }
-
-  // No filter words specified, return ANY
-  // TODO: remove this code and put it into a desugaring step
-  return ['COLLIDE_ANY'];
+  return filterWords;
 }
 
 /*
