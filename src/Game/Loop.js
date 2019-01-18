@@ -20,10 +20,6 @@ const Loop = ({onTimeChange})=> {
   return <p></p>;
 };
 
-const mapStateToProps = ({game})=> ({
-  active: game.active
-});
-
 const mapDispatchToProps = (dispatch)=> ({
   onTimeChange: (elapsed)=> {
     dispatch(updateElapsed(elapsed));
@@ -31,6 +27,6 @@ const mapDispatchToProps = (dispatch)=> ({
 });
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(Loop);

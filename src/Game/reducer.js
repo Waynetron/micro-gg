@@ -1,5 +1,5 @@
 import {flatten} from 'lodash-es';
-import {parseRules, parseSprites, parseLegend, parseLevel, parseDebug,
+import {parseRules, parseSprites, parseLegend, parseLevel,
   getLevelDimensions} from '../util/parse.js';
 import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransition,
   isAlive} from '../util/state.js'
@@ -21,7 +21,8 @@ const defaultState = {
     sinceLastFrame: 0,
     totalFrames: 0
   },
-  active: false
+  active: false,
+  debug: false
 };
 
 const arrayToObject = (array) =>
@@ -38,11 +39,13 @@ const gameReducer = (state = defaultState, action) => {
     case 'UPDATE_CODE':
       return {...state, code: action.code}
 
+    case 'TOGGLE_DEBUG':
+      return {...state, debug: !state.debug}
+
     case 'COMPILE':
       const {code} = action;
       const level = parseLevel(code);
       const legend = parseLegend(code);
-      const debug = parseDebug(code).length > 0;
       // names is the legend mapped to have the values as keys. Used for fast name lookup.
       const names = arrayToObject(Object.values(legend));
       const sprites = parseSprites(level, legend);
@@ -67,8 +70,7 @@ const gameReducer = (state = defaultState, action) => {
         rules,
         stateTransitions: [...stateTransitions, ...collisionStateTransitions],
         width: width_in_tiles * TILE_SIZE,
-        height: height_in_tiles * TILE_SIZE,
-        debug
+        height: height_in_tiles * TILE_SIZE
       }
 
     case 'UPDATE_ELAPSED':

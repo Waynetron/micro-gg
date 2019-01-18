@@ -1,10 +1,11 @@
 import React, {Fragment} from 'react';
 import {connect} from 'react-redux'
+import {HotKeys} from 'react-hotkeys';
 import Game from '../Game/Game.js';
 import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import {compile, setActive} from '../Code/actions';
-import {HotKeys} from 'react-hotkeys';
+import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput} from './actions.js';
 import './App.css';
 
@@ -24,7 +25,7 @@ const keyMap = {
   'cancel_action2': {sequence: 'action2', action: 'keyup'},
 };
 
-const handlers = (onSetInput, onCancelInput, onReset, onRun, isGameActive)=> ({
+const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGameActive)=> ({
   'up': ()=> onSetInput('up'),
   'down': ()=> onSetInput('down'),
   'left': ()=> onSetInput('left'),
@@ -32,6 +33,7 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, isGameActive)=> ({
   'action1': ()=> onSetInput('action1'),
   'action2': ()=> onSetInput('action2'),
   'r': ()=> onReset(),
+  'd': ()=> onToggleDebug(),
   'space': ()=> onRun(!isGameActive),
 
   'cancel_up': ()=> onCancelInput('up'),
@@ -42,7 +44,7 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, isGameActive)=> ({
   'cancel_action2': ()=> onCancelInput('action2'),
 });
 
-const App = ({code, compile, isGameActive, setGameActive, onSetInput, onCancelInput})=> {
+const App = ({code, compile, isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput})=> {
   return (
     <HotKeys
       handlers={handlers(
@@ -50,6 +52,7 @@ const App = ({code, compile, isGameActive, setGameActive, onSetInput, onCancelIn
         onCancelInput,
         ()=> compile(code),
         (active)=> setGameActive(active),
+        ()=> onToggleDebug(),
         isGameActive
       )}
       keyMap={keyMap}
@@ -86,6 +89,9 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onCancelInput: (input)=> {
     dispatch(cancelInput(input));
+  },
+  onToggleDebug: ()=> {
+    dispatch(toggleDebug());
   }
 });
 

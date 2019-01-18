@@ -5,7 +5,6 @@ const isCollisionRule = (line)=> line.includes('|');
 const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
 const isLevel = (line)=> line.match(/#.+#/g)
 const isLegend = (line)=> line.includes('=');
-const isDebugFlag = (line)=> line.includes('debug');
 
 export const parseLegend = (code)=> {
   let legend = {};
@@ -26,10 +25,6 @@ const removeEdges = (lines)=> (
 
 export const parseLevel = (code)=> (
   code.split('\n').filter(isLevel) |> removeEdges
-);
-
-export const parseDebug = (code)=> (
-  code.split('\n').filter(isDebugFlag)
 );
 
 export const getLevelDimensions = (level)=> {
