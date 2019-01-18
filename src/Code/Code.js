@@ -12,7 +12,6 @@ const Code = ({code, onChange})=> {
     <textarea
       value={code}
       onChange={({target})=> onChange(target.value)}
-      onLoad={()=> console.log('i loaded')}
     />
   </div>
 };

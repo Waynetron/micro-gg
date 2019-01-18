@@ -63,27 +63,35 @@ const getPointsForSide = (side, sprite)=> {
   }
 }
 
-const isOverlappingPoint = (point, spriteA, spriteB)=> {
+const willOverlapPoint = (point, spriteA, spriteB)=> {
   const {x, y} = point;
   const {top, bottom, left, right} = getEdges(spriteB);
-
-  // Added +/- 1 to have things collide when they are perfectly next to each other but not overlapping
-  // This is a temporary fix for a bug that is causing non-moving sprites to not register collisions
-  // In fact that bug is still present, and now, combined with this means that a spriteA will need to jump on a DOWN moving
-  // spriteB twice to trigger the collision on spriteB's COLLIDE_TOP.
-  return (
+  const isOverlappingWhenIncludingExtra = (
     y > top - 1 &&
     y < bottom + 1 &&
     x > left - 1 &&
     x < right + 1
   );
+  
+  return isOverlapping;
 }
 
-const isOverlappingSide = (side, spriteA, spriteB)=> {
+const overlapsPoint = (point, spriteB, padding = 0)=> {
+  const {x, y} = point;
+  const {top, bottom, left, right} = getEdges(spriteB);
+  return (
+    y > top - padding &&
+    y < bottom + padding &&
+    x > left - padding &&
+    x < right + padding
+  );
+}
+
+const overlapsSide = (side, spriteA, spriteB)=> {
   const points = getPointsForSide(side, spriteA);
 
   for (const point of points) {
-    if (isOverlappingPoint(point, spriteA, spriteB)) {
+    if (overlapsPoint(point, spriteB, 1)) {
       return true;
     }
   }
@@ -94,22 +102,22 @@ const isOverlappingSide = (side, spriteA, spriteB)=> {
 
 const getCollidedEdges = (spriteA, spriteB)=> {
   const prevEdgesA = getEdges({position: {...spriteA.prevPosition}});
-  const edgesB = getEdges(spriteB);
+  const prevEdgesB = getEdges({position: {...spriteB.prevPosition}});
   const collidedEdges = {top: false, bottom: false, left: false, right: false};
 
   // by checking if an edge was not overlapping last frame but is this frame
   // we can see which edge is colliding
-  if (prevEdgesA.top >= edgesB.bottom) {
+  if (prevEdgesA.top >= prevEdgesB.bottom) {
     collidedEdges[TOP] = true;
   }
-  else if (prevEdgesA.bottom <= edgesB.top) {
+  else if (prevEdgesA.bottom <= prevEdgesB.top) {
     collidedEdges[BOTTOM] = true;
   }
 
-  if (prevEdgesA.left >= edgesB.right) {
+  if (prevEdgesA.left >= prevEdgesB.right) {
     collidedEdges[LEFT] = true;
   }
-  else if (prevEdgesA.right <= edgesB.left) {
+  else if (prevEdgesA.right <= prevEdgesB.left) {
     collidedEdges[RIGHT] = true;
   }
 
@@ -161,7 +169,7 @@ export const updateSpriteCollidingState = (spriteA, sprites)=> {
     }
 
     for (const edge of [TOP, BOTTOM, LEFT, RIGHT]) {
-      if (isOverlappingSide(edge, spriteA, spriteB)) {
+      if (overlapsSide(edge, spriteA, spriteB)) {
         colliding[edge].push({name: spriteB.name});
       }
     }
@@ -220,57 +228,6 @@ export const applySpriteCollisions = (spriteA, sprites)=> {
   }
 
   return spriteA;
-};
-
-export const applySpriteCollisionsCrossMethod = (spriteA, sprites)=> {
-  if (spriteA.static) {
-    return spriteA;
-  }
-
-  for (const spriteB of sprites) {
-    if (spriteA.id === spriteB.id) {
-      continue;
-    }
-
-    let newSprite = {...spriteA};
-    let didOverlap = false;
-
-    if (isOverlappingSide(LEFT, spriteA, spriteB)) {
-      newSprite = {
-        ...newSprite,
-        ...getSeparatedState(LEFT, spriteA, spriteB)
-      };
-      didOverlap = true;
-    }
-    else if (isOverlappingSide(RIGHT, spriteA, spriteB)) {
-      newSprite = {
-        ...newSprite,
-        ...getSeparatedState(RIGHT, spriteA, spriteB)
-      };
-      didOverlap = true;
-    }
-
-    if (isOverlappingSide(TOP, spriteA, spriteB)) {
-      newSprite = {
-        ...newSprite,
-        ...getSeparatedState(TOP, spriteA, spriteB)
-      };
-      didOverlap = true;
-    }
-    else if (isOverlappingSide(BOTTOM, spriteA, spriteB)) {
-      newSprite = {
-        ...newSprite,
-        ...getSeparatedState(BOTTOM, spriteA, spriteB)
-      };
-      didOverlap = true;
-    }
-
-    if (didOverlap) {
-      return newSprite;
-    }
-  }
-
-  return spriteA
 };
 
 export const applyWallCollisions = (sprite, width, height)=> {
