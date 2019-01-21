@@ -8,3 +8,7 @@ export const cancelInput = (input)=> ({
   type: 'CANCEL_INPUT',
   input
 })
+
+export const toggleTheme = ()=> ({
+  type: 'TOGGLE_THEME'
+})

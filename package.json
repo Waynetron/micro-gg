@@ -6,6 +6,7 @@
     "lodash-es": "^4.17.11",
     "node-sass": "^4.11.0",
     "react": "^16.7.0-alpha.0",
+    "react-custom-properties": "^1.2.0",
     "react-dom": "^16.7.0-alpha.0",
     "react-hotkeys": "^1.1.4",
     "react-redux": "^6.0.0",

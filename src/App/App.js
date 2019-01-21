@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys';
 import Game from '../Game/Game.js';
@@ -6,8 +6,23 @@ import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import {compile, setActive} from '../Code/actions';
 import {toggleDebug} from '../Game/actions.js';
-import {setInput, cancelInput} from './actions.js';
+import {setInput, cancelInput, toggleTheme} from './actions.js';
+import CustomProperties from 'react-custom-properties';
 import './App.scss';
+
+const darkColors = {
+  primary: '#F18383',
+  secondary: '#87FFAE',
+  dark: '#000000',
+  light: '#FFFFFF'
+}
+
+const lightColors = {
+  primary: '#F18383',
+  secondary: '#87FFAE',
+  dark: '#FFFFFF',
+  light: '#000000'
+}
 
 const keyMap = {
   'up': {sequence: 'up', action: 'keydown'},
@@ -44,41 +59,59 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
   'cancel_action2': ()=> onCancelInput('action2'),
 });
 
-const App = ({code, compile, isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput})=> {
+const App = ({
+    code, compile, theme, isGameActive, setGameActive,
+    onToggleDebug, onSetInput, onCancelInput, onToggleTheme
+})=> {
+  const colors = theme === 'light' ? lightColors : darkColors
+  
   return (
-    <HotKeys
-      handlers={handlers(
-        onSetInput,
-        onCancelInput,
-        ()=> compile(code),
-        (active)=> setGameActive(active),
-        ()=> onToggleDebug(),
-        isGameActive
-      )}
-      keyMap={keyMap}
-    >
-      <div className="main">
-        <div className="left">
-          <header><h1>micro gg</h1></header>
-          <Code />
+    <CustomProperties className="custom-properties-container" properties={{
+      '--primary-color': colors.primary,
+      '--secondary-color': colors.secondary,
+      '--dark-color': colors.dark,
+      '--light-color': colors.light
+    }}>
+      <HotKeys
+        handlers={handlers(
+          onSetInput,
+          onCancelInput,
+          ()=> compile(code),
+          (active)=> setGameActive(active),
+          ()=> onToggleDebug(),
+          isGameActive
+        )}
+        keyMap={keyMap}
+      >
+        <div className="main">
+          <div className="left">
+            <header>
+              <h1>micro gg</h1>
+              <button className='primary' onClick={()=> onToggleTheme()}>
+              {theme === 'dark' ? 'light' : 'dark'}
+              </button>
+            </header>
+            <Code />
+          </div>
+          <div className="right">
+            <header>
+              <button className='primary' onClick={()=> compile(code)}>reset</button>
+              <button className='secondary' onClick={()=> setGameActive(!isGameActive)}>
+                {isGameActive ? 'pause' : 'run'}
+              </button>
+              {isGameActive && <Loop />}
+            </header>
+            <Game />
+          </div>
         </div>
-        <div className="right">
-          <header>
-            <button className='primary' onClick={()=> compile(code)}>reset</button>
-            <button className='secondary' onClick={()=> setGameActive(!isGameActive)}>
-              {isGameActive ? 'pause' : 'run'}
-            </button>
-            {isGameActive && <Loop />}
-          </header>
-          <Game />
-        </div>
-      </div>
-    </HotKeys>
+      </HotKeys>
+    </CustomProperties>
   );
 };
 
 const mapStateToProps = ({code, game})=> ({
   code: code.code,
+  theme: game.theme,
   isGameActive: game.active
 })
 
@@ -97,6 +130,9 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onToggleDebug: ()=> {
     dispatch(toggleDebug());
+  },
+  onToggleTheme: ()=> {
+    dispatch(toggleTheme());
   }
 });
 

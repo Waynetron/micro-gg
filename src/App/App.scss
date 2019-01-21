@@ -1,8 +1,3 @@
-$color-primary: #F18383;
-$color-secondary: #87FFAE;
-$color-dark: black;
-$color-light: white;
-
 h1 {
   font-size: 1.6rem;
 }
@@ -10,15 +5,17 @@ h1 {
 /* React app is injected into this container (I think) */
 #root {
   height: 100%;
-  display:flex;
-  flex-direction: column;
+}
+
+/* container added for the css variable injection */
+#root > div {
+  height: 100%; 
 }
 
 /* react-hotkeys adds this container, doesn't have any className to grab onto */
 div[tabindex="-1"] {
   height: 100%;
   display:flex;
-  flex-direction: column;
 }
 div[tabindex="-1"]:focus {
   outline: 0;
@@ -36,11 +33,11 @@ div[tabindex="-1"]:focus {
 
 .left {
   flex-grow: 1;
-  background-color: $color-dark;
+  background-color: var(--dark-color);
 }
 
 .right {
-  background-color: $color-primary;
+  background-color: var(--primary-color);
 }
 
 @media only screen and (max-width: 768px) {
@@ -48,7 +45,7 @@ div[tabindex="-1"]:focus {
     flex-direction: column-reverse;
   }
   .left header {
-    display: none;
+    // display: none;
   }
 }
 
@@ -58,11 +55,17 @@ header {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  color: $color-primary;
+  color: var(--primary-color);
 }
 
 .left header {
-  padding: 0 1.25rem 0 1.25rem;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+    margin-top: -5px;
+    line-height: 0;
+  }
 }
 
 header button {
@@ -74,17 +77,21 @@ header button {
   font-size: 0.8rem;
   width: 6rem;
   margin-right: 1rem;
+
+  &:focus {
+    outline: 0;
+  }
 }
 
 header button.primary {
-  background-color: $color-dark;
-  color: $color-primary;
+  background-color: var(--dark-color);
+  color: var(--primary-color);
 }
 
 header button.secondary {
   background-color: transparent;
-  border: solid 2px $color-dark;
-  color: $color-dark;
+  border: solid 2px var(--dark-color);
+  color: var(--dark-color);
 }
 
 #code, #game {
@@ -96,19 +103,24 @@ header button.secondary {
 }
 
 .stage {
-  background-color: $color-dark;
+  background-color: var(--dark-color);
   overflow: hidden;
 }
 
 #code textarea {
-  background-color: $color-dark;
+  background-color: var(--dark-color);
   border: none;
   line-height: 1.1.25rem;
   font-size: 1.0rem;
   font-family: 'Fira Code';
   padding: 1.25rem;
   width: 100%;
-  color: $color-primary;
+  color: var(--primary-color);
+
+  &:focus {
+    outline: 0;
+    background-color: #222222;
+  }
 }
 
 #game {

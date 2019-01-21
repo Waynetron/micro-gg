@@ -22,6 +22,7 @@ const defaultState = {
     totalFrames: 0
   },
   active: false,
+  theme: 'dark',
   debug: false
 };
 
@@ -104,11 +105,17 @@ const gameReducer = (state = defaultState, action) => {
               |> ((sprites)=> sprites.map(roundToPixels))
       }
     case 'SET_INPUT':
+    return {
+      ...state,
+      sprites: state.sprites.map(
+        (sprite)=> ({...sprite, inputs: {...sprite.inputs, [action.input]: true}})
+      )
+    };
+
+    case 'TOGGLE_THEME':
       return {
         ...state,
-        sprites: state.sprites.map(
-          (sprite)=> ({...sprite, inputs: {...sprite.inputs, [action.input]: true}})
-        )
+        theme: state.theme === 'light' ? 'dark' : 'light'
       };
 
     case 'CANCEL_INPUT':
