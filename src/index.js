@@ -4,6 +4,7 @@ import {Provider} from 'react-redux'
 import {createStore} from 'redux'
 import reducers from './reducers'
 import './index.css';
+import './fonts/FiraCode/fira_code.css';
 import App from './App/App.js';
 
 const store = createStore(

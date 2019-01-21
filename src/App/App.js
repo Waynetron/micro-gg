@@ -7,7 +7,7 @@ import Code from '../Code/Code.js';
 import {compile, setActive} from '../Code/actions';
 import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput} from './actions.js';
-import './App.css';
+import './App.scss';
 
 const keyMap = {
   'up': {sequence: 'up', action: 'keydown'},
@@ -57,16 +57,21 @@ const App = ({code, compile, isGameActive, setGameActive, onToggleDebug, onSetIn
       )}
       keyMap={keyMap}
     >
-      <header>
-        <button onClick={()=> compile(code)}>reset</button>
-        <button onClick={()=> setGameActive(!isGameActive)}>
-          {isGameActive ? 'pause' : 'run'}
-        </button>
-        {isGameActive && <Loop />}
-      </header>
-      <div className="content">
-        <Code />
-        <Game />
+      <div className="main">
+        <div className="left">
+          <header><h1>micro gg</h1></header>
+          <Code />
+        </div>
+        <div className="right">
+          <header>
+            <button className='primary' onClick={()=> compile(code)}>reset</button>
+            <button className='secondary' onClick={()=> setGameActive(!isGameActive)}>
+              {isGameActive ? 'pause' : 'run'}
+            </button>
+            {isGameActive && <Loop />}
+          </header>
+          <Game />
+        </div>
       </div>
     </HotKeys>
   );
