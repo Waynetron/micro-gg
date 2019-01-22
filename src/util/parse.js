@@ -1,4 +1,5 @@
 import uniqid from 'uniqid';
+import {flatten} from 'lodash-es';
 import {TILE_SIZE, MAX_VELOCITY} from '../Game/constants.js'
 
 const isCollisionRule = (line)=> line.includes('|');
@@ -64,7 +65,43 @@ export const parseSprites = (level, legend)=> {
   return sprites;
 };
 
-export const parseRules = (code)=> ([
-  code.split('\n').filter(isRule),
-  code.split('\n').filter(isCollisionRule)
-]);
+const getOpposite = (direction)=> {
+  const oppositeMappings = {
+    'COLLIDE_LEFT': 'COLLIDE_RIGHT',
+    'COLLIDE_RIGHT': 'COLLIDE_LEFT',
+    'COLLIDE_TOP': 'COLLIDE_BOTTOM',
+    'COLLIDE_BOTTOM': 'COLLIDE_TOP'
+  }
+
+  return oppositeMappings[direction];
+}
+
+const expand = (line)=> {
+  if (line.includes('COLLIDE ')) {
+    const [left, right] = line.split('->');
+    const specificDirections = ['COLLIDE_LEFT', 'COLLIDE_RIGHT', 'COLLIDE_TOP', 'COLLIDE_BOTTOM'];
+
+    let expandedLines = [];
+    for (const direction of specificDirections) {
+      const expanded = line
+        .replace('COLLIDE ', `${direction} `)
+        .replace('COLLIDE ', `${getOpposite(direction)} `);
+
+      expandedLines.push(expanded);
+    }
+
+    return expandedLines;
+  }
+  
+  return [line]
+}
+
+export const parseRules = (code)=> {
+  const regularRules = code.split('\n').filter(isRule);  
+  const collisionRules = code.split('\n').filter(isCollisionRule);
+
+  return [
+    regularRules,
+    flatten(collisionRules.map((line)=> expand(line)))
+  ]
+};
