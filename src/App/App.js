@@ -11,17 +11,17 @@ import CustomProperties from 'react-custom-properties';
 import './App.scss';
 
 const darkColors = {
-  primary: '#F18383',
+  primary: '#F1A0A0',
   secondary: '#87FFAE',
   dark: '#000000',
-  light: '#FFFFFF'
+  light: '#FDF6E2'
 }
 
 const lightColors = {
-  primary: '#F18383',
+  primary: '#43153F',
   secondary: '#87FFAE',
-  dark: '#FFFFFF',
-  light: '#000000'
+  dark: '#FDF6E2',
+  light: '#FFFFFF'
 }
 
 const keyMap = {
@@ -72,27 +72,27 @@ const App = ({
       '--dark-color': colors.dark,
       '--light-color': colors.light
     }}>
-      <HotKeys
-        handlers={handlers(
-          onSetInput,
-          onCancelInput,
-          ()=> compile(code),
-          (active)=> setGameActive(active),
-          ()=> onToggleDebug(),
-          isGameActive
-        )}
-        keyMap={keyMap}
-      >
-        <div className="main">
-          <div className="left">
-            <header>
-              <h1>micro gg</h1>
-              <button className='primary' onClick={()=> onToggleTheme()}>
-              {theme === 'dark' ? 'light' : 'dark'}
-              </button>
-            </header>
-            <Code />
-          </div>
+      <div className="main">
+        <div className="left">
+          <header>
+            <h1>micro gg</h1>
+            <button className='primary' onClick={()=> onToggleTheme()}>
+            {theme === 'dark' ? 'light' : 'dark'}
+            </button>
+          </header>
+          <Code />
+        </div>
+        <HotKeys
+          handlers={handlers(
+            onSetInput,
+            onCancelInput,
+            ()=> compile(code),
+            (active)=> setGameActive(active),
+            ()=> onToggleDebug(),
+            isGameActive
+          )}
+          keyMap={keyMap}
+        >
           <div className="right">
             <header>
               <button className='primary' onClick={()=> compile(code)}>reset</button>
@@ -103,8 +103,8 @@ const App = ({
             </header>
             <Game />
           </div>
-        </div>
-      </HotKeys>
+        </HotKeys>
+      </div>
     </CustomProperties>
   );
 };

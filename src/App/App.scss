@@ -23,7 +23,7 @@ div[tabindex="-1"]:focus {
 
 .main {
   display: flex;
-  flex-grow: 1;
+  height: 100%;
 }
 
 .left, .right {
@@ -44,8 +44,10 @@ div[tabindex="-1"]:focus {
   .main {
     flex-direction: column-reverse;
   }
-  .left header {
-    // display: none;
+  
+  /* react-hotkeys container at 100% height was killing this layout */
+  div[tabindex="-1"] {
+    height: auto;
   }
 }
 
