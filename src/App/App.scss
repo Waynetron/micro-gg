@@ -50,7 +50,7 @@ div[tabindex="-1"]:focus {
 }
 
 header {
-  padding: 1.25rem 1.25rem 0 1.25rem;
+  padding: 1rem 1rem 1rem 1rem;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -110,21 +110,20 @@ header button.secondary {
 #code textarea {
   background-color: var(--dark-color);
   border: none;
-  line-height: 1.1.25rem;
+  line-height: 1.1rem;
   font-size: 1.0rem;
   font-family: 'Fira Code';
-  padding: 1.25rem;
+  padding: 1rem;
   width: 100%;
   color: var(--primary-color);
 
   &:focus {
     outline: 0;
-    background-color: #222222;
   }
 }
 
 #game {
-  padding: 1.25rem;
+  padding: 1rem;
   flex-direction: column;
 }
 
