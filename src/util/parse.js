@@ -13,8 +13,14 @@ export const parseLegend = (code)=> {
   code.split('\n')
     .filter(isLegend)
     .forEach((line)=> {
-      const [symbol, name] = line.split('=').map((str)=> str.trim());
-      legend[symbol] = name;
+      const [symbol, right] = line.split('=').map((str)=> str.trim());
+      const names = right.split(' or ');
+      // this is a function to allow returning a random name in the case of:
+      // G = Goomba or Tree or Brick
+      legend[symbol] = ()=> {
+        const randIndex = Math.floor(Math.random() * names.length);
+        return names[randIndex];
+      }
     });
 
   return legend
@@ -28,6 +34,18 @@ export const parseLevel = (code)=> (
   code.split('\n').filter(isLevel) |> removeEdges
 );
 
+export const parseNames = (code)=> {
+  const lines = code.split('\n').filter(isLegend);
+  const names = lines.map((line)=> {
+    const [, right] = line.split(' = ');
+    const words = right.split(' or ');
+    
+    return words;
+  });
+
+  return flatten(names);
+};
+
 export const getLevelDimensions = (level)=> {
   const width_in_tiles = level[0].length;
   const height_in_tiles = level.length;
@@ -38,10 +56,10 @@ export const getLevelDimensions = (level)=> {
 export const parseSprites = (level, legend)=> {
   const sprites = [];
   level.map((line, row)=> line.split('').forEach((char, col)=> {
-    const name = legend[char];
-    if (name) {
+    const getName = legend[char];
+    if (getName && getName() !== 'Empty') {
       sprites.push({
-        name: name,
+        name: getName(),
         id: uniqid(),
         position: {
           x: col * TILE_SIZE,
@@ -78,7 +96,6 @@ const getOpposite = (direction)=> {
 
 const expand = (line)=> {
   if (line.includes('COLLIDE ')) {
-    const [left, right] = line.split('->');
     const specificDirections = ['COLLIDE_LEFT', 'COLLIDE_RIGHT', 'COLLIDE_TOP', 'COLLIDE_BOTTOM'];
 
     let expandedLines = [];

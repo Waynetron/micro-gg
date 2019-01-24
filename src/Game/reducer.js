@@ -1,5 +1,5 @@
 import {flatten} from 'lodash-es';
-import {parseRules, parseSprites, parseLegend, parseLevel,
+import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   getLevelDimensions} from '../util/parse.js';
 import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransition,
   isAlive} from '../util/state.js'
@@ -17,10 +17,6 @@ const defaultState = {
   stateTransitions: [],
   width_in_tiles: 0,
   height_in_tiles: 0,
-  elapsed: {
-    sinceLastFrame: 0,
-    totalFrames: 0
-  },
   active: false,
   theme: 'dark',
   debug: false
@@ -31,6 +27,11 @@ const arrayToObject = (array) =>
      obj[item] = true
      return obj
    }, {})
+
+const removeComments = (code)=>
+  code.split('\n').filter(
+    (line)=> !line.includes('//')
+  ).join('\n')
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
@@ -44,12 +45,18 @@ const gameReducer = (state = defaultState, action) => {
       return {...state, debug: !state.debug}
 
     case 'COMPILE':
-      const {code} = action;
+      const code = removeComments(action.code);
       const level = parseLevel(code);
       const legend = parseLegend(code);
-      // names is the legend mapped to have the values as keys. Used for fast name lookup.
-      const names = arrayToObject(Object.values(legend));
       const sprites = parseSprites(level, legend);
+
+      // Names is the legend mapped to have the values as keys. Used for fast name lookup.
+      // this used to use the legend before the random features were added.
+      // For this to work though, names needs to include all possible names, including those that might not be rendered onto
+      // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
+      // not also appear in the legend.
+      // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
+      const names = arrayToObject(parseNames(code));
       
       // A rule consists of a before and an after state referred to as a state transition
       const [rules, collisionRules] = parseRules(code);
@@ -74,19 +81,10 @@ const gameReducer = (state = defaultState, action) => {
         height: height_in_tiles * TILE_SIZE
       }
 
-    case 'UPDATE_ELAPSED':
-      const {elapsed} = action;
+    case 'UPDATE':
       const previousState = {...state};
       return {
           ...state,
-          // Using object with a frame counter inside the object to make sure
-          // it always rerenders when used in components
-          // My thinking is that if I just use elapsed, then it's possible for the same elapsed value
-          // to fire twice in a row, and the 2nd render might not be called (optimised away)
-          elapsed: {
-            sinceLastFrame: Date.now() - elapsed,
-            totalFrames: state.elapsed.totalFrames + 1
-          },
           sprites: state.sprites.filter(isAlive)
               |> ((sprites)=> sprites.map(resetColliding))
               |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(

@@ -1,40 +1,40 @@
 const defaultState = {
   code: `
-#####################
-#                   #
-#                   #
-#                   #
-#                   #
-#                   #
-#     ###?#         #
-#                   #
-#  P           G    #
-#####################
+##################
+#                #
+#                #
+#                #
+#                #
+#                #
+#     ###?#      #
+#                #
+#  P          G  #
+##################
 
 P = Player
-? = QuestionBrick
 # = Brick
+? = QuestionBrick or Brick or Empty
 G = Goomba
 R = GoombaRed
 ^ = Spike
 
-[ Goomba ] -> [ DOWN Goomba ]
 [ Player ] -> [ DOWN Player ]
 
 <LEFT> [ Player ] -> [ LEFT Player ]
 <RIGHT> [ Player ] -> [ RIGHT Player ]
 <UP> [ COLLIDE Player | COLLIDE Wall ] -> [ JUMP Player | Wall ]
 
-[ COLLIDE Player | COLLIDE Goomba ] -> [ DEAD Player | Goomba ]
+[ COLLIDE_LEFT Player | COLLIDE_RIGHT Goomba ] -> [ DEAD Player | Goomba ]
+[ COLLIDE_RIGHT Player | COLLIDE_LEFT Goomba ] -> [ DEAD Player | Goomba ]
 [ COLLIDE_BOTTOM Player | COLLIDE_TOP Goomba ] -> [ JUMP Player | DEAD Goomba ]
 
-[ Goomba ] -> [ Gomba LEFT ]
-[ COLLIDE_LEFT Goomba | COLLIDE_RIGHT Anything ] -> [ GoombaRed | Anything ]
-[ GoombaRed ] -> [ GombaRed RIGHT ]
-[ COLLIDE_RIGHT GoombaRed | COLLIDE_LEFT Anything ] -> [ Goomba | Anything ]
+// [ Goomba ] -> [ DOWN LEFT Gomba ]
+// [ GoombaRed ] -> [ GombaRed DOWN RIGHT ]
+// [ COLLIDE_LEFT Goomba | COLLIDE_RIGHT Wall ] -> [ GoombaRed | Wall ]
+// [ COLLIDE_RIGHT GoombaRed | COLLIDE_LEFT Wall ] -> [ Goomba | Wall ]
 
 [ COLLIDE_TOP Player | COLLIDE_BOTTOM Brick ] -> [ Player | DEAD Brick ]
-[ COLLIDE_TOP Player | COLLIDE_BOTTOM QuestionBrick ] -> [ Player | JUMP Goomba ]    
+[ COLLIDE_TOP Player | COLLIDE_BOTTOM QuestionBrick ] -> [ Player | JUMP Goomba ]
 `
 }
 

@@ -1,7 +1,6 @@
 
-export const updateElapsed = (elapsed)=> ({
-  type: 'UPDATE_ELAPSED',
-  elapsed
+export const update = ()=> ({
+  type: 'UPDATE'
 })
 
 export const updateSprite = (sprite)=> ({
