@@ -1,4 +1,4 @@
-import {matches, mergeWith, isNumber} from 'lodash-es';
+import {matches, mergeWith, merge, isNumber} from 'lodash-es';
 
 const trimBrackets = (string)=> string.replace('[', '').replace(']', '')
 const separateWords = (leftAndRightString)=> (
@@ -134,7 +134,8 @@ const wordsToState = (words, names)=> {
   /* Turn those words into arrays of key value objects
     [
       [{name: "Goomba"}],
-      [{name: "Goomba"}, {acceleration: {x: 1, y: 0}}]}
+      [{name: "Goomba"}, {acceleration: {x: 1}}]},
+      [{name: "Goomba"}, {acceleration: {y: 1}}]}
     ]
   */
   const statesArr = words.map((word)=> {
@@ -157,13 +158,15 @@ const wordsToState = (words, names)=> {
     return {};
   });
 
-  /* Flatten it to a single array of objects
-    [
-      {name: "Goomba"},
-      {name: "Goomba", acceleration: {x: 1, y: 0}}
-    ]
+  /* Flatten and merge all the states together into a single state object:
+    {name: "Goomba", acceleration: {x: 1, y: 1}}
   */
-  return Object.assign({}, {}, ...statesArr);
+  let resultState = {};
+  for (const stateObj of statesArr) {
+    merge(resultState, stateObj);
+  }
+
+  return resultState;
 };
 
 export const ruleToStateTransition = (ruleString, names)=> {
