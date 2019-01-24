@@ -25,7 +25,6 @@ const mapStateToProps = ({code})=> {
 const mapDispatchToProps = (dispatch)=> ({
   onChange: (code)=> {
     dispatch(updateCode(code));
-    dispatch(compile(code));
   },
   onCompile: (code)=> {
     dispatch(compile(code));
