@@ -15,6 +15,10 @@ const states = {
   FAST_DOWN: {acceleration: {y: 6}},
   FAST_LEFT: {acceleration: {x: -6}},
   FAST_RIGHT: {acceleration: {x: 6}},
+  SLOW_UP: {acceleration: {y: -0.5}},
+  SLOW_DOWN: {acceleration: {y: 0.5}},
+  SLOW_LEFT: {acceleration: {x: -0.5}},
+  SLOW_RIGHT: {acceleration: {x: 0.5}},
   JUMP: {
     velocity: {y: -250},
     inputs: {up: false}

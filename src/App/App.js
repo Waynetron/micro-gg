@@ -75,7 +75,7 @@ const App = ({
       <div className="main">
         <div className="left">
           <header>
-            <h1>micro gg</h1>
+            <h1>  </h1>
             <button className='primary' onClick={()=> onToggleTheme()}>
             {theme === 'dark' ? 'light' : 'dark'}
             </button>
@@ -95,7 +95,7 @@ const App = ({
         >
           <div className="right">
             <header>
-              <button className='primary' onClick={()=> compile(code)}>reset</button>
+              <button className='primary' onClick={()=> compile(code)}>compile</button>
               <button className='secondary' onClick={()=> setGameActive(!isGameActive)}>
                 {isGameActive ? 'pause' : 'run'}
               </button>
