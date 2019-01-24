@@ -68,7 +68,7 @@ const gameReducer = (state = defaultState, action) => {
         sprites,
         legend,
         names,
-        rules,
+        rules: [...rules, ...collisionRules],
         stateTransitions: [...stateTransitions, ...collisionStateTransitions],
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE
