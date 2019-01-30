@@ -75,7 +75,7 @@ const App = ({
       <div className="main">
         <div className="left">
           <header>
-            <h1>  </h1>
+            <h1>micro gg</h1>
             <button className='primary' onClick={()=> onToggleTheme()}>
             {theme === 'dark' ? 'light' : 'dark'}
             </button>
