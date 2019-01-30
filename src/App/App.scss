@@ -40,14 +40,17 @@ div[tabindex="-1"]:focus {
   background-color: var(--primary-color);
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 900px) {
   .main {
     flex-direction: column-reverse;
   }
   
-  /* react-hotkeys container at 100% height was killing this layout */
+  /* react-hotkeys container */
   div[tabindex="-1"] {
+    /* The default 100% height was killing the layout */
     height: auto;
+    // Was some white coming through in the mobile layout
+    background-color: var(--primary-color);
   }
 }
 
@@ -130,7 +133,7 @@ header button.secondary {
   flex-direction: column;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 900px) {
   #game { 
     border-left: none;
     // border-bottom: solid 4px #20385B;
