@@ -20,22 +20,9 @@ R = GoombaRed
 
 [ Player ] -> [ DOWN Player ]
 
-<LEFT> [ Player ] -> [ LEFT Player ]
-<RIGHT> [ Player ] -> [ RIGHT Player ]
-<UP> [ COLLIDE Player | COLLIDE Wall ] -> [ JUMP Player | Wall ]
+<HORIZONTAL> [ Player ] -> [ HORIZONTAL Player ]
 
-[ COLLIDE_LEFT Player | COLLIDE_RIGHT Goomba ] -> [ DEAD Player | Goomba ]
-[ COLLIDE_RIGHT Player | COLLIDE_LEFT Goomba ] -> [ DEAD Player | Goomba ]
-[ COLLIDE_BOTTOM Player | COLLIDE_TOP Goomba ] -> [ JUMP Player | DEAD Goomba ]
-[ COLLIDE_BOTTOM Player | COLLIDE_TOP GoombaRed ] -> [ JUMP Player | DEAD GoombaRed ]
-
-[ Goomba ] -> [ DOWN SLOW_LEFT Gomba ]
-[ GoombaRed ] -> [ GombaRed DOWN SLOW_RIGHT ]
-[ COLLIDE_LEFT Goomba | COLLIDE_RIGHT Wall ] -> [ GoombaRed | Wall ]
-[ COLLIDE_RIGHT GoombaRed | COLLIDE_LEFT Wall ] -> [ Goomba | Wall ]
-
-[ COLLIDE_TOP Player | COLLIDE_BOTTOM Brick ] -> [ Player | DEAD Brick ]
-[ COLLIDE_TOP Player | COLLIDE_BOTTOM QuestionBrick ] -> [ Player | JUMP Goomba ]
+[ Player | Goomba ] -> [ DEAD Player | Goomba ]
 `
 }
 

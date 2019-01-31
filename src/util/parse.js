@@ -94,23 +94,74 @@ const getOpposite = (direction)=> {
   return oppositeMappings[direction];
 }
 
-const expand = (line)=> {
-  if (line.includes('COLLIDE ')) {
-    const specificDirections = ['COLLIDE_LEFT', 'COLLIDE_RIGHT', 'COLLIDE_TOP', 'COLLIDE_BOTTOM'];
+const collisionExpandMappings = {
+  ALL: ['COLLIDE_LEFT', 'COLLIDE_RIGHT', 'COLLIDE_TOP', 'COLLIDE_BOTTOM'],
+  HORIZONTAL: ['COLLIDE_LEFT', 'COLLIDE_RIGHT'],
+  VERTICAL: ['COLLIDE_TOP', 'COLLIDE_BOTTOM']
+}
 
-    let expandedLines = [];
-    for (const direction of specificDirections) {
-      const expanded = line
-        .replace('COLLIDE ', `${direction} `)
-        .replace('COLLIDE ', `${getOpposite(direction)} `);
+const regularExpandMappings = {
+  HORIZONTAL: ['LEFT', 'RIGHT'],
+  VERTICAL: ['UP', 'DOWN']
+}
 
-      expandedLines.push(expanded);
-    }
+// Takes a single rule and returns an array with (potentially) multiple rules
+// Eg: Rules starting with HORIZONTAL become both LEFT and RIGHT rules
+const expandRegularRule = (line)=> {
+  let expandedLines = [];
 
-    return expandedLines;
-  }
+  for (const [key, words] of Object.entries(regularExpandMappings)) {
+    if (line.includes(`<${key}> `) || line.includes(`${key} `)) {
+      for (const word of words) {
+        const expanded = line
+          // replaces either <LEFT> or LEFT
+          // this would be better swapped for some equivalant that replaces
+          // all occurances of a word
+          .replace(`<${key}> `, `<${word}> `)
+          .replace(`${key} `, `${word} `)
   
-  return [line]
+        expandedLines.push(expanded);
+      }
+    }
+  }
+
+  return expandedLines.length > 0 ? expandedLines : [line]
+}
+
+// Takes a single collision rule and returns an array with (potentially) multiple rules
+// Eg: [ Player | Goomba ] -> [ DEAD Player | Goomba ]
+// becomes
+// UP [ Player | Goomba ] -> [ DEAD Player | Goomba ]
+// DOWN [ Player | Goomba ] -> [ DEAD Player | Goomba ]
+// Etc...
+const expandCollisionRule = (line)=> {
+  let expandedLines = [];
+
+  // If no direction given, then use 'ALL'. Otherwise use the given direction ('UP', 'DOWN', etc)
+  const [firstWord] = line.split('[');
+  
+  let appendedLine = line;
+  if (firstWord === '') {
+    const [left, right] = line.split('->');
+    appendedLine = left.replace('[', 'ALL [') + '->' + right.replace('[', 'ALL [');
+  }
+  // const direction = firstWord === '[' ? 'ALL' : firstWord;
+  
+  for (const [key, directions] of Object.entries(collisionExpandMappings)) {
+    if (appendedLine.includes(`${key} `)) {
+      for (const direction of directions) {
+        // replaces the left and then replaces the right with the opposite
+        // leveraging the fact that replace only does one replace at a time
+        const expanded = appendedLine
+          .replace(`${key} `, `${direction} `)
+          .replace(`${key} `, `${getOpposite(direction)} `);
+
+        expandedLines.push(expanded);
+      }
+    }
+  }
+
+  return expandedLines.length > 0 ? expandedLines : [line]
 }
 
 // When rules having a matching left state, then keep only the last rule
@@ -126,13 +177,18 @@ const removeDuplicateRules = (lines)=> {
 
 export const parseRules = (code)=> {
   const regularRules = code.split('\n').filter(isRule);  
+  const expandedRegularRules = flatten(
+    regularRules.map((line)=> expandRegularRule(line))
+  );
   
   const collisionRules = code.split('\n').filter(isCollisionRule);
-  const expandedCollisionRules = flatten(collisionRules.map((line)=> expand(line)));
+  const expandedCollisionRules = flatten(
+    collisionRules.map((line)=> expandCollisionRule(line))
+  );
   // const uniqueCollisionRules = removeDuplicateRules(expandedCollisionRules);
 
   return [
-    regularRules,
+    expandedRegularRules,
     expandedCollisionRules
   ]
 };
