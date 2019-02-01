@@ -19,10 +19,7 @@ const states = {
   SLOW_DOWN: {acceleration: {y: 0.5}},
   SLOW_LEFT: {acceleration: {x: -0.5}},
   SLOW_RIGHT: {acceleration: {x: 0.5}},
-  JUMP: {
-    velocity: {y: -250},
-    inputs: {up: false}
-  },
+  JUMP: {velocity: {y: -250}},
   DEAD: {dead: true},
   STATIC: {static: true}
 };
@@ -32,31 +29,31 @@ const inputs = {
   '<DOWN>': 'down',
   '<LEFT>': 'left',
   '<RIGHT>': 'right',
+  '<ACTION>': 'action1',
   '<ACTION1>': 'action1',
   '<ACTION2>': 'action2'
 };
 
-const collisionFilterWords = {
-  COLLIDE_TOP: true,
-  COLLIDE_BOTTOM: true,
-  COLLIDE_LEFT: true,
-  COLLIDE_RIGHT: true
-  // Note: if you add anything here, make sure to update getCollisionFilterWords
-  // and make sure it doesn't accidentally use the new words
+const getOpposite = (direction)=> {
+  const oppositeMappings = {
+    'left': 'right',
+    'right': 'left',
+    'top': 'bottom',
+    'bottom': 'top'
+  }
+
+  return oppositeMappings[direction];
 }
 
-const collisionFilterWordsToSide = {
-  COLLIDE_TOP: 'top',
-  COLLIDE_BOTTOM: 'bottom',
-  COLLIDE_LEFT: 'left',
-  COLLIDE_RIGHT: 'right'
-}
+const directionToSide = (direction)=> {
+  const oppositeMappings = {
+    'left': 'left',
+    'right': 'right',
+    'down': 'bottom',
+    'up': 'top'
+  }
 
-const getCollisionFilterWords = (words)=> {
-  const filterWords = words.filter((word)=> collisionFilterWords[word]);
-  
-  // These are the words the sprite will collide against (eg: TOP, BOTTOM)
-  return filterWords;
+  return oppositeMappings[direction];
 }
 
 /*
@@ -97,30 +94,36 @@ Evaluate both rules into a pair of state transitions
 ]
 */
 export const collisionRuleToStateTransitions = (ruleString, names)=> {
-  const [leftRule, rightRule] = ruleString.split('->');
-  const [leftWordsA, leftWordsB] = leftRule.split('|') |> separateWords;
-  const [rightWordsA, rightWordsB] = rightRule.split('|') |> separateWords;
+  // const [firstWord, ...rest] = ruleString.split('[');
 
-  // Isolate the filter words from the left sides eg: TOP, BOTTOM
-  const filterWordsA = getCollisionFilterWords(leftWordsA);
-  const filterWordsB = getCollisionFilterWords(leftWordsB);
+  // Get collision direction (first word at the start of the line)
+  const [firstWord] = ruleString.match(/^([A-Z]+)\b/);
+  const direction = firstWord.toLowerCase();
+
+  // Get the left and right matches
+  const [left, right] = ruleString.split('->');
+  const [leftGroup] = left.match(/\[.+?\]/);
+  const [rightGroup] = right.match(/\[.+?\]/);
+  
+  const [leftWordsA, leftWordsB] = leftGroup.split('|') |> separateWords;
+  const [rightWordsA, rightWordsB] = rightGroup.split('|') |> separateWords;
 
   const leftStateA = wordsToState(leftWordsA, names);
   const leftStateB = wordsToState(leftWordsB, names);
   const rightStateA = wordsToState(rightWordsA, names);
-  const rightStateB = wordsToState(rightWordsB, names);
+
+  // User may omit the r  ightWordsB. In which case populate it with leftWords B
+  // Eg: [ <ACTION> Player | Ground ] -> [ JUMP Player ]
+  // Becomes: [ <ACTION> Player | Ground ] -> [ JUMP Player ]
+  const rightStateB = wordsToState(rightWordsB ? rightWordsB : leftWordsB, names);
 
   // Pay close attention to the flipping of A and B for certain variables.
   // collidingA is used as the colliding state for spriteB and vice-a-versa
   let collidingA = {};
-  for (const word of filterWordsB) {
-    collidingA[collisionFilterWordsToSide[word]] = [{...leftStateA}]
-  }
+  collidingA[directionToSide(direction)] = [{...leftStateA}]
 
   let collidingB = {};
-  for (const word of filterWordsA) {
-    collidingB[collisionFilterWordsToSide[word]] = [{...leftStateB}]
-  }
+  collidingB[getOpposite(directionToSide(direction))] = [{...leftStateB}]
 
   const pairA = [
     {...leftStateA, colliding: collidingB},

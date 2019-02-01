@@ -29,15 +29,15 @@ const keyMap = {
   'down': {sequence: 'down', action: 'keydown'},
   'left': {sequence: 'left', action: 'keydown'},
   'right': {sequence: 'right', action: 'keydown'},
-  'action1': {sequence: 'action1', action: 'keydown'},
-  'action2': {sequence: 'action2', action: 'keydown'},
+  'action1': {sequence: 'x', action: 'keydown'},
+  'action2': {sequence: 'z', action: 'keydown'},
 
   'cancel_up': {sequence: 'up', action: 'keyup'},
   'cancel_down': {sequence: 'down', action: 'keyup'},
   'cancel_left': {sequence: 'left', action: 'keyup'},
   'cancel_right': {sequence: 'right', action: 'keyup'},
-  'cancel_action1': {sequence: 'action1', action: 'keyup'},
-  'cancel_action2': {sequence: 'action2', action: 'keyup'},
+  'cancel_action1': {sequence: 'x', action: 'keyup'},
+  'cancel_action2': {sequence: 'z', action: 'keyup'},
 };
 
 const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGameActive)=> ({

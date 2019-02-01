@@ -11,7 +11,7 @@ const Code = ({code, onChange, onCompile})=> {
 
   return <div id="code">
     <textarea
-      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false"
       value={code}
       onChange={({target})=> onChange(target.value)}
     />

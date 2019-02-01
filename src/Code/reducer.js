@@ -3,12 +3,12 @@ const defaultState = {
 ##################
 #                #
 #                #
+#     P          #
 #                #
-#                #
-#     ?????      #
-#     ###?#      #
-#                #
-#  P          G  #
+#     #####      #
+#     ### #      #
+#######           #
+######        G  #
 ##################
 
 P = Player
@@ -23,6 +23,8 @@ R = GoombaRed
 <HORIZONTAL> [ Player ] -> [ HORIZONTAL Player ]
 
 [ Player | Goomba ] -> [ DEAD Player | Goomba ]
+
+UP [ <ACTION> Player | Brick ] -> [ JUMP Player ]
 `
 }
 

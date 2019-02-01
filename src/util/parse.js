@@ -83,21 +83,10 @@ export const parseSprites = (level, legend)=> {
   return sprites;
 };
 
-const getOpposite = (direction)=> {
-  const oppositeMappings = {
-    'COLLIDE_LEFT': 'COLLIDE_RIGHT',
-    'COLLIDE_RIGHT': 'COLLIDE_LEFT',
-    'COLLIDE_TOP': 'COLLIDE_BOTTOM',
-    'COLLIDE_BOTTOM': 'COLLIDE_TOP'
-  }
-
-  return oppositeMappings[direction];
-}
-
 const collisionExpandMappings = {
-  ALL: ['COLLIDE_LEFT', 'COLLIDE_RIGHT', 'COLLIDE_TOP', 'COLLIDE_BOTTOM'],
-  HORIZONTAL: ['COLLIDE_LEFT', 'COLLIDE_RIGHT'],
-  VERTICAL: ['COLLIDE_TOP', 'COLLIDE_BOTTOM']
+  ALL: ['LEFT', 'RIGHT', 'UP', 'DOWN'],
+  HORIZONTAL: ['LEFT', 'RIGHT'],
+  VERTICAL: ['UP', 'DOWN']
 }
 
 const regularExpandMappings = {
@@ -142,19 +131,14 @@ const expandCollisionRule = (line)=> {
   
   let appendedLine = line;
   if (firstWord === '') {
-    const [left, right] = line.split('->');
-    appendedLine = left.replace('[', 'ALL [') + '->' + right.replace('[', 'ALL [');
+    appendedLine = line.replace('[', 'ALL [');
   }
-  // const direction = firstWord === '[' ? 'ALL' : firstWord;
   
   for (const [key, directions] of Object.entries(collisionExpandMappings)) {
     if (appendedLine.includes(`${key} `)) {
       for (const direction of directions) {
-        // replaces the left and then replaces the right with the opposite
-        // leveraging the fact that replace only does one replace at a time
         const expanded = appendedLine
           .replace(`${key} `, `${direction} `)
-          .replace(`${key} `, `${getOpposite(direction)} `);
 
         expandedLines.push(expanded);
       }
