@@ -63,19 +63,6 @@ const getPointsForSide = (side, sprite)=> {
   }
 }
 
-const willOverlapPoint = (point, spriteA, spriteB)=> {
-  const {x, y} = point;
-  const {top, bottom, left, right} = getEdges(spriteB);
-  const isOverlappingWhenIncludingExtra = (
-    y > top - 1 &&
-    y < bottom + 1 &&
-    x > left - 1 &&
-    x < right + 1
-  );
-  
-  return isOverlapping;
-}
-
 const overlapsPoint = (point, spriteB, padding = 0)=> {
   const {x, y} = point;
   const {top, bottom, left, right} = getEdges(spriteB);
