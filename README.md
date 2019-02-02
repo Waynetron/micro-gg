@@ -5,11 +5,6 @@ Game script is a simple rules based language for making games
 
 ## Some ideas around how it *might* work
 
-Create things at the start by simply naming them
-Click on the name and you can edit the appearance in a little pixel editor to the side (haha, yeah right).
-
-```Player, Brick, QuestionBrick, SolidBrick, Spike, Goomba```
-
 Levels can be drawn with ascii
 ```
 #######################
@@ -20,7 +15,11 @@ Levels can be drawn with ascii
 #                     #
 #    P                #
 ###############^^^^####
+```
 
+Create things simply naming them in the legend
+Click on the name and you can edit the appearance in a little pixel editor to the side (haha, yeah right).
+```
 P = Player
 ? = QuestionBrick
 B = Brick
