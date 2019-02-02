@@ -148,17 +148,6 @@ const expandCollisionRule = (line)=> {
   return expandedLines.length > 0 ? expandedLines : [line]
 }
 
-// When rules having a matching left state, then keep only the last rule
-const removeDuplicateRules = (lines)=> {
-  const unique = {};
-  for (const line of lines) {
-    const [left, right] = line.split('->');
-    unique[left] = line;
-  }
-
-  return Object.values(unique);
-}
-
 export const parseRules = (code)=> {
   const regularRules = code.split('\n').filter(isRule);  
   const expandedRegularRules = flatten(
