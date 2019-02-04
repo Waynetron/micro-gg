@@ -120,10 +120,10 @@ export const collisionRuleToStateTransitions = (ruleString, names)=> {
   // Pay close attention to the flipping of A and B for certain variables.
   // collidingA is used as the colliding state for spriteB and vice-a-versa
   let collidingA = {};
-  collidingA[directionToSide(direction)] = [{...leftStateA}]
+  collidingA[getOpposite(directionToSide(direction))] = [{...leftStateA}]
 
   let collidingB = {};
-  collidingB[getOpposite(directionToSide(direction))] = [{...leftStateB}]
+  collidingB[directionToSide(direction)] = [{...leftStateB}]
 
   const pairA = [
     {...leftStateA, colliding: collidingB},
