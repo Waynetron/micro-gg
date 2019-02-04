@@ -19,7 +19,7 @@ const states = {
   SLOW_DOWN: {acceleration: {y: 0.5}},
   SLOW_LEFT: {acceleration: {x: -0.5}},
   SLOW_RIGHT: {acceleration: {x: 0.5}},
-  JUMP: {velocity: {y: -250}},
+  JUMP: {velocity: {y: -150}},
   DEAD: {dead: true},
   STATIC: {static: true}
 };
