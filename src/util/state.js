@@ -72,7 +72,6 @@ const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
     console.error('Expecting there to always be a state here');
   }
 
-  console.log(collidesWith);
   let state = [{
     ...collidesWith
   }];
@@ -107,8 +106,8 @@ const collisionDirectionToParseDirections = {
 
 const getColliding = (direction, leftStates, leftIndex)=> {
   // direction refers to the direction the collision rule is applied in.
-  // getCollidingForSide('left', 'forward' ... refers to searching for the colliding state for
-  // the left side by traversing the ruleString to the right (forward)
+  // getCollidingForSide('bottom', 'forward' ... refers to searching for the colliding state for
+  // the bottom side by traversing the ruleString to the right (forward)
   let colliding = {};
   const frontSide = directionToSide(direction);
   const backSide = getOpposite(frontSide);
@@ -123,8 +122,6 @@ const getColliding = (direction, leftStates, leftIndex)=> {
     colliding[frontSide] = frontColliding;
   }
 
-  console.log(colliding, direction, leftStates, leftIndex);
-
   if (frontColliding || backColliding) {
     return colliding; 
   }
@@ -134,7 +131,6 @@ const getColliding = (direction, leftStates, leftIndex)=> {
 }
 
 /*
-
 Starts withObject.keys( ).length > 0 ? colliding : undefined;
   [ UP Player | Spike ] -> [ DEAD Player | Spike ]
 Breaks up into 2 rules
@@ -233,10 +229,19 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
     leftIndex += 1;
   }
 
-  const leftStatesWithColliding = leftStates.map((state, index)=> ({
-    ...state,
-    colliding: getColliding(direction, leftStates, index),
-  }));
+  const leftStatesWithColliding = leftStates.map((state, index)=> {
+    const colliding = getColliding(direction, leftStates, index);
+
+    if (colliding) {
+      return {
+        ...state,
+        colliding: getColliding(direction, leftStates, index),
+      }
+    }
+    else {
+      return state;
+    }
+  });
 
   // Right
   // The right state is any changes to the left state. And includes the creation
@@ -256,7 +261,7 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
       // Eg: the fireball in this rule: [ <ACTION> Mario ] -> [ Mario | Fireball ]
       state = {
         // ...newState(word, direction, leftBefore, leftBeforeIndex, rightIndex),
-        createNew: true, // indicates to applyStateMutation not to merge this but create new state
+        createNew: true, // indicates to applyStateMutations not to merge this but create new state
         position: {x: 0, y: 0},
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
@@ -387,7 +392,11 @@ const mergeCustomizer = (objValue, srcValue)=> {
   }
 }
 
-export const applyStateMutation = (sprite, mutations)=> {
+export const applyStateMutations = (sprite, mutations)=> {
+  if (mutations.length === 0) {
+    return sprite;
+  }
+  
   let resultState = {...sprite};
 
   for (const mutation of mutations) {

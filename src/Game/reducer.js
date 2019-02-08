@@ -1,7 +1,7 @@
 import {flatten} from 'lodash-es';
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   getLevelDimensions} from '../util/parse.js';
-import {ruleToStateMutation, collisionRuleToStateMutations, applyStateMutation,
+import {ruleToStateMutation, collisionRuleToStateMutations, applyStateMutations,
   isAlive, isCreateNewState, getNewStateToAdd, addNewState} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
@@ -101,8 +101,8 @@ const gameReducer = (state = defaultState, action) => {
                 sprite, state.sprites, state.width, state.height
               )))
               |> ((sprites)=> sprites.map(storePreviousPosition))
-              |> ((sprites)=> sprites.map((sprite)=> applyStateMutation(sprite, state.stateMutations)))
-              |> ((sprites)=> sprites.map((sprite)=> applyStateMutation(sprite, state.collisionStateMutationsModify)))
+              |> ((sprites)=> sprites.map((sprite)=> applyStateMutations(sprite, state.stateMutations)))
+              |> ((sprites)=> sprites.map((sprite)=> applyStateMutations(sprite, state.collisionStateMutationsModify)))
               |> ((sprites)=> sprites.map(applyFriction))
               |> ((sprites)=> sprites.map(applyAcceleration))
               |> ((sprites)=> sprites.map(applyVelocity))
