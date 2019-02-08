@@ -39,25 +39,103 @@ const getOpposite = (direction)=> {
     'left': 'right',
     'right': 'left',
     'top': 'bottom',
-    'bottom': 'top'
+    'bottom': 'top',
+    'up': 'down',
+    'down': 'up',
+    'forward': 'backward'
   }
 
   return oppositeMappings[direction];
 }
 
 const directionToSide = (direction)=> {
-  const oppositeMappings = {
+  const mappings = {
     'left': 'left',
     'right': 'right',
     'down': 'bottom',
     'up': 'top'
   }
 
-  return oppositeMappings[direction];
+  return mappings[direction];
+}
+
+// Recursively finds the colliding state
+const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
+  const nextIndex = traverseDirection === 'forward' ? currentIndex + 1 : currentIndex - 1;
+  // outside range
+  if (nextIndex < 0 || nextIndex === states.length) {
+    return;
+  }
+
+  const collidesWith = states[nextIndex];
+  if (!collidesWith) {
+    console.error('Expecting there to always be a state here');
+  }
+
+  console.log(collidesWith);
+  let state = [{
+    ...collidesWith
+  }];
+
+  const nextColliding = getCollidingForSide(side, traverseDirection, states, nextIndex);
+  if (nextColliding) {
+    state.colliding = {
+      [side]: nextColliding
+    }  
+  }
+
+  return state;
+}
+
+const isHorizontal = (direction)=>
+  direction === 'left' || direction === 'right';
+
+// Should return something like
+// {
+//    up: [],
+//    down: [],
+//    left: [],
+//    right: []
+// }
+
+const collisionDirectionToParseDirections = {
+  right: 'forward',
+  left: 'backward',
+  up: 'forward',
+  down: 'backward'
+}
+
+const getColliding = (direction, leftStates, leftIndex)=> {
+  // direction refers to the direction the collision rule is applied in.
+  // getCollidingForSide('left', 'forward' ... refers to searching for the colliding state for
+  // the left side by traversing the ruleString to the right (forward)
+  let colliding = {};
+  const frontSide = directionToSide(direction);
+  const backSide = getOpposite(frontSide);
+  const frontColliding = getCollidingForSide(frontSide, 'forward', leftStates, leftIndex);
+  const backColliding = getCollidingForSide(backSide, 'backward', leftStates, leftIndex);
+
+  if (backColliding) {
+    colliding[backSide] = backColliding;
+  }
+
+  if (frontColliding) {
+    colliding[frontSide] = frontColliding;
+  }
+
+  console.log(colliding, direction, leftStates, leftIndex);
+
+  if (frontColliding || backColliding) {
+    return colliding; 
+  }
+  else {
+    return;
+  }
 }
 
 /*
-Starts with 
+
+Starts withObject.keys( ).length > 0 ? colliding : undefined;
   [ UP Player | Spike ] -> [ DEAD Player | Spike ]
 Breaks up into 2 rules
   [ UP Player] -> [ DEAD Player]
@@ -94,8 +172,6 @@ Evaluate both rules into a pair of state transitions
 ]
 */
 export const collisionRuleToStateTransitions = (ruleString, names)=> {
-  // const [firstWord, ...rest] = ruleString.split('[');
-
   // Get collision direction (first word at the start of the line)
   const [firstWord] = ruleString.match(/^([A-Z]+)\b/);
   const direction = firstWord.toLowerCase();
@@ -104,37 +180,129 @@ export const collisionRuleToStateTransitions = (ruleString, names)=> {
   const [left, right] = ruleString.split('->');
   const [leftGroup] = left.match(/\[.+?\]/);
   const [rightGroup] = right.match(/\[.+?\]/);
+
+  // leftWords and rightWords can each be arbirary lengths
+  // Consider the left side could be a collision involving 3 parties but on the right side
+  // we only care about the first of those parties.
+  // [ Player | Goomba | Player2 ] -> [ | DEAD Goomba | ]
+
+  // Also consider the left side may involve no collisions, but the right side might
+  // as is the case of mario throwing a fireball
+  // HORIZONTAL [ <ACTION> Mario] -> [ Mario | HORIZONTAL Fireball ]
+  // HORIZONTAL [ <ACTION> Mario] -> [ Mario + HORIZONTAL Fireball ]
   
-  const [leftWordsA, leftWordsB] = leftGroup.split('|') |> separateWords;
-  const [rightWordsA, rightWordsB] = rightGroup.split('|') |> separateWords;
+  // const min = Math.min(left.length, right.length);
+  // const max = Math.max(left.length, right.length);
 
-  const leftStateA = wordsToState(leftWordsA, names);
-  const leftStateB = wordsToState(leftWordsB, names);
-  const rightStateA = wordsToState(rightWordsA, names);
+  // // Deal with the simple matches first
+  // for (let i = 0; i < min; i++) {
 
-  // User may omit the r  ightWordsB. In which case populate it with leftWords B
-  // Eg: [ <ACTION> Player | Ground ] -> [ JUMP Player ]
-  // Becomes: [ <ACTION> Player | Ground ] -> [ JUMP Player ]
-  const rightStateB = wordsToState(rightWordsB ? rightWordsB : leftWordsB, names);
+  // }
 
-  // Pay close attention to the flipping of A and B for certain variables.
-  // collidingA is used as the colliding state for spriteB and vice-a-versa
-  let collidingA = {};
-  collidingA[getOpposite(directionToSide(direction))] = [{...leftStateA}]
+  // // These are the extras, the ones that don't have a match on the opposite side
+  // for (let i = min; i < max; i++) {
+  //   // If they exist on the left, but not the right. Then it is assumed the sprite is to remain as it was
+  //   if (left.length > right.length) {
+  //     const oldWords = left[i];
+  //   }
+  //   // But if they exist on the right, but not the left. Then these are new sprites to be spawned.
+  //   else {
+  //     const newWords = right[i];
+  //   }
+  // }
 
-  let collidingB = {};
-  collidingB[directionToSide(direction)] = [{...leftStateB}]
+  // <-------- leftWordArrays----->    <--- rightWordArrays -->
+  // <---words--> < ----words----->    <-words-> <---words---->
+  // [ UP Player | Goomba | Brick ] -> [ Player | DEAD Goomba ]
+  const leftWordArrays = leftGroup.split('|') |> separateWords;
+  const rightWordArrays = rightGroup.split('|') |> separateWords;
 
-  const pairA = [
-    {...leftStateA, colliding: collidingB},
-    rightStateA
-  ];
-  const pairB = [
-    {...leftStateB, colliding: {...collidingA}},
-    rightStateB
-  ];
+  let leftStates = [];
+  let rightStates = [];
 
-  return [pairA, pairB];
+  // Left
+  // The left side is what the rule is looking to match.
+  // The colliding state should recursively nest colliding states if the rule has multiple collisions
+  let leftIndex = 0;
+  for (const words of leftWordArrays) {
+    const state = {
+      ...wordsToState(words, names)
+    }
+
+    leftStates.push(state);
+    leftIndex += 1;
+  }
+
+  const leftStatesWithColliding = leftStates.map((state, index)=> ({
+    ...state,
+    colliding: getColliding(direction, leftStates, index),
+  }));
+
+  // Right
+  // The right state is any changes to the left state. And includes the creation
+  // of completely new state.
+  let rightIndex = 0;
+  for (const words of rightWordArrays) {
+    const matchingLeft = leftWordArrays[rightIndex];
+    let state;
+    if (matchingLeft) {
+      // If there's a matching left state, then this state is a mutation of that
+      // state. It may be a small change like adding DEAD to a Player.
+      // Eg: [ Mario | Goomba ] -> [ DEAD Mario | Goomba ]
+      state = wordsToState(words, names);
+    }
+    else {
+      // If there is no matching let state, then this is a completely new state.
+      // Eg: the fireball in this rule: [ <ACTION> Mario ] -> [ Mario | Fireball ]
+      state = {
+        // ...newState(word, direction, leftBefore, leftBeforeIndex, rightIndex),
+        createNew: true, // indicates to applyStateTransition not to merge this but create new state
+        position: {x: 0, y: 0},
+        ...wordsToState(words, names)
+        // I don't think the right side needs the colliding state calculated
+      }
+
+      // Duplicate the leftmost match state as the match for this new state
+      leftStates.push({...leftStates[0]});
+    }
+
+    rightStates.push(state);
+    rightIndex += 1;
+  }
+
+  // State pairs to state transitions
+  return leftStatesWithColliding.map((leftState, index)=> [leftState, rightStates[index]]);
+
+  // const leftStateA = wordsToState(leftWordsA, names);
+  // const leftStateB = leftWordsB
+  //   ? wordsToState(leftWordsB, names)
+  //   : newSprite()
+    
+  // const rightStateA = wordsToState(rightWordsA, names);
+
+  // // User may omit rightWordsB. In which case populate it with leftWordsB
+  // // Eg: [ <ACTION> Player | Ground ] -> [ JUMP Player ]
+  // // Becomes: [ <ACTION> Player | Ground ] -> [ JUMP Player ]
+  // const rightStateB = wordsToState(rightWordsB ? rightWordsB : leftWordsB, names);
+
+  // // Pay close attention to the flipping of A and B for certain variables.
+  // // collidingA is used as the colliding state for spriteB and vice-a-versa
+  // let collidingA = {};
+  // collidingA[getOpposite(directionToSide(direction))] = [{...leftStateA}]
+
+  // let collidingB = {};
+  // collidingB[directionToSide(direction)] = [{...leftStateB}]
+
+  // const pairA = [
+  //   {...leftStateA, colliding: collidingB},
+  //   rightStateA
+  // ];
+  // const pairB = [
+  //   {...leftStateB, colliding: {...collidingA}},
+  //   rightStateB
+  // ];
+
+  // return [pairA, pairB];
 }
 
 const wordsToState = (words, names)=> {
@@ -189,6 +357,29 @@ export const ruleToStateTransition = (ruleString, names)=> {
   return [leftState, rightState];
 }
 
+export const getNewStateToAdd = (sprites, transitions)=> {
+  const newState = [];
+
+  for (const sprite of sprites) {
+    for (const transition of transitions) {
+      const [left, right] = transition;
+
+      if (matches(left)(sprite)) {
+        newState.push(right);
+      }
+    }
+  }
+
+  return newState;
+}
+
+export const addNewState = (sprites, newState)=> {
+  return [
+    ...sprites,
+    ...newState
+  ]
+}
+
 // custom merge rules
 const mergeCustomizer = (objValue, srcValue)=> {
   if (isNumber(objValue)) {
@@ -211,3 +402,7 @@ export const applyStateTransition = (sprite, transitions)=> {
 };
 
 export const isAlive = (sprite)=> !sprite.dead;
+export const isCreateNewState = (stateTransition)=> {
+  const [left, right] = stateTransition;
+  return right.createNew;
+};

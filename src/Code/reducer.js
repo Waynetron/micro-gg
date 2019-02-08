@@ -3,12 +3,12 @@ const defaultState = {
 ##################
 #                #
 #                #
-#     P          #
 #                #
-#     #####      #
-#     ### #      #
-#######           #
-######        G  #
+#                #
+#                #
+#                #
+#    P           #
+#             G  #
 ##################
 
 P = Player
@@ -18,13 +18,13 @@ G = Goomba
 R = GoombaRed
 ^ = Spike
 
+[ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]
+[ <UP> Player | Wall ] -> [ JUMP Player | Wall ]
 [ Player ] -> [ DOWN Player ]
+[ Goomba ] -> [ DOWN Goomba ]
 
-<HORIZONTAL> [ Player ] -> [ HORIZONTAL Player ]
-
-[ Player | Goomba ] -> [ DEAD Player | Goomba ]
-
-UP [ <ACTION> Player | Brick ] -> [ JUMP Player ]
+HORIZONTAL [ Player | Goomba ] -> [ DEAD Player | Goomba ]
+DOWN [ Player | Goomba ] -> [ Player | DEAD Goomba ]
 `
 }
 

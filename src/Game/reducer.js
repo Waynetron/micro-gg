@@ -2,7 +2,7 @@ import {flatten} from 'lodash-es';
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   getLevelDimensions} from '../util/parse.js';
 import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransition,
-  isAlive} from '../util/state.js'
+  isAlive, isCreateNewState, getNewStateToAdd, addNewState} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
   applyWallCollisions, resetColliding
@@ -67,6 +67,12 @@ const gameReducer = (state = defaultState, action) => {
         (rule)=> collisionRuleToStateTransitions(rule, names)
       );
       const collisionStateTransitions = flatten(collisionStateTransitionPairs);
+      
+      // separate the collisionStateTransitions into 2 groups: 
+        // those that will spawn new state
+        // and those that will modify existing state
+      const collisionStateTransitionsCreate = collisionStateTransitions.filter(isCreateNewState);
+      const collisionStateTransitionsModify = collisionStateTransitions.filter((e)=> !isCreateNewState(e));
 
       const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
@@ -76,22 +82,27 @@ const gameReducer = (state = defaultState, action) => {
         legend,
         names,
         rules: [...rules, ...collisionRules],
-        stateTransitions: [...stateTransitions, ...collisionStateTransitions],
+        stateTransitions,
+        collisionStateTransitionsCreate,
+        collisionStateTransitionsModify,
         width: width_in_tiles * TILE_SIZE,
         height: height_in_tiles * TILE_SIZE
       }
 
     case 'UPDATE':
       const previousState = {...state};
+      const stateToAdd = getNewStateToAdd(state.sprites, state.collisionStateTransitionsCreate);
       return {
           ...state,
           sprites: state.sprites.filter(isAlive)
+              |> ((sprites)=> addNewState(sprites, stateToAdd))
               |> ((sprites)=> sprites.map(resetColliding))
               |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(
                 sprite, state.sprites, state.width, state.height
               )))
               |> ((sprites)=> sprites.map(storePreviousPosition))
               |> ((sprites)=> sprites.map((sprite)=> applyStateTransition(sprite, state.stateTransitions)))
+              |> ((sprites)=> sprites.map((sprite)=> applyStateTransition(sprite, state.collisionStateTransitionsModify)))
               |> ((sprites)=> sprites.map(applyFriction))
               |> ((sprites)=> sprites.map(applyAcceleration))
               |> ((sprites)=> sprites.map(applyVelocity))
