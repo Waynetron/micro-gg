@@ -140,7 +140,7 @@ Starts withObject.keys( ).length > 0 ? colliding : undefined;
 Breaks up into 2 rules
   [ UP Player] -> [ DEAD Player]
   [ Spike ] -> [ Spike ]
-Evaluate both rules into a pair of state transitions
+Evaluate both rules into a pair of state mutations
 [
   {name: "Player", acceleration: {x: 1, y: 0}},
   {name: "Player", dead: true}
@@ -149,7 +149,7 @@ Evaluate both rules into a pair of state transitions
   {name: "Spike"},
   {name: "Spike"}
 ]
-// Finally adds a colliding property to the left side each state transition
+// Finally adds a colliding property to the left side each state mutation
 [
   {
     name: "Player", acceleration: {x: 1, y: 0},
@@ -171,7 +171,7 @@ Evaluate both rules into a pair of state transitions
   {name: "Spike"}
 ]
 */
-export const collisionRuleToStateTransitions = (ruleString, names)=> {
+export const collisionRuleToStateMutations = (ruleString, names)=> {
   // Get collision direction (first word at the start of the line)
   const [firstWord] = ruleString.match(/^([A-Z]+)\b/);
   const direction = firstWord.toLowerCase();
@@ -256,7 +256,7 @@ export const collisionRuleToStateTransitions = (ruleString, names)=> {
       // Eg: the fireball in this rule: [ <ACTION> Mario ] -> [ Mario | Fireball ]
       state = {
         // ...newState(word, direction, leftBefore, leftBeforeIndex, rightIndex),
-        createNew: true, // indicates to applyStateTransition not to merge this but create new state
+        createNew: true, // indicates to applyStateMutation not to merge this but create new state
         position: {x: 0, y: 0},
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
@@ -270,7 +270,7 @@ export const collisionRuleToStateTransitions = (ruleString, names)=> {
     rightIndex += 1;
   }
 
-  // State pairs to state transitions
+  // State pairs to state mutations
   return leftStatesWithColliding.map((leftState, index)=> [leftState, rightStates[index]]);
 
   // const leftStateA = wordsToState(leftWordsA, names);
@@ -344,7 +344,7 @@ const wordsToState = (words, names)=> {
   return resultState;
 };
 
-export const ruleToStateTransition = (ruleString, names)=> {
+export const ruleToStateMutation = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
   // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
@@ -357,12 +357,12 @@ export const ruleToStateTransition = (ruleString, names)=> {
   return [leftState, rightState];
 }
 
-export const getNewStateToAdd = (sprites, transitions)=> {
+export const getNewStateToAdd = (sprites, mutations)=> {
   const newState = [];
 
   for (const sprite of sprites) {
-    for (const transition of transitions) {
-      const [left, right] = transition;
+    for (const mutation of mutations) {
+      const [left, right] = mutation;
 
       if (matches(left)(sprite)) {
         newState.push(right);
@@ -387,11 +387,11 @@ const mergeCustomizer = (objValue, srcValue)=> {
   }
 }
 
-export const applyStateTransition = (sprite, transitions)=> {
+export const applyStateMutation = (sprite, mutations)=> {
   let resultState = {...sprite};
 
-  for (const transition of transitions) {
-    const [left, right] = transition;
+  for (const mutation of mutations) {
+    const [left, right] = mutation;
 
     if (matches(left)(sprite)) {
       resultState = mergeWith(resultState, right, mergeCustomizer)
@@ -402,7 +402,7 @@ export const applyStateTransition = (sprite, transitions)=> {
 };
 
 export const isAlive = (sprite)=> !sprite.dead;
-export const isCreateNewState = (stateTransition)=> {
-  const [left, right] = stateTransition;
+export const isCreateNewState = (stateMutation)=> {
+  const [left, right] = stateMutation;
   return right.createNew;
 };
