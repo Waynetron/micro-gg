@@ -20,6 +20,7 @@ R = GoombaRed
 
 [ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]
 [ <UP> Player | Wall ] -> [ JUMP Player | Wall ]
+[ <ACTION> Player | Wall ] -> [ JUMP Player | Wall ]
 [ Player ] -> [ DOWN Player ]
 [ Goomba ] -> [ DOWN Goomba ]
 

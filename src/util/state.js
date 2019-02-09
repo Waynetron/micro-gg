@@ -1,5 +1,22 @@
+import uniqid from 'uniqid';
 import {matches, mergeWith, merge, isNumber} from 'lodash-es';
+import {MAX_VELOCITY} from '../Game/constants.js';
 
+export const createNewSprite = (name, x, y)=> ({
+  name: name,
+  position: {x, y},
+  velocity: {x: 0, y: 0},
+  maxVelocity: {x: MAX_VELOCITY, y: MAX_VELOCITY},
+  acceleration: {x: 0, y: 0},
+  colliding: {
+    top: [],
+    bottom: [],
+    left: [],
+    right: []
+  },
+  static: false,
+  inputs: {}
+});
 const trimBrackets = (string)=> string.replace('[', '').replace(']', '')
 const separateWords = (leftAndRightString)=> (
   leftAndRightString.map((string)=>
@@ -259,16 +276,16 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
     else {
       // If there is no matching let state, then this is a completely new state.
       // Eg: the fireball in this rule: [ <ACTION> Mario ] -> [ Mario | Fireball ]
+      const newSprite = createNewSprite('TEMP_NAME', 0, 0);
       state = {
-        // ...newState(word, direction, leftBefore, leftBeforeIndex, rightIndex),
+        ...newSprite,
         createNew: true, // indicates to applyStateMutations not to merge this but create new state
-        position: {x: 0, y: 0},
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
       }
 
       // Duplicate the leftmost match state as the match for this new state
-      leftStates.push({...leftStates[0]});
+      leftStatesWithColliding.push({...leftStates[0]});
     }
 
     rightStates.push(state);
@@ -370,7 +387,11 @@ export const getNewStateToAdd = (sprites, mutations)=> {
       const [left, right] = mutation;
 
       if (matches(left)(sprite)) {
-        newState.push(right);
+        // Add new sprite + give it a unique ID
+        newState.push({
+          id: uniqid(),
+          ...right
+        });
       }
     }
   }

@@ -1,6 +1,7 @@
-import uniqid from 'uniqid';
+import {createNewSprite} from './state.js';
 import {flatten} from 'lodash-es';
-import {TILE_SIZE, MAX_VELOCITY} from '../Game/constants.js'
+import {TILE_SIZE, MAX_VELOCITY} from '../Game/constants.js';
+import uniqid from 'uniqid';
 
 const isCollisionRule = (line)=> line.includes('|');
 const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
@@ -58,25 +59,14 @@ export const parseSprites = (level, legend)=> {
   level.map((line, row)=> line.split('').forEach((char, col)=> {
     const getName = legend[char];
     if (getName && getName() !== 'Empty') {
-      sprites.push({
-        name: getName(),
-        id: uniqid(),
-        position: {
-          x: col * TILE_SIZE,
-          y: row * TILE_SIZE
-        },
-        velocity: {x: 0, y: 0},
-        maxVelocity: {x: MAX_VELOCITY, y: MAX_VELOCITY},
-        acceleration: {x: 0, y: 0},
-        colliding: {
-          top: [],
-          bottom: [],
-          left: [],
-          right: []
-        },
-        static: false,
-        inputs: {}
-      });
+      const x = col * TILE_SIZE;
+      const y = row * TILE_SIZE;
+      sprites.push(
+        {
+          id: uniqid(),
+          ...createNewSprite(getName(), x, y)
+        }
+      );
     }
   }));
 
