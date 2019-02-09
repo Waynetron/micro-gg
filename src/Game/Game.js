@@ -2,9 +2,10 @@ import React from 'react';
 import Sprite from './Sprite.js';
 import {connect} from 'react-redux'
 
-const Game = ({sprites, rules, width, height, debug})=> (
+const Game = ({sprites, rules, width, height, error, debug})=> (
   <div id="game">
     <div className='stage' style={{width, height}}>
+      {error && <p className='error' >{error}</p>}
       {sprites.map((sprite)=>
         <Sprite
           key={sprite.id}
@@ -20,12 +21,13 @@ const Game = ({sprites, rules, width, height, debug})=> (
 )
 
 const mapStateToProps = ({game})=> {
-  const {sprites, rules, width, height, debug} = game;
+  const {sprites, rules, width, height, debug, error} = game;
   return {
     sprites,
     rules,
     width,
     height,
+    error,
     debug
   }
 }

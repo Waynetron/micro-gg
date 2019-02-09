@@ -45,48 +45,57 @@ const gameReducer = (state = defaultState, action) => {
       return {...state, debug: !state.debug}
 
     case 'COMPILE':
-      const code = removeComments(action.code);
-      const level = parseLevel(code);
-      const legend = parseLegend(code);
-      const sprites = parseSprites(level, legend);
+      try {
+        const code = removeComments(action.code);
+        const level = parseLevel(code);
+        const legend = parseLegend(code);
+        const sprites = parseSprites(level, legend);
 
-      // Names is the legend mapped to have the values as keys. Used for fast name lookup.
-      // this used to use the legend before the random features were added.
-      // For this to work though, names needs to include all possible names, including those that might not be rendered onto
-      // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
-      // not also appear in the legend.
-      // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-      const names = arrayToObject(parseNames(code));
-      
-      // A rule consists of a before and an after state referred to as a state mutation
-      const [rules, collisionRules] = parseRules(code);
-      const stateMutations = rules.map((rule)=> ruleToStateMutation(rule, names)); // [leftState, rightState]
+        // Names is the legend mapped to have the values as keys. Used for fast name lookup.
+        // this used to use the legend before the random features were added.
+        // For this to work though, names needs to include all possible names, including those that might not be rendered onto
+        // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
+        // not also appear in the legend.
+        // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
+        const names = arrayToObject(parseNames(code));
+        
+        // A rule consists of a before and an after state referred to as a state mutation
+        const [rules, collisionRules] = parseRules(code);
+        const stateMutations = rules.map((rule)=> ruleToStateMutation(rule, names)); // [leftState, rightState]
 
-      // collisionRules are a bit more complicated
-      const collisionStateMutationPairs = collisionRules.map(
-        (rule)=> collisionRuleToStateMutations(rule, names)
-      );
-      const collisionStateMutations = flatten(collisionStateMutationPairs);
-      
-      // separate the collisionStateMutations into 2 groups: 
-        // those that will spawn new state
-        // and those that will modify existing state
-      const collisionStateMutationsCreate = collisionStateMutations.filter(isCreateNewState);
-      const collisionStateMutationsModify = collisionStateMutations.filter((e)=> !isCreateNewState(e));
+        // collisionRules are a bit more complicated
+        const collisionStateMutationPairs = collisionRules.map(
+          (rule)=> collisionRuleToStateMutations(rule, names)
+        );
+        const collisionStateMutations = flatten(collisionStateMutationPairs);
+        
+        // separate the collisionStateMutations into 2 groups: 
+          // those that will spawn new state
+          // and those that will modify existing state
+        const collisionStateMutationsCreate = collisionStateMutations.filter(isCreateNewState);
+        const collisionStateMutationsModify = collisionStateMutations.filter((e)=> !isCreateNewState(e));
 
-      const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
+        const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
-      return {
-        ...defaultState,
-        sprites,
-        legend,
-        names,
-        rules: [...rules, ...collisionRules],
-        stateMutations,
-        collisionStateMutationsCreate,
-        collisionStateMutationsModify,
-        width: width_in_tiles * TILE_SIZE,
-        height: height_in_tiles * TILE_SIZE
+        return {
+          ...defaultState,
+          sprites,
+          legend,
+          names,
+          rules: [...rules, ...collisionRules],
+          stateMutations,
+          collisionStateMutationsCreate,
+          collisionStateMutationsModify,
+          width: width_in_tiles * TILE_SIZE,
+          height: height_in_tiles * TILE_SIZE
+        }
+      }
+      catch(err) {
+        console.error(err);
+        return {
+          ...defaultState,
+          error: 'Compilation error 😞'
+        }
       }
 
     case 'UPDATE':

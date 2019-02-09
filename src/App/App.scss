@@ -112,6 +112,11 @@ header button.secondary {
   overflow: hidden;
 }
 
+.error {
+  color: red;
+  padding: 2rem;
+}
+
 #code textarea {
   background-color: var(--dark-color);
   border: none;
