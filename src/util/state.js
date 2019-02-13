@@ -1,6 +1,6 @@
 import uniqid from 'uniqid';
 import {matches, mergeWith, merge, isNumber} from 'lodash-es';
-import {MAX_VELOCITY} from '../Game/constants.js';
+import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 
 export const createNewSprite = (name, x, y)=> ({
   name: name,
@@ -279,7 +279,7 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
       const newSprite = createNewSprite('TEMP_NAME', 0, 0);
       state = {
         ...newSprite,
-        createNew: true, // indicates to applyStateMutations not to merge this but create new state
+        createNew: {direction}, // indicates to applyStateMutations not to merge this but create new state
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
       }
@@ -379,6 +379,22 @@ export const ruleToStateMutation = (ruleString, names)=> {
   return [leftState, rightState];
 }
 
+const addVectors = (vectorA, vectorB)=> ({
+  x: vectorA.x + vectorB.x,
+  y: vectorA.y + vectorB.y
+});
+
+const getDirectionOffset = (direction)=> {
+  const directionOffsetsMap = {
+    up: {x: 0, y: -TILE_SIZE},
+    down: {x: 0, y: TILE_SIZE},
+    left: {x: -TILE_SIZE, y: 0},
+    right: {x: TILE_SIZE, y: 0}
+  }
+
+  return directionOffsetsMap[direction];
+}
+
 export const getNewStateToAdd = (sprites, mutations)=> {
   const newState = [];
 
@@ -389,8 +405,10 @@ export const getNewStateToAdd = (sprites, mutations)=> {
       if (matches(left)(sprite)) {
         // Add new sprite + give it a unique ID
         newState.push({
+          ...right,
           id: uniqid(),
-          ...right
+          position: addVectors(sprite.position, getDirectionOffset(right.createNew.direction)),
+          createNew: undefined
         });
       }
     }
@@ -434,5 +452,5 @@ export const applyStateMutations = (sprite, mutations)=> {
 export const isAlive = (sprite)=> !sprite.dead;
 export const isCreateNewState = (stateMutation)=> {
   const [left, right] = stateMutation;
-  return right.createNew;
+  return right.createNew !== undefined;
 };
