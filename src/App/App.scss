@@ -23,7 +23,8 @@ div[tabindex="-1"]:focus {
 
 .main {
   display: flex;
-  height: 100%;
+  min-height: 100%;
+  background-color: var(--primary-color);
 }
 
 .left, .right {
@@ -34,10 +35,6 @@ div[tabindex="-1"]:focus {
 .left {
   flex-grow: 1;
   background-color: var(--dark-color);
-}
-
-.right {
-  background-color: var(--primary-color);
 }
 
 @media only screen and (max-width: 900px) {
@@ -99,11 +96,12 @@ header button.secondary {
   color: var(--dark-color);
 }
 
-#code, #game {
+.code, #game {
   display: flex;
+  flex-direction: column;
 }
 
-#code {
+.code {
   flex-grow: 1;
 }
 
@@ -117,19 +115,12 @@ header button.secondary {
   padding: 2rem;
 }
 
-#code textarea {
+.code {
   background-color: var(--dark-color);
-  border: none;
-  line-height: 1.1rem;
   font-size: 1.0rem;
   font-family: 'Fira Code';
   padding: 1rem;
-  width: 100%;
   color: var(--primary-color);
-
-  &:focus {
-    outline: 0;
-  }
 }
 
 #game {

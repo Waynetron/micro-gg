@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "immutable": "^4.0.0-rc.12",
     "lodash-es": "^4.17.11",
     "node-sass": "^4.11.0",
     "react": "^16.7.0-alpha.0",
@@ -13,6 +14,8 @@
     "react-scripts": "2.1.1",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
+    "slate": "^0.44.10",
+    "slate-react": "^0.21.16",
     "uniqid": "^5.0.3"
   },
   "scripts": {

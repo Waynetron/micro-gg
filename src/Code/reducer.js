@@ -1,5 +1,7 @@
-const defaultState = {
-  code: `
+import {Value} from 'slate';
+import Plain from 'slate-plain-serializer';
+
+const initialCode = `
 ##################
 #                #
 #                #
@@ -26,13 +28,19 @@ R = GoombaRed
 
 HORIZONTAL [ Player | Goomba ] -> [ DEAD Player | Goomba ]
 DOWN [ Player | Goomba ] -> [ Player | DEAD Goomba ]
-`
+`;
+
+const defaultState = {
+  code: initialCode,
+  slateValue: Plain.deserialize(initialCode)
 }
 
-const gameReducer = (state = defaultState, {type, code}) => {
-  switch (type) {
+const gameReducer = (state = defaultState, action) => {
+  switch (action.type) {
     case 'UPDATE_CODE':
-      return {...state, code}
+      return {...state, code: action.code}
+    case 'UPDATE_SLATE_VALUE':
+      return {...state, slateValue: action.slateValue}
     default:
       return state
   }

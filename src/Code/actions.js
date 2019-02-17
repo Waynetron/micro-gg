@@ -4,6 +4,11 @@ export const updateCode = (code)=> ({
   code
 })
 
+export const updateSlateValue = (slateValue)=> ({
+  type: 'UPDATE_SLATE_VALUE',
+  slateValue
+})
+
 export const compile = (code)=> ({
   type: 'COMPILE',
   code
