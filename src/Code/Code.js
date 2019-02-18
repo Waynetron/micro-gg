@@ -1,36 +1,43 @@
 import React, {useEffect} from 'react';
 import {updateCode, updateSlateValue, compile} from './actions.js';
 import {connect} from 'react-redux';
+import uniqid from 'uniqid';
 import {Editor} from 'slate-react';
 import Plain from 'slate-plain-serializer';
+import Tooltip from '@material-ui/core/Tooltip';
+import Game from '../Game/Game.js';
+import {parseLegend} from '../util/parse.js';
+import {createNewSprite} from '../util/state.js';
 
 const renderNode = (props, editor, next)=> {
   const { attributes, children, node } = props
 
-  console.log(node);
+  if (node.text.includes('=')) {
+    const legend = parseLegend(node.text);
+    const [getName] = Object.values(legend);
 
-  switch (node.type) {
-    case 'block-quote':
-      return <blockquote {...attributes}>{children}</blockquote>
-    case 'bulleted-list':
-      return <ul {...attributes}>{children}</ul>
-    case 'heading-one':
-      return <h1 {...attributes}>{children}</h1>
-    case 'heading-two':
-      return <h2 {...attributes}>{children}</h2>
-    case 'heading-three':
-      return <h3 {...attributes}>{children}</h3>
-    case 'heading-four':
-      return <h4 {...attributes}>{children}</h4>
-    case 'heading-five':
-      return <h5 {...attributes}>{children}</h5>
-    case 'heading-six':
-      return <h6 {...attributes}>{children}</h6>
-    case 'list-item':
-      return <li {...attributes}>{children}</li>
-    default:
-      return next()
+    return (
+      <Tooltip
+        interactive
+        title={
+          <div className='tooltip-content'>
+            <Game
+              sprites={[
+                {...createNewSprite(getName(), 0, 0), id: uniqid()}
+              ]}
+              width={32}
+              height={32}
+            />
+            {/* <button className='secondary' onClick={()=> console.log('clicky wicky')}>Edit</button> */}
+          </div>
+        }
+      >
+        <span {...attributes} className='rule'>{children}</span>
+      </Tooltip>
+    )
   }
+
+  return next();
 }
 
 const Code = ({code, slateValue, onChange, onCompile})=> {
@@ -48,9 +55,12 @@ const Code = ({code, slateValue, onChange, onCompile})=> {
   />
 };
 
-const mapStateToProps = ({code})=> ({
+const mapStateToProps = ({code, game})=> ({
   code: code.code,
-  slateValue: code.slateValue
+  slateValue: code.slateValue,
+  sprites: game.sprites, 
+  width: game.width, 
+  height: game.height
 })
 
 const mapDispatchToProps = (dispatch)=> ({

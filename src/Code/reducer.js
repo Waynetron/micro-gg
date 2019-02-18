@@ -1,4 +1,3 @@
-import {Value} from 'slate';
 import Plain from 'slate-plain-serializer';
 
 const initialCode = `

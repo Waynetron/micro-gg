@@ -103,24 +103,6 @@ const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
   return state;
 }
 
-const isHorizontal = (direction)=>
-  direction === 'left' || direction === 'right';
-
-// Should return something like
-// {
-//    up: [],
-//    down: [],
-//    left: [],
-//    right: []
-// }
-
-const collisionDirectionToParseDirections = {
-  right: 'forward',
-  left: 'backward',
-  up: 'forward',
-  down: 'backward'
-}
-
 const getColliding = (direction, leftStates, leftIndex)=> {
   // direction refers to the direction the collision rule is applied in.
   // getCollidingForSide('bottom', 'forward' ... refers to searching for the colliding state for
@@ -236,14 +218,12 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
   // Left
   // The left side is what the rule is looking to match.
   // The colliding state should recursively nest colliding states if the rule has multiple collisions
-  let leftIndex = 0;
   for (const words of leftWordArrays) {
     const state = {
       ...wordsToState(words, names)
     }
 
     leftStates.push(state);
-    leftIndex += 1;
   }
 
   const leftStatesWithColliding = leftStates.map((state, index)=> {
@@ -451,6 +431,6 @@ export const applyStateMutations = (sprite, mutations)=> {
 
 export const isAlive = (sprite)=> !sprite.dead;
 export const isCreateNewState = (stateMutation)=> {
-  const [left, right] = stateMutation;
+  const [, right] = stateMutation;
   return right.createNew !== undefined;
 };

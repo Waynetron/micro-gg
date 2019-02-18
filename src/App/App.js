@@ -60,17 +60,18 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 });
 
 const App = ({
-    code, compile, theme, isGameActive, setGameActive,
-    onToggleDebug, onSetInput, onCancelInput, onToggleTheme
+    code, compile, theme, sprites, width, height, debug, error,
+    isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput, onToggleTheme
 })=> {
-  const colors = theme === 'light' ? lightColors : darkColors
+  const colors = theme === 'light' ? lightColors : darkColors;
   
   return (
     <CustomProperties className="custom-properties-container" properties={{
       '--primary-color': colors.primary,
       '--secondary-color': colors.secondary,
       '--dark-color': colors.dark,
-      '--light-color': colors.light
+      '--light-color': colors.light,
+      '--hover-color': `${colors.primary}22`  // 22 is is the alpha in hex
     }}>
       <div className="main">
         <div className="left">
@@ -101,7 +102,15 @@ const App = ({
               </button>
               {isGameActive && <Loop />}
             </header>
-            <Game />
+            <div className="game-container">
+              <Game
+              sprites={sprites}
+              width={width}
+              height={height}
+              debug={debug}
+              error={error}
+            />
+          </div>
           </div>
         </HotKeys>
       </div>
@@ -112,7 +121,12 @@ const App = ({
 const mapStateToProps = ({code, game})=> ({
   code: code.code,
   theme: game.theme,
-  isGameActive: game.active
+  isGameActive: game.active,
+  sprites: game.sprites,
+  width: game.width,
+  height: game.height,
+  debug: game.debug,
+  error: game.error
 })
 
 const mapDispatchToProps = (dispatch)=> ({

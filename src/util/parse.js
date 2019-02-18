@@ -1,6 +1,6 @@
 import {createNewSprite} from './state.js';
 import {flatten} from 'lodash-es';
-import {TILE_SIZE, MAX_VELOCITY} from '../Game/constants.js';
+import {TILE_SIZE} from '../Game/constants.js';
 import uniqid from 'uniqid';
 
 const isCollisionRule = (line)=> line.includes('|');
