@@ -1,70 +1,152 @@
 import React, {useEffect} from 'react';
 import {updateCode, updateSlateValue, compile} from './actions.js';
 import {connect} from 'react-redux';
-import uniqid from 'uniqid';
+import Prism from 'prismjs';
 import {Editor} from 'slate-react';
 import Plain from 'slate-plain-serializer';
-import Tooltip from '@material-ui/core/Tooltip';
-import Game from '../Game/Game.js';
-import {parseLegend} from '../util/parse.js';
-import {createNewSprite} from '../util/state.js';
+import ImagePicker from '../ImagePicker/ImagePicker.js';
 
-const renderNode = (props, editor, next)=> {
-  const { attributes, children, node } = props
-
-  if (node.text.includes('=')) {
-    const legend = parseLegend(node.text);
-    const [getName] = Object.values(legend);
-
-    return (
-      <Tooltip
-        interactive
-        title={
-          <div className='tooltip-content'>
-            <Game
-              sprites={[
-                {...createNewSprite(getName(), 0, 0), id: uniqid()}
-              ]}
-              width={32}
-              height={32}
-            />
-            {/* <button className='secondary' onClick={()=> console.log('clicky wicky')}>Edit</button> */}
-          </div>
-        }
-      >
-        <span {...attributes} className='rule'>{children}</span>
-      </Tooltip>
-    )
+const makeGrammar = ()=> {
+  return {
+    'variable': {
+      pattern: new RegExp(' (=|or) [A-Z]+', 'i')
+    },
+    'comment': /\/\/.*/
   }
-
-  return next();
 }
 
-const Code = ({code, slateValue, onChange, onCompile})=> {
+const grammar = makeGrammar();
+
+const onKeyDown = (event, editor, next)=> {
+  if (event.ctrlKey && event.key === 'b') {
+    event.preventDefault()
+    console.log('add bold')
+    editor.addMark('bold')
+  } else {
+    return next()
+  }
+}
+
+const getContent = (token)=> {
+  if (typeof token == 'string') {
+    return token
+  } else if (typeof token.content == 'string') {
+    return token.content
+  } else {
+    return token.content.map(getContent).join('')
+  }
+}
+
+const decorateNode = (node, editor, next)=> {
+  const others = next() || []
+
+  const texts = node.getTexts().toArray()
+  const string = texts.map(t => t.text).join('\n')
+  const tokens = Prism.tokenize(string, grammar)
+  const decorations = []
+  let startText = texts.shift()
+  let endText = startText
+  let startOffset = 0
+  let endOffset = 0
+  let start = 0
+
+  for (const token of tokens) {
+    startText = endText
+    startOffset = endOffset
+
+    const content = getContent(token)
+    const newlines = content.split('\n').length - 1
+    const length = content.length - newlines
+    const end = start + length
+
+    let available = startText.text.length - startOffset
+    let remaining = length
+
+    endOffset = startOffset + remaining
+
+    while (available < remaining && texts.length > 0) {
+      endText = texts.shift()
+      remaining = length - available
+      available = endText.text.length
+      endOffset = remaining
+    }
+
+    if (typeof token != 'string') {
+      const dec = {
+        anchor: {
+          key: startText.key,
+          offset: startOffset,
+        },
+        focus: {
+          key: endText.key,
+          offset: endOffset,
+        },
+        mark: {
+          type: token.type,
+        },
+      }
+
+      decorations.push(dec)
+    }
+
+    start = end
+  }
+
+  return [...others, ...decorations]
+}
+
+const renderMark = (props, editor, next) => {
+  const { children, attributes } = props
+
+  switch (props.mark.type) {
+    case 'variable':
+      return <span {...attributes}>
+        {children}
+        <ImagePicker />
+      </span>
+    case 'comment':
+      return (
+        <span {...attributes} style={{ opacity: '0.33' }}>
+          {children}
+        </span>
+      )
+    case 'keyword':
+      return (
+        <span {...attributes} style={{ fontWeight: 'bold' }}>
+          {children}
+        </span>
+      )
+    default:
+      return next()
+  }
+}
+
+const Code = ({code, slateValue, imageMap, onUpdateCode, onCompile})=> {
   // manually trigger code change on first load
   useEffect(() => {
-    // onChange(slateValue);
     onCompile(code);
   }, []);
 
   return <Editor
     className={'code'}
     value={slateValue}
-    onChange={onChange}
-    renderNode={renderNode}
+    onChange={onUpdateCode}
+    onKeyDown={onKeyDown}
+    decorateNode={decorateNode}
+    renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
   />
 };
 
 const mapStateToProps = ({code, game})=> ({
   code: code.code,
   slateValue: code.slateValue,
-  sprites: game.sprites, 
   width: game.width, 
-  height: game.height
+  height: game.height,
+  imageMap: game.imageMap
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  onChange: ({value})=> {
+  onUpdateCode: ({value})=> {
     dispatch(updateCode(Plain.serialize(value)));
     dispatch(updateSlateValue(value));
   },

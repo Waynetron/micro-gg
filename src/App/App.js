@@ -60,7 +60,7 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 });
 
 const App = ({
-    code, compile, theme, sprites, width, height, debug, error,
+    code, compile, theme, sprites, imageMap, width, height, debug, error,
     isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput, onToggleTheme
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
@@ -81,7 +81,7 @@ const App = ({
             {theme === 'dark' ? 'light' : 'dark'}
             </button>
           </header>
-          <Code />
+          <Code imageMap={imageMap} />
         </div>
         <HotKeys
           handlers={handlers(
@@ -105,6 +105,7 @@ const App = ({
             <div className="game-container">
               <Game
               sprites={sprites}
+              imageMap={imageMap}
               width={width}
               height={height}
               debug={debug}
@@ -123,6 +124,7 @@ const mapStateToProps = ({code, game})=> ({
   theme: game.theme,
   isGameActive: game.active,
   sprites: game.sprites,
+  imageMap: game.imageMap,
   width: game.width,
   height: game.height,
   debug: game.debug,

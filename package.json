@@ -7,6 +7,7 @@
     "immutable": "^4.0.0-rc.12",
     "lodash-es": "^4.17.11",
     "node-sass": "^4.11.0",
+    "prismjs": "^1.15.0",
     "react": "^16.7.0-alpha.0",
     "react-custom-properties": "^1.2.0",
     "react-dom": "^16.7.0-alpha.0",

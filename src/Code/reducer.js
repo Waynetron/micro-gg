@@ -14,7 +14,7 @@ const initialCode = `
 
 P = Player
 # = Brick
-? = QuestionBrick or Brick or Empty
+? = QuestionBrick or Brick
 G = Goomba
 R = GoombaRed
 ^ = Spike

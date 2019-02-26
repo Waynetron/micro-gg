@@ -127,9 +127,16 @@ button.secondary {
   color: var(--primary-color);
 }
 
+.code-sprite {
+  width: 16px;
+  height: 16px;
+  margin-left: .4rem;
+  margin-right: .2rem;
+}
+
 .tooltip-content .stage {
   display: flex;
-  
+
   border: 1px solid #000000
 }
 

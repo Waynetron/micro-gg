@@ -19,7 +19,8 @@ const defaultState = {
   height_in_tiles: 0,
   active: false,
   theme: 'dark',
-  debug: false
+  debug: false,
+  imageMap: {}
 };
 
 const arrayToObject = (array) =>
@@ -36,13 +37,16 @@ const removeComments = (code)=>
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'SET_ACTIVE':
-      return {...state, active: action.active}
-      
-    case 'UPDATE_CODE':
-      return {...state, code: action.code}
+      return {
+        ...state,
+        active: action.active
+      }
 
     case 'TOGGLE_DEBUG':
-      return {...state, debug: !state.debug}
+      return {
+        ...state,
+        debug: !state.debug
+      }
 
     case 'COMPILE':
       try {
@@ -50,15 +54,21 @@ const gameReducer = (state = defaultState, action) => {
         const level = parseLevel(code);
         const legend = parseLegend(code);
         const sprites = parseSprites(level, legend);
+    
+      // Names is the legend mapped to have the values as keys. Used for fast name lookup.
+      // this used to use the legend before the random features were added.
+      // For this to work though, names needs to include all possible names, including those that might not be rendered onto
+      // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
+      // not also appear in the legend.
+      // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
+      const namesArr = parseNames(code);
+      const names = arrayToObject(namesArr);
+      
+      const imageMap = {};
+      for (const name of namesArr) {
+        imageMap[name] = name.toLowerCase();
+      }
 
-        // Names is the legend mapped to have the values as keys. Used for fast name lookup.
-        // this used to use the legend before the random features were added.
-        // For this to work though, names needs to include all possible names, including those that might not be rendered onto
-        // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
-        // not also appear in the legend.
-        // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-        const names = arrayToObject(parseNames(code));
-        
         // A rule consists of a before and an after state referred to as a state mutation
         const [rules, collisionRules] = parseRules(code);
         const stateMutations = rules.map((rule)=> ruleToStateMutation(rule, names)); // [leftState, rightState]
@@ -81,13 +91,14 @@ const gameReducer = (state = defaultState, action) => {
           ...defaultState,
           sprites,
           legend,
-          names,
           rules: [...rules, ...collisionRules],
           stateMutations,
           collisionStateMutationsCreate,
           collisionStateMutationsModify,
           width: width_in_tiles * TILE_SIZE,
-          height: height_in_tiles * TILE_SIZE
+          height: height_in_tiles * TILE_SIZE,
+          names,
+          imageMap
         }
       }
       catch(err) {
