@@ -1,11 +1,10 @@
 import React, {useEffect} from 'react';
-import {updateCode, updateSlateValue, compile} from './actions.js';
+import {updateCode, compile} from './actions.js';
 import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
 import Plain from 'slate-plain-serializer';
 import ImagePicker from '../ImagePicker/ImagePicker.js';
-import {isLegend} from '../util/parse.js';
 
 const makeGrammar = ()=> {
   return {
@@ -107,7 +106,6 @@ const renderMark = (props, editor, next, imageMap) => {
     case 'variable':
       const [, right] = node.text.split('=').map((str)=> str.trim())
       const [firstName,] = right.split(' or ')
-      console.log(firstName)
 
       return <span {...attributes}>
         {children}
@@ -130,7 +128,7 @@ const renderMark = (props, editor, next, imageMap) => {
   }
 }
 
-const Code = ({code, slateValue, imageMap, onUpdateCode, onCompile})=> {
+const Code = ({code, imageMap, onUpdateCode, onCompile})=> {
   // manually trigger code change on first load
   useEffect(() => {
     onCompile(code);
@@ -138,7 +136,7 @@ const Code = ({code, slateValue, imageMap, onUpdateCode, onCompile})=> {
 
   return <Editor
     className={'code'}
-    value={slateValue}
+    defaultValue={Plain.deserialize(code)}
     onChange={onUpdateCode}
     onKeyDown={onKeyDown}
     decorateNode={decorateNode}
@@ -148,7 +146,6 @@ const Code = ({code, slateValue, imageMap, onUpdateCode, onCompile})=> {
 
 const mapStateToProps = ({code, game})=> ({
   code: code.code,
-  slateValue: code.slateValue,
   width: game.width, 
   height: game.height,
   imageMap: game.imageMap
@@ -157,7 +154,6 @@ const mapStateToProps = ({code, game})=> ({
 const mapDispatchToProps = (dispatch)=> ({
   onUpdateCode: ({value})=> {
     dispatch(updateCode(Plain.serialize(value)));
-    dispatch(updateSlateValue(value));
   },
   onCompile: (code)=> {
     dispatch(compile(code));

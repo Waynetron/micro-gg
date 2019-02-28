@@ -23,7 +23,7 @@ const store = createStore(
  );
 
 const persistor = persistStore(store);
-persistor.purge();
+// persistor.purge();
 
 ReactDOM.render(
   <Provider store={store}>

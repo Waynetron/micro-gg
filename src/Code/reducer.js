@@ -30,16 +30,13 @@ DOWN [ Player | Goomba ] -> [ Player | DEAD Goomba ]
 `;
 
 const defaultState = {
-  code: initialCode,
-  slateValue: Plain.deserialize(initialCode)
+  code: initialCode
 }
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'UPDATE_CODE':
       return {...state, code: action.code}
-    case 'UPDATE_SLATE_VALUE':
-      return {...state, slateValue: action.slateValue}
     default:
       return state
   }
