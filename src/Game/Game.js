@@ -9,7 +9,7 @@ const Game = ({sprites, width, height, imageMap, error, debug})=> (
         key={sprite.id}
         x={sprite.position.x}
         y={sprite.position.y}
-        img={imageMap[sprite.name]}
+        img={imageMap[sprite.name] || 'player'}
         sprite={sprite} // used for debug visualisation
         debug={debug}
       />

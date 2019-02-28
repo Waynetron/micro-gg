@@ -20,7 +20,8 @@ const defaultState = {
   active: false,
   theme: 'dark',
   debug: false,
-  imageMap: {}
+  imageMap: {},
+  images: ['player', 'brick', 'questionbrick', 'spike', 'goomba', 'goombared']
 };
 
 const arrayToObject = (array) =>
@@ -47,7 +48,16 @@ const gameReducer = (state = defaultState, action) => {
         ...state,
         debug: !state.debug
       }
-
+    
+    case 'SELECT_IMAGE':
+      const imageMap = {...state.imageMap}
+      const {variableName, imageName} = action
+      imageMap[variableName] = imageName;
+      return {
+        ...state,
+        imageMap
+      }
+    
     case 'COMPILE':
       try {
         const code = removeComments(action.code);
@@ -64,9 +74,11 @@ const gameReducer = (state = defaultState, action) => {
       const namesArr = parseNames(code);
       const names = arrayToObject(namesArr);
       
-      const imageMap = {};
+      const imageMap = {...state.imageMap};
       for (const name of namesArr) {
-        imageMap[name] = name.toLowerCase();
+        if (!imageMap[name]) {
+          imageMap[name] = state.images[name] ? name.toLowerCase() : 'player';
+        }
       }
 
         // A rule consists of a before and an after state referred to as a state mutation

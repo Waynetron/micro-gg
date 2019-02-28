@@ -5,13 +5,14 @@ import Prism from 'prismjs';
 import {Editor} from 'slate-react';
 import Plain from 'slate-plain-serializer';
 import ImagePicker from '../ImagePicker/ImagePicker.js';
+import {isLegend} from '../util/parse.js';
 
 const makeGrammar = ()=> {
   return {
-    'variable': {
-      pattern: new RegExp(' (=|or) [A-Z]+', 'i')
-    },
-    'comment': /\/\/.*/
+    comment: /\/\/.*/,
+    variable: {
+      pattern: new RegExp(' = ([A-Z]+)', 'i'),
+    }
   }
 }
 
@@ -39,9 +40,13 @@ const getContent = (token)=> {
 
 const decorateNode = (node, editor, next)=> {
   const others = next() || []
-
   const texts = node.getTexts().toArray()
   const string = texts.map(t => t.text).join('\n')
+
+  if (texts.length !== 1) {
+    return others;
+  }
+
   const tokens = Prism.tokenize(string, grammar)
   const decorations = []
   let startText = texts.shift()
@@ -95,14 +100,18 @@ const decorateNode = (node, editor, next)=> {
   return [...others, ...decorations]
 }
 
-const renderMark = (props, editor, next) => {
-  const { children, attributes } = props
+const renderMark = (props, editor, next, imageMap) => {
+  const { children, attributes, node } = props
 
   switch (props.mark.type) {
     case 'variable':
+      const [, right] = node.text.split('=').map((str)=> str.trim())
+      const [firstName,] = right.split(' or ')
+      console.log(firstName)
+
       return <span {...attributes}>
         {children}
-        <ImagePicker />
+        <ImagePicker variableName={firstName} />
       </span>
     case 'comment':
       return (
