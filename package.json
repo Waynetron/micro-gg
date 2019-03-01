@@ -13,9 +13,11 @@
     "react-dom": "^16.7.0-alpha.0",
     "react-hotkeys": "^1.1.4",
     "react-redux": "^6.0.0",
+    "react-redux-socket": "^2.2.3",
     "react-scripts": "2.1.1",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
+    "redux-thunk": "^2.3.0",
     "slate": "^0.44.10",
     "slate-react": "^0.21.16",
     "uniqid": "^5.0.3"
