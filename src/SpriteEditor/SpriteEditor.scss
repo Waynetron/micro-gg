@@ -18,16 +18,20 @@
 }
 
 .image-list {
+  display: flex;
+  flex-direction: column;
+
   .image {
     width: 32px;
     height: 32px;
     padding: 0.5rem;
+    border: none;
 
     &:hover {
       background-color: #ddd;
     }
     &.selected {
-      background-color: rebeccapurple;
+      background-color: black;
     }
   }
 }

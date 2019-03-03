@@ -5,27 +5,27 @@ import Tile from './Tile.js'
 import {TILE_SIZE} from '../Game/constants.js';
 import './SpriteEditor.scss';
 
-const imageNames = ['tile0', 'tile1', 'tile2', 'tile3']
-
-const SpritePicker = ({tileSets, selectedTileSet, onSelect})=> (
+const SpritePicker = ({images, tileSets, selectedTileSet, onSelect})=> (
   <div className='image-list'>
-    {tileSets.map((_, index)=>{
+    {images.map((src, index)=>{
       return (
-        <div
+        <img
+          src={src}
+          alt=''
           className={`image ${index === selectedTileSet && 'selected'}`}
           onClick={()=> onSelect(index)}
-        ></div>
+        />
       )
     })}
   </div>
 )
 
-const Preview = ({tiles, selectedTile, onSelect})=> (
+const Preview = ({tiles, selectedTile, tileImages, onSelect})=> (
   <div className='preview'>
     {tiles.map((rowArr, row)=> (
       rowArr.map((tileIndex, col)=> (
         <Tile
-          img={imageNames[tileIndex]}
+          img={tileImages[tileIndex]}
           x={col * TILE_SIZE}
           y={row * TILE_SIZE}
           onClick={()=> onSelect(row, col, selectedTile)}
@@ -35,9 +35,9 @@ const Preview = ({tiles, selectedTile, onSelect})=> (
   </div>
 )
 
-const TilePicker = ({selectedTile, onSelect})=> (
+const TilePicker = ({selectedTile, tileImages, onSelect})=> (
   <div className='picker'>
-    {imageNames.map((name, index)=> (
+    {tileImages.map((name, index)=> (
       <img
         key={name}
         alt=''
@@ -49,7 +49,7 @@ const TilePicker = ({selectedTile, onSelect})=> (
   </div>
 )
 
-const SpriteEditor = ({tileSets, imageMap, images, open, updateTileSets, onClose})=> {  
+const SpriteEditor = ({tileSets, tileImages, images, open, updateTileSets, onClose})=> {  
   const [selectedTileSet, setSelectedTileSet] = useState(0);
   const [selectedTile, setSelectedTile] = useState(0);
   const tiles = tileSets[selectedTileSet]
@@ -59,6 +59,7 @@ const SpriteEditor = ({tileSets, imageMap, images, open, updateTileSets, onClose
       <div className='container'>
         <div className='left'>
           <SpritePicker
+            images={images}
             tileSets={tileSets}
             selectedTileSet={selectedTileSet}
             onSelect={setSelectedTileSet}
@@ -67,6 +68,7 @@ const SpriteEditor = ({tileSets, imageMap, images, open, updateTileSets, onClose
         <div className='right'>
           <Preview
             tiles={tiles}
+            tileImages={tileImages}
             selectedTile={selectedTile}
             onSelect={(row, col, newTileIndex)=> {
               const newTileSets = [...tileSets]
@@ -75,6 +77,7 @@ const SpriteEditor = ({tileSets, imageMap, images, open, updateTileSets, onClose
             }}
           />
           <TilePicker
+            tileImages={tileImages}
             selectedTile={selectedTile}
             onSelect={setSelectedTile}
           />
@@ -86,8 +89,8 @@ const SpriteEditor = ({tileSets, imageMap, images, open, updateTileSets, onClose
 
 const mapStateToProps = ({game, spriteEditor})=> ({
   open: spriteEditor.open,
-  imageMap: game.imageMap,
-  images: game.images,
+  tileImages: spriteEditor.tileImages,
+  images: spriteEditor.images,
   tileSets: spriteEditor.tileSets
 })
 
