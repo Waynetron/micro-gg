@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys';
 import Game from '../Game/Game.js';
 import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
+import SpriteEditor from '../SpriteEditor/SpriteEditor';
 import {compile, setActive} from '../Code/actions';
 import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput, toggleTheme} from './actions.js';
@@ -61,7 +62,8 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 
 const App = ({
     code, compile, theme, sprites, imageMap, width, height, debug, error,
-    isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput, onToggleTheme
+    isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput, onToggleTheme,
+    onOpenCloseSpriteEditor
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
   
@@ -77,6 +79,9 @@ const App = ({
         <div className="left">
           <header>
             <h1>micro gg</h1>
+            <button className='primary' onClick={()=> onOpenCloseSpriteEditor(true)}>
+              Sprite Editor
+            </button>
             <button className='primary' onClick={()=> onToggleTheme()}>
             {theme === 'dark' ? 'light' : 'dark'}
             </button>
@@ -103,6 +108,9 @@ const App = ({
               {isGameActive && <Loop />}
             </header>
             <div className="game-container">
+              <SpriteEditor
+                onClose={()=> onOpenCloseSpriteEditor(false)}
+              />
               <Game
               sprites={sprites}
               imageMap={imageMap}
@@ -149,6 +157,9 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onToggleTheme: ()=> {
     dispatch(toggleTheme());
+  },
+  onOpenCloseSpriteEditor: (open)=> {
+    dispatch({type: 'spriteEditor/SET_OPEN', open: open})
   }
 });
 

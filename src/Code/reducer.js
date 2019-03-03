@@ -1,4 +1,3 @@
-import Plain from 'slate-plain-serializer';
 
 const initialCode = `
 ##################
