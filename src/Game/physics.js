@@ -157,7 +157,13 @@ export const updateSpriteCollidingState = (spriteA, sprites, width, height)=> {
 
     for (const edge of [TOP, BOTTOM, LEFT, RIGHT]) {
       if (overlapsSide(edge, spriteA, spriteB)) {
-        colliding[edge].push({name: spriteB.name});
+        
+        const collidingSprite = {...spriteB}
+        // prevent recursion of colliding state by removing the colliding state from spriteB
+        // otherwise it can recurse forever: state.colliding.bottom.colliding.top.colliding.bottom...
+        collidingSprite.colliding = undefined
+
+        colliding[edge].push(collidingSprite)
       }
     }
   }
