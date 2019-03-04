@@ -47,7 +47,7 @@ const rasterise = (tileSet)=> {
 
 const defaultState = {
   tileSets: initialTileSets,
-  open: true,
+  open: false,
   images: initialTileSets.map((tileSet)=> rasterise(tileSet)),
   tileImages
 }
