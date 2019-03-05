@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {matches, mergeWith, merge, isNumber} from 'lodash-es';
+import {matches, mergeWith, merge, isNumber} from 'lodash';
 import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 
 export const createNewSprite = (name, x, y)=> ({

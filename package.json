@@ -6,7 +6,6 @@
   "dependencies": {
     "@material-ui/core": "^3.9.2",
     "immutable": "^4.0.0-rc.12",
-    "lodash-es": "^4.17.11",
     "node-sass": "^4.11.0",
     "prismjs": "^1.15.0",
     "react": "^16.7.0-alpha.0",
@@ -39,7 +38,10 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/plugin-proposal-pipeline-operator": "^7.2.0",
+    "@babel/preset-env": "^7.3.4",
+    "babel-plugin-lodash": "^3.3.4",
     "customize-cra": "^0.2.8",
     "gh-pages": "^2.0.1",
     "react-app-rewired": "^1.6.2"

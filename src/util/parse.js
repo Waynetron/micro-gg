@@ -1,5 +1,5 @@
 import {createNewSprite} from './state.js';
-import {flatten} from 'lodash-es';
+import {flatten} from 'lodash';
 import {TILE_SIZE} from '../Game/constants.js';
 import uniqid from 'uniqid';
 
@@ -86,10 +86,11 @@ const regularExpandMappings = {
 
 // Takes a single rule and returns an array with (potentially) multiple rules
 // Eg: Rules starting with HORIZONTAL become both LEFT and RIGHT rules
-const expandRegularRule = (line)=> {
+export const expandRegularRule = (line)=> {
   let expandedLines = [];
 
   for (const [key, words] of Object.entries(regularExpandMappings)) {
+    console.error(line)
     if (line.includes(`<${key}> `) || line.includes(`${key} `)) {
       for (const word of words) {
         const expanded = line
@@ -104,6 +105,7 @@ const expandRegularRule = (line)=> {
     }
   }
 
+  console.error(expandedLines)
   return expandedLines.length > 0 ? expandedLines : [line]
 }
 
@@ -113,7 +115,7 @@ const expandRegularRule = (line)=> {
 // UP [ Player | Goomba ] -> [ DEAD Player | Goomba ]
 // DOWN [ Player | Goomba ] -> [ DEAD Player | Goomba ]
 // Etc...
-const expandCollisionRule = (line)=> {
+export const expandCollisionRule = (line)=> {
   let expandedLines = [];
 
   // If no direction given, then use 'ALL'. Otherwise use the given direction ('UP', 'DOWN', etc)

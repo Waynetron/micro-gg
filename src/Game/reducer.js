@@ -1,4 +1,4 @@
-import {flatten} from 'lodash-es';
+import {flatten} from 'lodash';
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   getLevelDimensions} from '../util/parse.js';
 import {ruleToStateMutation, collisionRuleToStateMutations, applyStateMutations,
