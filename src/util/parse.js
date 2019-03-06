@@ -73,87 +73,103 @@ export const parseSprites = (level, legend)=> {
   return sprites;
 };
 
-const collisionExpandMappings = {
-  ALL: ['LEFT', 'RIGHT', 'UP', 'DOWN'],
+const expansionMappings = {
+  ALL: ['UP', 'DOWN', 'LEFT', 'RIGHT'],
   HORIZONTAL: ['LEFT', 'RIGHT'],
   VERTICAL: ['UP', 'DOWN']
 }
 
-const regularExpandMappings = {
-  HORIZONTAL: ['LEFT', 'RIGHT'],
-  VERTICAL: ['UP', 'DOWN']
-}
-
-// Takes a single rule and returns an array with (potentially) multiple rules
-// Eg: Rules starting with HORIZONTAL become both LEFT and RIGHT rules
-export const expandRegularRule = (line)=> {
-  let expandedLines = [];
-
-  for (const [key, words] of Object.entries(regularExpandMappings)) {
-    console.error(line)
+const isExpandable = (line)=> {
+  for (const key of Object.keys(expansionMappings)) {
     if (line.includes(`<${key}> `) || line.includes(`${key} `)) {
-      for (const word of words) {
-        const expanded = line
-          // replaces either <LEFT> or LEFT
-          // this would be better swapped for some equivalant that replaces
-          // all occurances of a word
-          .replace(`<${key}> `, `<${word}> `)
-          .replace(`${key} `, `${word} `)
-  
-        expandedLines.push(expanded);
-      }
+      return true
     }
   }
 
-  console.error(expandedLines)
-  return expandedLines.length > 0 ? expandedLines : [line]
+  return false
 }
 
-// Takes a single collision rule and returns an array with (potentially) multiple rules
-// Eg: [ Player | Goomba ] -> [ DEAD Player | Goomba ]
-// becomes
-// UP [ Player | Goomba ] -> [ DEAD Player | Goomba ]
-// DOWN [ Player | Goomba ] -> [ DEAD Player | Goomba ]
-// Etc...
-export const expandCollisionRule = (line)=> {
-  let expandedLines = [];
+/*
+takes a single rule and expands it into several
+Eg:
+  ALL [Player] -> [Player]
+Becomes:
+  UP [Player] -> [Player]
+  DOWN [Player] -> [Player]
+  LEFT [Player] -> [Player]
+  RIGHT [Player] -> [Player]
+ */
+const expandRule = (line)=> {
+  const lines = []
+  for (const [key, words] of Object.entries(expansionMappings)) {
+    if (line.includes(key)) {
+      for (const word of words) {
+        lines.push(line.replace(key, word));
+      }
 
-  // If no direction given, then use 'ALL'. Otherwise use the given direction ('UP', 'DOWN', etc)
+      // Return early once one keyword is dealt with
+      return lines;
+      /*
+      It's important to return early here once a keyword is found to prevent
+      this function from dealing with more than one keyword per execution
+      For example if a line contains both ALL and HORIZONTAL
+      Only one keyword can be dealt with per pass, else we end up with an output like:
+      UP [ _ ] -> [ HORIZONTAL ]
+      DOWN [ _ ] -> [ HORIZONTAL ]
+      LEFT [ _ ] -> [ HORIZONTAL ]
+      RIGHT [ _ ] -> [ HORIZONTAL ]
+      ALL [ _ ] -> [ LEFT ]
+      ALL [ _ ] -> [ RIGHT ]
+      Once the above expanded again, we would end up with a bunch of duplicate rules
+      */
+    }
+  }
+
+  return lines;
+}
+
+export const expandRules = (lines)=> {
+  const alreadyExpanded = lines.filter((line)=> !isExpandable(line))
+  const freshlyExpanded = flatten(
+    lines.filter(isExpandable).map(expandRule)
+  )
+
+  if (freshlyExpanded.length === 0) {
+    // fully expanded, stop recursing
+    return lines
+  }
+  
+  return [
+    ...alreadyExpanded,
+    ...expandRules(freshlyExpanded)
+  ]
+}
+
+// If no direction given, then append 'ALL'. Otherwise use the given direction ('UP', 'DOWN', etc)
+const addImplicitKeywords = (line) => {
   const [firstWord] = line.split('[');
   
   let appendedLine = line;
   if (firstWord === '') {
     appendedLine = line.replace('[', 'ALL [');
   }
-  
-  for (const [key, directions] of Object.entries(collisionExpandMappings)) {
-    if (appendedLine.includes(`${key} `)) {
-      for (const direction of directions) {
-        const expanded = appendedLine
-          .replace(`${key} `, `${direction} `)
 
-        expandedLines.push(expanded);
-      }
-    }
-  }
-
-  return expandedLines.length > 0 ? expandedLines : [line]
+  return appendedLine;
 }
 
 export const parseRules = (code)=> {
-  const regularRules = code.split('\n').filter(isRule);  
-  const expandedRegularRules = flatten(
-    regularRules.map((line)=> expandRegularRule(line))
-  );
+  const regularRules = code
+    .split('\n')
+    .filter(isRule)
+    .map(addImplicitKeywords)
   
-  const collisionRules = code.split('\n').filter(isCollisionRule);
-  const expandedCollisionRules = flatten(
-    collisionRules.map((line)=> expandCollisionRule(line))
-  );
-  // const uniqueCollisionRules = removeDuplicateRules(expandedCollisionRules);
+  const collisionRules = code
+    .split('\n')
+    .filter(isCollisionRule)
+    .map(addImplicitKeywords)
 
   return [
-    expandedRegularRules,
-    expandedCollisionRules
+    expandRules(regularRules),
+    expandRules(collisionRules)
   ]
-};
+}
