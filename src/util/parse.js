@@ -81,12 +81,24 @@ const expansionMappings = {
 
 const isExpandable = (line)=> {
   for (const key of Object.keys(expansionMappings)) {
-    if (line.includes(`<${key}> `) || line.includes(`${key} `)) {
+    if (line.includes(key)) {
       return true
     }
   }
 
   return false
+}
+
+// replaces all occurrances of a word in a string with the given word
+const replaceWord = (line, word, newWord)=> {
+  const newLine = line.replace(word, newWord)
+
+  // if more occurances of the word, then run replaceWord again
+  if (newLine.includes(word)) {
+    return replaceWord(newLine, word, newWord)
+  }
+
+  return newLine
 }
 
 /*
@@ -104,7 +116,9 @@ const expandRule = (line)=> {
   for (const [key, words] of Object.entries(expansionMappings)) {
     if (line.includes(key)) {
       for (const word of words) {
-        lines.push(line.replace(key, word));
+        lines.push(
+          replaceWord(line, key, word)
+        );
       }
 
       // Return early once one keyword is dealt with
@@ -161,7 +175,6 @@ export const parseRules = (code)=> {
   const regularRules = code
     .split('\n')
     .filter(isRule)
-    .map(addImplicitKeywords)
   
   const collisionRules = code
     .split('\n')

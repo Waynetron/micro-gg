@@ -30,14 +30,12 @@ describe('expanding regular rules', ()=> {
     ]);
   });
 
-  it('expands [ HORIZONTAL ] -> [ HORIZONTAL ]', ()=> {
-    const ruleBoth = 'DOWN [ HORIZONTAL Player ] -> [ HORIZONTAL Player ]'
+  it('expands [ <HORIZONTAL> ] -> [ HORIZONTAL ]', ()=> {
+    const ruleBoth = 'DOWN [ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]'
 
     expect(expandRules([ruleBoth])).toEqual([
-      'DOWN [ LEFT Player ] -> [ LEFT Player ]',
-      'DOWN [ LEFT Player ] -> [ RIGHT Player ]',
-      'DOWN [ RIGHT Player ] -> [ LEFT Player ]',
-      'DOWN [ RIGHT Player ] -> [ RIGHT Player ]'
+      'DOWN [ <LEFT> Player ] -> [ LEFT Player ]',
+      'DOWN [ <RIGHT> Player ] -> [ RIGHT Player ]'
     ]);
   });
 
@@ -111,8 +109,6 @@ describe('expanding collision rules', ()=> {
 
     expect(expandRules([horizontalComboA])).toEqual([
       'DOWN [ LEFT Player | LEFT Goomba ] -> [ DEAD Player | Goomba ]',
-      'DOWN [ LEFT Player | RIGHT Goomba ] -> [ DEAD Player | Goomba ]',
-      'DOWN [ RIGHT Player | LEFT Goomba ] -> [ DEAD Player | Goomba ]',
       'DOWN [ RIGHT Player | RIGHT Goomba ] -> [ DEAD Player | Goomba ]',
     ]);
   });
@@ -122,8 +118,6 @@ describe('expanding collision rules', ()=> {
 
     expect(expandRules([horizontalComboB])).toEqual([
       'DOWN [ Player | Goomba ] -> [ LEFT DEAD Player | LEFT Goomba ]',
-      'DOWN [ Player | Goomba ] -> [ LEFT DEAD Player | RIGHT Goomba ]',
-      'DOWN [ Player | Goomba ] -> [ RIGHT DEAD Player | LEFT Goomba ]',
       'DOWN [ Player | Goomba ] -> [ RIGHT DEAD Player | RIGHT Goomba ]',
     ]);
   });
