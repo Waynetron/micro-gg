@@ -5,6 +5,7 @@ import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 export const createNewSprite = (name, x, y)=> ({
   name: name,
   position: {x, y},
+  prevPosition: {x, y},
   velocity: {x: 0, y: 0},
   maxVelocity: {x: MAX_VELOCITY, y: MAX_VELOCITY},
   acceleration: {x: 0, y: 0},

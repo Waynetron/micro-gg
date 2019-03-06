@@ -141,7 +141,6 @@ const gameReducer = (state = defaultState, action) => {
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-              // |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisionsCrossMethod(sprite, state.sprites, previousState)))
               |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
               |> ((sprites)=> sprites.map(roundToPixels))
       }
