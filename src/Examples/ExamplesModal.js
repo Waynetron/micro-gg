@@ -4,7 +4,7 @@ import Textarea from 'react-textarea-autosize';
 import {examples} from './exampleCode';
 
 const ExamplesModal = ()=> {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
 
   return visible 
   ?
