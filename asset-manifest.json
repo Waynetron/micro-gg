@@ -1,14 +1,14 @@
 {
-  "main.css": "/micro-gg/static/css/main.78a3c85c.chunk.css",
-  "main.js": "/micro-gg/static/js/main.cda0a68f.chunk.js",
-  "main.js.map": "/micro-gg/static/js/main.cda0a68f.chunk.js.map",
+  "main.css": "/micro-gg/static/css/main.b4b04845.chunk.css",
+  "main.js": "/micro-gg/static/js/main.f99fa2a9.chunk.js",
+  "main.js.map": "/micro-gg/static/js/main.f99fa2a9.chunk.js.map",
   "static/js/1.c85a1dc3.chunk.js": "/micro-gg/static/js/1.c85a1dc3.chunk.js",
   "static/js/1.c85a1dc3.chunk.js.map": "/micro-gg/static/js/1.c85a1dc3.chunk.js.map",
   "runtime~main.js": "/micro-gg/static/js/runtime~main.e630c52e.js",
   "runtime~main.js.map": "/micro-gg/static/js/runtime~main.e630c52e.js.map",
   "static/media/fira_code.css": "/micro-gg/static/media/FiraCode-Medium.010c2e55.ttf",
-  "static/css/main.78a3c85c.chunk.css.map": "/micro-gg/static/css/main.78a3c85c.chunk.css.map",
+  "static/css/main.b4b04845.chunk.css.map": "/micro-gg/static/css/main.b4b04845.chunk.css.map",
   "index.html": "/micro-gg/index.html",
-  "precache-manifest.763c6c086286452d5437ce3b0ec02f51.js": "/micro-gg/precache-manifest.763c6c086286452d5437ce3b0ec02f51.js",
+  "precache-manifest.61485d1c6d983b3c1fdf4fb720d1547b.js": "/micro-gg/precache-manifest.61485d1c6d983b3c1fdf4fb720d1547b.js",
   "service-worker.js": "/micro-gg/service-worker.js"
 }
