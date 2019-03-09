@@ -1,10 +1,10 @@
 self.__precacheManifest = [
   {
-    "revision": "d293dc7c066d907f308b9924a60f1700",
-    "url": "/micro-gg/static/media/FiraCode-Medium.d293dc7c.woff2"
+    "revision": "24310bd06e2537b92a92f33dabdc038b",
+    "url": "/micro-gg/static/media/FiraCode-Regular.24310bd0.woff2"
   },
   {
-    "revision": "8915a85d175a635f3686",
+    "revision": "195e285e9722818885d8",
     "url": "/micro-gg/static/css/main.b4b04845.chunk.css"
   },
   {
@@ -16,12 +16,12 @@ self.__precacheManifest = [
     "url": "/micro-gg/static/js/runtime~main.e630c52e.js"
   },
   {
-    "revision": "259c44f16f7596bab6718b235119e013",
-    "url": "/micro-gg/static/media/FiraCode-Light.259c44f1.eot"
-  },
-  {
     "revision": "6929f8ebd787ddbe39bf7be574731a5e",
     "url": "/micro-gg/static/media/FiraCode-Regular.6929f8eb.eot"
+  },
+  {
+    "revision": "259c44f16f7596bab6718b235119e013",
+    "url": "/micro-gg/static/media/FiraCode-Light.259c44f1.eot"
   },
   {
     "revision": "f0f92eeb8c1af44fa4e604069fde97d9",
@@ -36,12 +36,12 @@ self.__precacheManifest = [
     "url": "/micro-gg/static/media/FiraCode-Light.3a7fa128.woff2"
   },
   {
-    "revision": "24310bd06e2537b92a92f33dabdc038b",
-    "url": "/micro-gg/static/media/FiraCode-Regular.24310bd0.woff2"
+    "revision": "d293dc7c066d907f308b9924a60f1700",
+    "url": "/micro-gg/static/media/FiraCode-Medium.d293dc7c.woff2"
   },
   {
-    "revision": "8915a85d175a635f3686",
-    "url": "/micro-gg/static/js/main.8915a85d.chunk.js"
+    "revision": "195e285e9722818885d8",
+    "url": "/micro-gg/static/js/main.195e285e.chunk.js"
   },
   {
     "revision": "9ecee2ce95b0de731b1498b48e71c737",
@@ -52,16 +52,12 @@ self.__precacheManifest = [
     "url": "/micro-gg/static/media/FiraCode-Light.a8a711df.woff"
   },
   {
-    "revision": "62da0ac51db1e4a3a4d57b9154a344fc",
-    "url": "/micro-gg/static/media/FiraCode-Regular.62da0ac5.woff"
-  },
-  {
     "revision": "4dee11c0d1acf3da2be1957cb5299315",
     "url": "/micro-gg/static/media/FiraCode-Medium.4dee11c0.woff"
   },
   {
-    "revision": "a85ebfc3913ab6bc6a7b817fa627b904",
-    "url": "/micro-gg/static/media/FiraCode-Light.a85ebfc3.ttf"
+    "revision": "62da0ac51db1e4a3a4d57b9154a344fc",
+    "url": "/micro-gg/static/media/FiraCode-Regular.62da0ac5.woff"
   },
   {
     "revision": "2bf08001f42c34e30e1de9d2eb81aead",
@@ -72,15 +68,19 @@ self.__precacheManifest = [
     "url": "/micro-gg/static/media/FiraCode-Regular.f08fdb39.ttf"
   },
   {
-    "revision": "010c2e55a9ef14a61d1d6c8b3fbcc7bc",
-    "url": "/micro-gg/static/media/FiraCode-Medium.010c2e55.ttf"
+    "revision": "a85ebfc3913ab6bc6a7b817fa627b904",
+    "url": "/micro-gg/static/media/FiraCode-Light.a85ebfc3.ttf"
   },
   {
     "revision": "8236190c08c5efe01d04baae252c0241",
     "url": "/micro-gg/static/media/FiraCode-Bold.8236190c.ttf"
   },
   {
-    "revision": "55286c2c8a6997277513829e6002be37",
+    "revision": "010c2e55a9ef14a61d1d6c8b3fbcc7bc",
+    "url": "/micro-gg/static/media/FiraCode-Medium.010c2e55.ttf"
+  },
+  {
+    "revision": "65afb44be5569987b93a6d640591d5c7",
     "url": "/micro-gg/index.html"
   }
 ];
