@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys';
+
 import Game from '../Game/Game.js';
 import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import SpriteEditor from '../SpriteEditor/SpriteEditor';
+import ExamplesModal from '../Examples/ExamplesModal';
 import {compile, setActive} from '../Code/actions';
 import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput, toggleTheme} from './actions.js';
@@ -63,7 +65,7 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 const App = ({
     code, compile, theme, sprites, imageMap, width, height, debug, error,
     isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput, onToggleTheme,
-    onOpenCloseSpriteEditor
+    onToggleExamples, onOpenCloseSpriteEditor
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
   
@@ -78,12 +80,10 @@ const App = ({
       <div className="main">
         <div className="left">
           <header>
-            <h1>micro gg</h1>
-            <button className='primary' onClick={()=> onOpenCloseSpriteEditor(true)}>
-              Sprite Editor
-            </button>
+            <h1 className='logo'>micro gg</h1>
+            <ExamplesModal />
             <button className='primary' onClick={()=> onToggleTheme()}>
-            {theme === 'dark' ? 'light' : 'dark'}
+              {theme === 'dark' ? 'light' : 'dark'}
             </button>
           </header>
           <Code imageMap={imageMap} />
@@ -157,6 +157,9 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onToggleTheme: ()=> {
     dispatch(toggleTheme());
+  },
+  onToggleExamples: ()=> {
+    dispatch({type: 'app/OPEN_EXAMPLES'})
   },
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
