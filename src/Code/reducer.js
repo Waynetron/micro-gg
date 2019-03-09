@@ -6,26 +6,38 @@ const initialCode = `
 #                #
 #                #
 #                #
+#     ###?#      #
 #                #
-#    P           #
-#             G  #
+#    P       G   #
 ##################
 
 P = Player
 # = Brick
-? = QuestionBrick or Brick
+? = QuestionBrick
 G = Goomba
-R = GoombaRed
-^ = Spike
 
-[ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]
-[ <UP> Player | Wall ] -> [ JUMP Player | Wall ]
-[ <ACTION> Player | Wall ] -> [ JUMP Player | Wall ]
+// Accelerate down, like gravity
 [ Player ] -> [ DOWN Player ]
 [ Goomba ] -> [ DOWN Goomba ]
 
+// Move sideways with <LEFT> and <RIGHT> arrow keys
+[ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]
+
+// Jump when <UP> is pressed and when the bottom of Player
+// is touching Wall (Wall = anything)
+DOWN [ <UP> Player | Wall ] -> [ JUMP Player | Wall ]
+
+// Player dies if touching Goomba on the side
 HORIZONTAL [ Player | Goomba ] -> [ DEAD Player | Goomba ]
+
+// Jumping on top of Goomba kills the Goomba
 DOWN [ Player | Goomba ] -> [ Player | DEAD Goomba ]
+
+// Break bricks by head-butting
+UP [ Player | Brick ] -> [ Player | DEAD Brick ]
+
+// Head-butting QuestionBrick turns it into another Player
+UP [ Player | QuestionBrick ] -> [ Player | JUMP Player ]
 `;
 
 const defaultState = {
