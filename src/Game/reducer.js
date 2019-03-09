@@ -77,7 +77,8 @@ const gameReducer = (state = defaultState, action) => {
       const imageMap = {...state.imageMap};
       for (const name of namesArr) {
         if (!imageMap[name]) {
-          imageMap[name] = state.images[name] ? name.toLowerCase() : 'player';
+          const imageAvailable = state.images.includes(name.toLowerCase())
+          imageMap[name] = imageAvailable ? name.toLowerCase() : 'player';
         }
       }
 
