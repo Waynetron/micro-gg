@@ -136,7 +136,7 @@ Starts withObject.keys( ).length > 0 ? colliding : undefined;
 Breaks up into 2 rules
   [ UP Player] -> [ DEAD Player]
   [ Spike ] -> [ Spike ]
-Evaluate both rules into a pair of state mutations
+Evaluate both rules into a pair of state transitions
 [
   {name: "Player", acceleration: {x: 1, y: 0}},
   {name: "Player", dead: true}
@@ -145,7 +145,7 @@ Evaluate both rules into a pair of state mutations
   {name: "Spike"},
   {name: "Spike"}
 ]
-// Finally adds a colliding property to the left side each state mutation
+// Finally adds a colliding property to the left side each state transition
 [
   {
     name: "Player", acceleration: {x: 1, y: 0},
@@ -167,7 +167,7 @@ Evaluate both rules into a pair of state mutations
   {name: "Spike"}
 ]
 */
-export const collisionRuleToStateMutations = (ruleString, names)=> {
+export const collisionRuleToStateTransitions = (ruleString, names)=> {
   // Get collision direction (first word at the start of the line)
   const [firstWord] = ruleString.match(/^([A-Z]+)\b/);
   const direction = firstWord.toLowerCase();
@@ -249,7 +249,7 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
     const matchingLeft = leftWordArrays[rightIndex];
     let state;
     if (matchingLeft) {
-      // If there's a matching left state, then this state is a mutation of that
+      // If there's a matching left state, then this state is a transition of that
       // state. It may be a small change like adding DEAD to a Player.
       // Eg: [ Mario | Goomba ] -> [ DEAD Mario | Goomba ]
       state = wordsToState(words, names);
@@ -260,7 +260,7 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
       const newSprite = createNewSprite('TEMP_NAME', 0, 0);
       state = {
         ...newSprite,
-        createNew: {direction}, // indicates to applyStateMutations not to merge this but create new state
+        createNew: {direction}, // indicates to applyStateTransitions not to merge this but create new state
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
       }
@@ -273,7 +273,7 @@ export const collisionRuleToStateMutations = (ruleString, names)=> {
     rightIndex += 1;
   }
 
-  // State pairs to state mutations
+  // State pairs to state transitions
   return leftStatesWithColliding.map((leftState, index)=> [leftState, rightStates[index]]);
 
   // const leftStateA = wordsToState(leftWordsA, names);
@@ -347,7 +347,7 @@ const wordsToState = (words, names)=> {
   return resultState;
 };
 
-export const ruleToStateMutation = (ruleString, names)=> {
+export const ruleToStateTransition = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
   // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
@@ -376,12 +376,12 @@ const getDirectionOffset = (direction)=> {
   return directionOffsetsMap[direction];
 }
 
-export const getNewStateToAdd = (sprites, mutations)=> {
+export const getNewStateToAdd = (sprites, transitions)=> {
   const newState = [];
 
   for (const sprite of sprites) {
-    for (const mutation of mutations) {
-      const [left, right] = mutation;
+    for (const transition of transitions) {
+      const [left, right] = transition;
 
       if (matches(left)(sprite)) {
         // Add new sprite + give it a unique ID
@@ -412,15 +412,15 @@ const mergeCustomizer = (objValue, srcValue)=> {
   }
 }
 
-export const applyStateMutations = (sprite, mutations)=> {
-  if (mutations.length === 0) {
+export const applyStateTransitions = (sprite, transitions)=> {
+  if (transitions.length === 0) {
     return sprite;
   }
   
   let resultState = {...sprite};
 
-  for (const mutation of mutations) {
-    const [left, right] = mutation;
+  for (const transition of transitions) {
+    const [left, right] = transition;
 
     if (matches(left)(sprite)) {
       resultState = mergeWith(resultState, right, mergeCustomizer)
@@ -431,7 +431,7 @@ export const applyStateMutations = (sprite, mutations)=> {
 };
 
 export const isAlive = (sprite)=> !sprite.dead;
-export const isCreateNewState = (stateMutation)=> {
-  const [, right] = stateMutation;
+export const isCreateNewState = (stateTransition)=> {
+  const [, right] = stateTransition;
   return right.createNew !== undefined;
 };
