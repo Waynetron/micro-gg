@@ -2,6 +2,7 @@ import {createNewSprite} from './state.js';
 import {flatten} from 'lodash';
 import {TILE_SIZE} from '../Game/constants.js';
 import uniqid from 'uniqid';
+import {ruleStringToState, collisionRuleStringToState, isCreateNewState} from '../util/state.js'
 
 const isCollisionRule = (line)=> line.includes('|');
 const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
@@ -171,18 +172,30 @@ const addImplicitKeywords = (line) => {
   return appendedLine;
 }
 
-export const parseRules = (code)=> {
+export const parseRules = (code, names)=> {
   const regularRules = code
     .split('\n')
     .filter(isRule)
+    |> expandRules
+    |> ((ruleStrings)=> ruleStrings.map((string)=> ruleStringToState(string, names)))
   
   const collisionRules = code
     .split('\n')
     .filter(isCollisionRule)
     .map(addImplicitKeywords)
+    |> expandRules
+    |> ((ruleStrings)=> ruleStrings.map((string)=> collisionRuleStringToState(string, names)))
+    |> flatten
+  
+  // separate the collisionRules into 2 groups: 
+  // those that will spawn new state
+  // and those that will modify existing state
+  const collisionCreate = collisionRules.filter(isCreateNewState);
+  const collisionModify = collisionRules.filter((rule)=> !isCreateNewState(rule));
 
-  return [
-    expandRules(regularRules),
-    expandRules(collisionRules)
-  ]
+  return {
+    regular: regularRules,
+    collisionCreate,
+    collisionModify
+  }
 }

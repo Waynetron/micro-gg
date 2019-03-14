@@ -167,7 +167,7 @@ Evaluate both rules into a pair of state transitions
   {name: "Spike"}
 ]
 */
-export const collisionRuleToStateTransitions = (ruleString, names)=> {
+export const collisionRuleStringToState = (ruleString, names)=> {
   // Get collision direction (first word at the start of the line)
   const [firstWord] = ruleString.match(/^([A-Z]+)\b/);
   const direction = firstWord.toLowerCase();
@@ -260,7 +260,7 @@ export const collisionRuleToStateTransitions = (ruleString, names)=> {
       const newSprite = createNewSprite('TEMP_NAME', 0, 0);
       state = {
         ...newSprite,
-        createNew: {direction}, // indicates to applyStateTransitions not to merge this but create new state
+        createNew: {direction}, // indicates to applyRules not to merge this but create new state
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
       }
@@ -347,7 +347,7 @@ const wordsToState = (words, names)=> {
   return resultState;
 };
 
-export const ruleToStateTransition = (ruleString, names)=> {
+export const ruleStringToState = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
   // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
@@ -412,15 +412,37 @@ const mergeCustomizer = (objValue, srcValue)=> {
   }
 }
 
-export const applyStateTransitions = (sprite, transitions)=> {
+export const getStateChanges = (sprites, transitions)=> {
   if (transitions.length === 0) {
+    return {};
+  }
+
+  const stateChanges = sprites.map((sprite)=> {
+    let resultState = {...sprite};
+
+    for (const transition of transitions) {
+      const [left, right] = transition;
+
+      if (matches(left)(sprite)) {
+        resultState = mergeWith(resultState, right, mergeCustomizer)
+      }
+    }
+
+    return resultState;
+  })
+
+  return stateChanges
+};
+
+export const applyRules = (sprite, rules)=> {
+  if (rules.length === 0) {
     return sprite;
   }
   
   let resultState = {...sprite};
 
-  for (const transition of transitions) {
-    const [left, right] = transition;
+  for (const rule of rules) {
+    const [left, right] = rule;
 
     if (matches(left)(sprite)) {
       resultState = mergeWith(resultState, right, mergeCustomizer)
@@ -431,7 +453,7 @@ export const applyStateTransitions = (sprite, transitions)=> {
 };
 
 export const isAlive = (sprite)=> !sprite.dead;
-export const isCreateNewState = (stateTransition)=> {
-  const [, right] = stateTransition;
+export const isCreateNewState = (rule)=> {
+  const [, right] = rule;
   return right.createNew !== undefined;
 };

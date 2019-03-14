@@ -1,8 +1,6 @@
-import {flatten} from 'lodash';
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   getLevelDimensions} from '../util/parse.js';
-import {ruleToStateTransition, collisionRuleToStateTransitions, applyStateTransitions,
-  isAlive, isCreateNewState, getNewStateToAdd, addNewState} from '../util/state.js'
+import {applyRules, isAlive, getNewStateToAdd, addNewState} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
   applyWallCollisions, resetColliding
@@ -13,14 +11,17 @@ const defaultState = {
   sprites: [],
   legend: {},
   names: {},
-  rules: [],
-  stateTransitions: [],
   width_in_tiles: 0,
   height_in_tiles: 0,
   active: false,
   theme: 'dark',
   debug: false,
   imageMap: {},
+  rules: {
+    regular: [],
+    collisionCreate: [],
+    collisionModify: []
+  },
   images: ['player', 'brick', 'questionbrick', 'spike', 'goomba', 'goombared']
 };
 
@@ -82,21 +83,8 @@ const gameReducer = (state = defaultState, action) => {
         }
       }
 
-        // A rule consists of a before and an after state referred to as a state transition
-        const [rules, collisionRules] = parseRules(code);
-        const stateTransitions = rules.map((rule)=> ruleToStateTransition(rule, names)); // [leftState, rightState]
-
-        // collisionRules are a bit more complicated
-        const collisionStateTransitionPairs = collisionRules.map(
-          (rule)=> collisionRuleToStateTransitions(rule, names)
-        );
-        const collisionStateTransitions = flatten(collisionStateTransitionPairs);
-        
-        // separate the collisionStateTransitions into 2 groups: 
-          // those that will spawn new state
-          // and those that will modify existing state
-        const collisionStateTransitionsCreate = collisionStateTransitions.filter(isCreateNewState);
-        const collisionStateTransitionsModify = collisionStateTransitions.filter((e)=> !isCreateNewState(e));
+        // A rule consists of a before and an after state
+        const rules = parseRules(code, names);
 
         const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
@@ -104,10 +92,7 @@ const gameReducer = (state = defaultState, action) => {
           ...defaultState,
           sprites,
           legend,
-          rules: [...rules, ...collisionRules],
-          stateTransitions,
-          collisionStateTransitionsCreate,
-          collisionStateTransitionsModify,
+          rules,
           width: width_in_tiles * TILE_SIZE,
           height: height_in_tiles * TILE_SIZE,
           names,
@@ -124,26 +109,27 @@ const gameReducer = (state = defaultState, action) => {
 
     case 'UPDATE':
       const previousState = {...state};
-      const stateToAdd = getNewStateToAdd(state.sprites, state.collisionStateTransitionsCreate);
+      const stateToAdd = getNewStateToAdd(state.sprites, state.rules.collisionCreate);
+      const newSprites = state.sprites.filter(isAlive)
+        |> ((sprites)=> addNewState(sprites, stateToAdd))
+        |> ((sprites)=> sprites.map(resetColliding))
+        |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(
+          sprite, state.sprites, state.width, state.height
+        )))
+        |> ((sprites)=> sprites.map(storePreviousPosition))
+        |> ((sprites)=> sprites.map((sprite)=> applyRules(sprite, state.rules.regular)))
+        |> ((sprites)=> sprites.map((sprite)=> applyRules(sprite, state.rules.collisionModify)))
+        |> ((sprites)=> sprites.map(applyFriction))
+        |> ((sprites)=> sprites.map(applyAcceleration))
+        |> ((sprites)=> sprites.map(applyVelocity))
+        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
+        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
+        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
+        |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
+        |> ((sprites)=> sprites.map(roundToPixels))
       return {
           ...state,
-          sprites: state.sprites.filter(isAlive)
-              |> ((sprites)=> addNewState(sprites, stateToAdd))
-              |> ((sprites)=> sprites.map(resetColliding))
-              |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(
-                sprite, state.sprites, state.width, state.height
-              )))
-              |> ((sprites)=> sprites.map(storePreviousPosition))
-              |> ((sprites)=> sprites.map((sprite)=> applyStateTransitions(sprite, state.stateTransitions)))
-              |> ((sprites)=> sprites.map((sprite)=> applyStateTransitions(sprite, state.collisionStateTransitionsModify)))
-              |> ((sprites)=> sprites.map(applyFriction))
-              |> ((sprites)=> sprites.map(applyAcceleration))
-              |> ((sprites)=> sprites.map(applyVelocity))
-              |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-              |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-              |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-              |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
-              |> ((sprites)=> sprites.map(roundToPixels))
+          sprites: newSprites
       }
     case 'SET_INPUT':
     return {
