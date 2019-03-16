@@ -194,8 +194,7 @@ export const parseRules = (code, names)=> {
   const collisionModify = collisionRules.filter((rule)=> !isCreateNewState(rule));
 
   return {
-    regular: regularRules,
-    collisionCreate,
-    collisionModify
+    modify: [...regularRules, ...collisionModify],
+    create: collisionCreate
   }
 }

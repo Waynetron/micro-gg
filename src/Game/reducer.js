@@ -1,6 +1,6 @@
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   getLevelDimensions} from '../util/parse.js';
-import {applyRules, isAlive, getNewStateToAdd, addNewState} from '../util/state.js'
+import {getStateTransitions, isAlive, getNewStateToAdd, addNewState, applyStateTransitions} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
   applyWallCollisions, resetColliding
@@ -21,6 +21,9 @@ const defaultState = {
     regular: [],
     collisionCreate: [],
     collisionModify: []
+  },
+  stateTransitions: {
+    regular: {}
   },
   images: ['player', 'brick', 'questionbrick', 'spike', 'goomba', 'goombared']
 };
@@ -109,7 +112,13 @@ const gameReducer = (state = defaultState, action) => {
 
     case 'UPDATE':
       const previousState = {...state};
-      const stateToAdd = getNewStateToAdd(state.sprites, state.rules.collisionCreate);
+      const stateToAdd = getNewStateToAdd(state.sprites, state.rules.create)
+      
+      const stateTransitions = {
+        modify: getStateTransitions(state.rules.modify, state.sprites),
+        create: getStateTransitions(state.rules.create, state.sprites),
+      }
+
       const newSprites = state.sprites.filter(isAlive)
         |> ((sprites)=> addNewState(sprites, stateToAdd))
         |> ((sprites)=> sprites.map(resetColliding))
@@ -117,8 +126,7 @@ const gameReducer = (state = defaultState, action) => {
           sprite, state.sprites, state.width, state.height
         )))
         |> ((sprites)=> sprites.map(storePreviousPosition))
-        |> ((sprites)=> sprites.map((sprite)=> applyRules(sprite, state.rules.regular)))
-        |> ((sprites)=> sprites.map((sprite)=> applyRules(sprite, state.rules.collisionModify)))
+        |> ((sprites)=> applyStateTransitions(stateTransitions.modify, sprites))
         |> ((sprites)=> sprites.map(applyFriction))
         |> ((sprites)=> sprites.map(applyAcceleration))
         |> ((sprites)=> sprites.map(applyVelocity))
@@ -127,9 +135,11 @@ const gameReducer = (state = defaultState, action) => {
         |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
         |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
         |> ((sprites)=> sprites.map(roundToPixels))
+        
       return {
           ...state,
-          sprites: newSprites
+          sprites: newSprites,
+          stateTransitions
       }
     case 'SET_INPUT':
     return {

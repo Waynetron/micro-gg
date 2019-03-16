@@ -434,22 +434,42 @@ export const getStateChanges = (sprites, transitions)=> {
   return stateChanges
 };
 
-export const applyRules = (sprite, rules)=> {
+export const getStateTransitions = (rules, sprites)=> {
   if (rules.length === 0) {
-    return sprite;
+    return []
   }
-  
-  let resultState = {...sprite};
 
-  for (const rule of rules) {
-    const [left, right] = rule;
-
-    if (matches(left)(sprite)) {
-      resultState = mergeWith(resultState, right, mergeCustomizer)
+  const transitions = {}
+  for (const sprite of sprites) {
+    for (const rule of rules) {
+      const [left, right] = rule;
+      if (matches(left)(sprite)) {
+        if (!transitions[sprite.id]) {
+          transitions[sprite.id] = []
+        }
+        
+        transitions[sprite.id].push(right)
+      }
     }
   }
 
-  return resultState;
+  return transitions
+};
+
+export const applyStateTransitions = (transitions, sprites)=> {
+  return sprites.map((sprite)=> {
+    const newStates = transitions[sprite.id]
+    if (newStates) {
+      let result = {...sprite}
+      for (const state of newStates) {
+        result = mergeWith(sprite, state, mergeCustomizer)
+      }
+
+      return result
+    }
+
+    return sprite
+  })
 };
 
 export const isAlive = (sprite)=> !sprite.dead;
