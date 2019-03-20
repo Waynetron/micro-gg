@@ -347,13 +347,25 @@ const wordsToState = (words, names)=> {
   return resultState;
 };
 
+// export const trimPreceedingKeyword = (ruleString)=> {
+//   const directions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+//   const [left] = ruleString.split('[')
+//   const firstWord = left.trim()
+  
+//   if (directions.includes(firstWord)) {
+//     return ruleString.replace(firstWord, '').trim()
+//   }
+
+//   return ruleString;
+// }
+
 export const ruleStringToState = (ruleString, names)=> {
   // First, turn the rule string into an array of words
   // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
   // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
   const [leftWords, rightWords] = ruleString.split('->')
     |> separateWords;
-    
+
   const leftState = wordsToState(leftWords, names);
   const rightState = wordsToState(rightWords, names);
 
