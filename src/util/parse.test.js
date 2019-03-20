@@ -1,56 +1,38 @@
 import {expandRules} from './parse'
 
 describe('expanding regular rules', ()=> {
-  it('expands ALL', ()=> {
-    const rule = 'ALL [ Player ] -> [ DOWN Player ]'
+  it('doesnt expand (regular rules should not contain ALL)', ()=> {
+    const rule = '[ Player ] -> [ DOWN Player ]'
 
     expect(expandRules([rule])).toEqual([
-      'UP [ Player ] -> [ DOWN Player ]',
-      'DOWN [ Player ] -> [ DOWN Player ]',
-      'LEFT [ Player ] -> [ DOWN Player ]',
-      'RIGHT [ Player ] -> [ DOWN Player ]'
+      '[ Player ] -> [ DOWN Player ]'
     ]);
   });
 
   it('expands [ HORIZONTAL ] -> [ _ ]', ()=> {
-    const ruleLeft = 'DOWN [ HORIZONTAL Player ] -> [ Player ]'
+    const ruleLeft = '[ HORIZONTAL Player ] -> [ Player ]'
 
     expect(expandRules([ruleLeft])).toEqual([
-      'DOWN [ LEFT Player ] -> [ Player ]',
-      'DOWN [ RIGHT Player ] -> [ Player ]'
+      '[ LEFT Player ] -> [ Player ]',
+      '[ RIGHT Player ] -> [ Player ]'
     ]);
   });
 
   it('expands [ _ ] -> [ HORIZONTAL ]', ()=> {
-    const ruleRight = 'DOWN [ Player ] -> [ HORIZONTAL Player ]'
+    const ruleRight = '[ Player ] -> [ HORIZONTAL Player ]'
 
     expect(expandRules([ruleRight])).toEqual([
-      'DOWN [ Player ] -> [ LEFT Player ]',
-      'DOWN [ Player ] -> [ RIGHT Player ]'
+      '[ Player ] -> [ LEFT Player ]',
+      '[ Player ] -> [ RIGHT Player ]'
     ]);
   });
 
   it('expands [ <HORIZONTAL> ] -> [ HORIZONTAL ]', ()=> {
-    const ruleBoth = 'DOWN [ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]'
+    const ruleBoth = '[ <HORIZONTAL> Player ] -> [ HORIZONTAL Player ]'
 
     expect(expandRules([ruleBoth])).toEqual([
-      'DOWN [ <LEFT> Player ] -> [ LEFT Player ]',
-      'DOWN [ <RIGHT> Player ] -> [ RIGHT Player ]'
-    ]);
-  });
-
-  it('expands rule with both ALL and HORIZONTAL', ()=> {
-    const horizontalNoDirection = 'ALL [ HORIZONTAL Player ] -> [ DEAD Player ]'
-
-    expect(expandRules([horizontalNoDirection])).toEqual([
-      'UP [ LEFT Player ] -> [ DEAD Player ]',
-      'UP [ RIGHT Player ] -> [ DEAD Player ]',
-      'DOWN [ LEFT Player ] -> [ DEAD Player ]',
-      'DOWN [ RIGHT Player ] -> [ DEAD Player ]',
-      'LEFT [ LEFT Player ] -> [ DEAD Player ]',
-      'LEFT [ RIGHT Player ] -> [ DEAD Player ]',
-      'RIGHT [ LEFT Player ] -> [ DEAD Player ]',
-      'RIGHT [ RIGHT Player ] -> [ DEAD Player ]'
+      '[ <LEFT> Player ] -> [ LEFT Player ]',
+      '[ <RIGHT> Player ] -> [ RIGHT Player ]'
     ]);
   });
 });
