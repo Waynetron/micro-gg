@@ -174,8 +174,9 @@ export const collisionRuleStringToState = (ruleString, names)=> {
 
   // Get the left and right matches
   const [left, right] = ruleString.split('->');
-  const [leftGroup] = left.match(/\[.+?\]/);
-  const [rightGroup] = right.match(/\[.+?\]/);
+  console.log(left, right)
+  const [leftGroup] = left.match(/\{.+?\}/);
+  const [rightGroup] = right.match(/\{.+?\}/);
 
   // leftWords and rightWords can each be arbirary lengths
   // Consider the left side could be a collision involving 3 parties but on the right side

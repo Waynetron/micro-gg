@@ -7,25 +7,25 @@ const names = {
 
 // describe('trim preceeding keywords', ()=> {
 //   it('trims preceeding direction (& ignores others)', ()=> {
-//     const rule = 'RIGHT [ Player ] -> [ Player RIGHT ]'
+//     const rule = 'RIGHT { Player } -> { Player RIGHT }'
 
 //     expect(trimPreceedingKeyword(rule)).toEqual(
-//       '[ Player ] -> [ Player RIGHT ]'
+//       '{ Player } -> { Player RIGHT }'
 //     );
 //   });
 
 //   it('doesnt trim if no keyword', ()=> {
-//     const rule = '[ Player ] -> [ Player DOWN ]'
+//     const rule = '{ Player } -> { Player DOWN }'
 
 //     expect(trimPreceedingKeyword(rule)).toEqual(
-//       '[ Player ] -> [ Player DOWN ]'
+//       '{ Player } -> { Player DOWN }'
 //     );
 //   });
 // });
 
 describe('converts rule string to state', ()=> {
   it('simple rule', ()=> {
-    const rule = '[ Player ] -> [ Player DOWN ]'
+    const rule = '{ Player } -> { Player DOWN }'
 
     expect(ruleStringToState(rule, names)).toEqual(
       [
@@ -36,7 +36,7 @@ describe('converts rule string to state', ()=> {
   });
 
   it('keyboard input and movement rule', ()=> {
-    const rule = '[ <RIGHT> Player ] -> [ RIGHT Player ]'
+    const rule = '{ <RIGHT> Player } -> { RIGHT Player }'
 
     expect(ruleStringToState(rule, names)).toEqual(
       [
