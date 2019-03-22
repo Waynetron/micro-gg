@@ -18,12 +18,9 @@ export const createNewSprite = (name, x, y)=> ({
   static: false,
   inputs: {}
 });
-const trimBrackets = (string)=> string.replace('[', '').replace(']', '')
-const separateWords = (leftAndRightString)=> (
-  leftAndRightString.map((string)=>
-    trimBrackets(string).trim().split(' ')
-  )
-);
+const trimBrackets = (string)=> string.replace('{', '').replace('}', '')
+const separateWords = (string)=> trimBrackets(string).trim().split(' ')
+
 const states = {
   UP: {acceleration: {y: -1}},
   DOWN: {acceleration: {y: 1}},
@@ -208,11 +205,11 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   //   }
   // }
 
-  // <-------- leftWordArrays----->    <--- rightWordArrays -->
+  // <------- leftWordArrays ----->    <--- rightWordArrays -->
   // <---words--> < ----words----->    <-words-> <---words---->
   // [ UP Player | Goomba | Brick ] -> [ Player | DEAD Goomba ]
-  const leftWordArrays = leftGroup.split('|') |> separateWords;
-  const rightWordArrays = rightGroup.split('|') |> separateWords;
+  const leftWordArrays = leftGroup.split('|').map((string)=> separateWords(string))
+  const rightWordArrays = rightGroup.split('|').map((string)=> separateWords(string))
 
   let leftStates = [];
   let rightStates = [];
@@ -360,17 +357,22 @@ const wordsToState = (words, names)=> {
 //   return ruleString;
 // }
 
+// { Player carrying: Brick }
+const stringToState = (string, names)=> {  
+  const words = separateWords(string);
+  const state = wordsToState(words, names);
+
+  return state;
+}
+
+// { Player } -> { Player carrying: Brick }
 export const ruleStringToState = (ruleString, names)=> {
-  // First, turn the rule string into an array of words
-  // eg: the ruleString "[ Goomba ] -> [ RIGHT Goomba ]"
-  // becomes: [["Goomba"], ["RIGHT", "Goomba"]]
-  const [leftWords, rightWords] = ruleString.split('->')
-    |> separateWords;
+  const [left, right] = ruleString.split('->')
 
-  const leftState = wordsToState(leftWords, names);
-  const rightState = wordsToState(rightWords, names);
-
-  return [leftState, rightState];
+  return [
+    stringToState(left, names),
+    stringToState(right, names)
+  ]
 }
 
 const addVectors = (vectorA, vectorB)=> ({
