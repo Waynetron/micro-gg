@@ -45,6 +45,28 @@ describe('converts rule string to state', ()=> {
       ]
     );
   });
+
+  it('adds custom carrying state', ()=> {
+    const rule = '{ Player } -> { Player carrying: Brick }'
+
+    expect(ruleStringToState(rule, names)).toEqual(
+      [
+        { name: 'Player' },
+        { name: 'Player', carrying: {name: 'Brick'} }
+      ]
+    );
+  });
+
+  it('matches on custom carrying state', ()=> {
+    const rule = '{ Player carrying: Brick } -> { Player DEAD }'
+
+    expect(ruleStringToState(rule, names)).toEqual(
+      [
+        { name: 'Player', carrying: {name: 'Brick'} },
+        { name: 'Player', dead: true }
+      ]
+    );
+  });
 });
 
 describe('applying state transitions', ()=> {

@@ -171,7 +171,6 @@ export const collisionRuleStringToState = (ruleString, names)=> {
 
   // Get the left and right matches
   const [left, right] = ruleString.split('->');
-  console.log(left, right)
   const [leftGroup] = left.match(/\{.+?\}/);
   const [rightGroup] = right.match(/\{.+?\}/);
 
@@ -331,6 +330,13 @@ const wordsToState = (words, names)=> {
       })
     }
 
+    if (word.includes(':')) {
+      const [left, right] = word.split(':')
+      const rightState = wordsToState([right.trim()], names)
+      
+      return {[left]: {...rightState}}
+    }
+
     return {};
   });
 
@@ -357,21 +363,55 @@ const wordsToState = (words, names)=> {
 //   return ruleString;
 // }
 
-// { Player carrying: Brick }
-const stringToState = (string, names)=> {  
-  const words = separateWords(string);
-  const state = wordsToState(words, names);
+const splitOnFirstWordGroup = (string)=> {
+  const words = separateWords(string)
 
-  return state;
+  let i = 0
+  for (const word of words) {
+    if (!word.includes(':')) {
+      const split = [
+        words.slice(0, i + 1).join(" "),
+        words.slice(i + 1).join(" ")
+      ]
+
+      return split
+    }
+
+    i++
+  }
+}
+
+// input: '{ Player carrying: Brick }'
+// output: { name: 'Player', carrying: {name: 'Brick'} }
+const stringToState = (string, names)=> {  
+  const [left, rest] = splitOnFirstWordGroup(string)
+
+  if (rest.length === 0) {
+    return [wordsToState([left], names)]
+  }
+
+  return [wordsToState([left], names), ...stringToState(rest, names)]
+}
+
+const flattenArrToObj = (states)=> {
+  let result = {}
+  for (const state of states) {
+    result = merge(state, result)
+  }
+
+  return result
 }
 
 // { Player } -> { Player carrying: Brick }
 export const ruleStringToState = (ruleString, names)=> {
   const [left, right] = ruleString.split('->')
 
+  const rightState = stringToState(right, names)
+  const combined = flattenArrToObj(rightState)
+
   return [
-    stringToState(left, names),
-    stringToState(right, names)
+    stringToState(left, names) |> flattenArrToObj,
+    stringToState(right, names) |> flattenArrToObj
   ]
 }
 
