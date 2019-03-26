@@ -161,7 +161,7 @@ export const expandRules = (lines)=> {
 }
 
 // If no direction given, then append 'ALL'. Otherwise use the given direction ('UP', 'DOWN', etc)
-const addImplicitKeywords = (line) => {
+export const addImplicitKeywords = (line) => {
   const [firstWord] = line.split('{');
   
   let appendedLine = line;

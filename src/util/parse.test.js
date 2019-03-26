@@ -1,4 +1,4 @@
-import {expandRules} from './parse'
+import {expandRules, addImplicitKeywords} from './parse'
 
 describe('expanding regular rules', ()=> {
   it('doesnt expand (regular rules should not contain ALL)', ()=> {
@@ -36,7 +36,6 @@ describe('expanding regular rules', ()=> {
     ]);
   });
 });
-
 
 describe('expanding collision rules', ()=> {
   it('expands collision rule with ALL', ()=> {
@@ -102,5 +101,14 @@ describe('expanding collision rules', ()=> {
       'DOWN { Player | Goomba } -> { LEFT DEAD Player | LEFT Goomba }',
       'DOWN { Player | Goomba } -> { RIGHT DEAD Player | RIGHT Goomba }',
     ]);
+  });
+});
+
+describe('addImplicitKeywords', ()=> {
+  it('adds implicit keywords to collision rule', ()=> {
+    const rule = '{ Player | Goomba } -> { DEAD Player | Goomba }'
+
+    expect(addImplicitKeywords(rule))
+      .toEqual('ALL { Player | Goomba } -> { DEAD Player | Goomba }');
   });
 });
