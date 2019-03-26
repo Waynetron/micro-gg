@@ -333,7 +333,7 @@ const wordsToState = (words, names)=> {
     if (word.includes(':')) {
       const [left, right] = word.split(':')
       const rightState = wordsToState([right.trim()], names)
-      
+
       return {[left]: {...rightState}}
     }
 
@@ -405,9 +405,6 @@ const flattenArrToObj = (states)=> {
 // { Player } -> { Player carrying: Brick }
 export const ruleStringToState = (ruleString, names)=> {
   const [left, right] = ruleString.split('->')
-
-  const rightState = stringToState(right, names)
-  const combined = flattenArrToObj(rightState)
 
   return [
     stringToState(left, names) |> flattenArrToObj,
