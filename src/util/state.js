@@ -9,6 +9,7 @@ export const createNewSprite = (name, x, y)=> ({
   velocity: {x: 0, y: 0},
   maxVelocity: {x: MAX_VELOCITY, y: MAX_VELOCITY},
   acceleration: {x: 0, y: 0},
+  friction: 0.15,
   colliding: {
     top: [],
     bottom: [],

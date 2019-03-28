@@ -1,5 +1,5 @@
 import {
-  TILE_SIZE, GROUND_FRICTION, AIR_FRICTION,
+  TILE_SIZE,
   TOP, BOTTOM, LEFT, RIGHT
 } from './constants.js'
 
@@ -298,14 +298,17 @@ export const resetColliding = (sprite)=> ({
 
 });
 
-export const applyFriction = (sprite)=> ({
-  ...sprite,
-  velocity: {
-    x: (sprite.colliding.top.length > 0 || sprite.colliding.bottom.length > 0)
-      ? sprite.velocity.x * GROUND_FRICTION
-      : sprite.velocity.x * AIR_FRICTION,
-    y: (sprite.colliding.left.length > 0 || sprite.colliding.right.length > 0)
-      ? sprite.velocity.y * GROUND_FRICTION
-      : sprite.velocity.y * AIR_FRICTION,
+const snapNearZero = (num)=> Math.abs(num) > 0.0001 ? num : 0
+
+export const applyFriction = (sprite)=> {
+  const x = sprite.velocity.x * (1 - sprite.friction)
+  const y = sprite.velocity.y * (1 - sprite.friction)
+  
+  return {
+    ...sprite,
+    velocity: {
+      x: snapNearZero(x),
+      y: snapNearZero(y),
+    }
   }
-});
+};
