@@ -1,8 +1,9 @@
-import {applyStateTransitions, ruleStringToState} from './state'
+import {applyStateTransitions, ruleStringToState, collisionRuleStringToState} from './state'
 
 const names = {
   Player: true,
-  Brick: true
+  Brick: true,
+  Goomba: true
 }
 
 // describe('trim preceeding keywords', ()=> {
@@ -46,7 +47,18 @@ describe('converts rule string to state', ()=> {
     );
   });
 
-  it('adds custom carrying state', ()=> {
+  it('adds custom friction state number', ()=> {
+    const rule = '{ Player } -> { Player friction: 0.1 }'
+
+    expect(ruleStringToState(rule, names)).toEqual(
+      [
+        { name: 'Player' },
+        { name: 'Player', friction: 0.1 }
+      ]
+    );
+  });
+  
+  it('adds custom carrying state object', ()=> {
     const rule = '{ Player } -> { Player carrying: Brick }'
 
     expect(ruleStringToState(rule, names)).toEqual(
@@ -64,6 +76,25 @@ describe('converts rule string to state', ()=> {
       [
         { name: 'Player', carrying: {name: 'Brick'} },
         { name: 'Player', dead: true }
+      ]
+    );
+  });
+});
+
+describe('converts collision rule string to state', ()=> {
+  it('simple collision rule', ()=> {
+    const rule = 'RIGHT { Player | Goomba } -> { DEAD Player | Brick }'
+
+    expect(collisionRuleStringToState(rule, names)).toEqual(
+      [
+        [
+        { name: 'Player', colliding: {right: [{name: 'Goomba'}]} },
+        { name: 'Player', dead: true },
+        ],
+        [
+          { name: 'Goomba', colliding: {left: [{name: 'Player'}]} },
+          { name: 'Brick' },
+        ]
       ]
     );
   });
