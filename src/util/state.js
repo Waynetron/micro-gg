@@ -333,8 +333,15 @@ const wordsToState = (words, names)=> {
 
     if (word.includes(':')) {
       const [left, right] = word.split(':')
-      const rightState = wordsToState([right.trim()], names)
 
+      // Number
+      const number = Number(right.trim())
+      if (typeof number === 'number' && !isNaN(number)) {
+        return {[left]: number}
+      }
+
+      // Object
+      const rightState = wordsToState([right.trim()], names)
       return {[left]: {...rightState}}
     }
 
@@ -364,6 +371,7 @@ const wordsToState = (words, names)=> {
 //   return ruleString;
 // }
 
+/* Splits string into word groupings eg: 'Player', 'friction: 0.1' */
 const splitOnFirstWordGroup = (string)=> {
   const words = separateWords(string)
 
@@ -459,11 +467,11 @@ export const addNewState = (sprites, newState)=> {
 }
 
 // custom merge rules
-const mergeCustomizer = (objValue, srcValue)=> {
-  if (isNumber(objValue)) {
-    return objValue + srcValue;
-  }
-}
+// const mergeCustomizer = (objValue, srcValue)=> {
+//   if (isNumber(objValue)) {
+//     return objValue + srcValue;
+//   }
+// }
 
 export const getStateChanges = (sprites, transitions)=> {
   if (transitions.length === 0) {
@@ -477,7 +485,7 @@ export const getStateChanges = (sprites, transitions)=> {
       const [left, right] = transition;
 
       if (matches(left)(sprite)) {
-        resultState = mergeWith(resultState, right, mergeCustomizer)
+        resultState = mergeWith(resultState, right)
       }
     }
 
@@ -515,7 +523,7 @@ export const applyStateTransitions = (transitions, sprites)=> {
     if (newStates) {
       let result = {...sprite}
       for (const state of newStates) {
-        result = mergeWith(sprite, state, mergeCustomizer)
+        result = mergeWith(sprite, state)
       }
 
       return result
