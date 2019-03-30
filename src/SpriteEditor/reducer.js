@@ -25,8 +25,8 @@ const rasterise = (tileSet)=> {
   canvas.height = height
   
   let ctx = canvas.getContext('2d')
-  tileSet.map((row, rowIndex)=> (
-    tileSet[rowIndex].map((col, colIndex)=> {
+  tileSet.forEach((row, rowIndex)=> (
+    tileSet[rowIndex].forEach((col, colIndex)=> {
       const tileImage = tileImages[tileSet[rowIndex][colIndex]]
       const image = new Image(32, 32);
       image.onload = function() {
