@@ -88,14 +88,73 @@ describe('converts collision rule string to state', ()=> {
     expect(collisionRuleStringToState(rule, names)).toEqual(
       [
         [
-        { name: 'Player', colliding: {right: [{name: 'Goomba'}]} },
-        { name: 'Player', dead: true },
+          { name: 'Player', colliding: {right: [{name: 'Goomba'}]} },
+          { name: 'Player', dead: true },
         ],
         [
           { name: 'Goomba', colliding: {left: [{name: 'Player'}]} },
           { name: 'Brick' },
         ]
       ]
+    );
+  });
+
+  it('simple collision rule with custom state number', ()=> {
+    const rule = 'RIGHT { Player | Goomba } -> { Player | Goomba money: 12 }'
+
+    expect(collisionRuleStringToState(rule, names)).toEqual(
+      [
+        [
+          { name: 'Player', colliding: {right: [{name: 'Goomba'}]} },
+          { name: 'Player' },
+        ],
+        [
+          { name: 'Goomba', colliding: {left: [{name: 'Player'}]} },
+          { name: 'Goomba', money: 12 },
+        ]
+      ]
+    );
+  });
+
+  it('simple collision rule with custom state', ()=> {
+    const rule = 'RIGHT { Player | Goomba } -> { Player | Goomba carrying: Brick }'
+
+    expect(collisionRuleStringToState(rule, names)).toEqual(
+      [
+        [
+          { name: 'Player', colliding: {right: [{name: 'Goomba'}]} },
+          { name: 'Player' },
+        ],
+        [
+          { name: 'Goomba', colliding: {left: [{name: 'Player'}]} },
+          { name: 'Goomba', carrying: {name: 'Brick'} },
+        ]
+      ]
+    );
+  });
+
+  it('multiple collision rule', ()=> {
+    const rule = 'RIGHT { Player | Goomba | Goomba } -> { Player | Goomba | Goomba }'
+
+    const result = collisionRuleStringToState(rule, names)
+
+    expect(JSON.stringify(result)).toEqual(
+      JSON.stringify(
+        [
+          [
+            { name: 'Player', colliding: {right: [{name: 'Goomba'}]} },
+            { name: 'Player' },
+          ],
+          [
+            { name: 'Goomba', colliding: {left: [{name: 'Player'}], right: [{name: 'Goomba'}]} },
+            { name: 'Goomba' },
+          ],
+          [
+            { name: 'Goomba', colliding: {left: [{name: 'Goomba'}]} },
+            { name: 'Goomba' },
+          ]
+        ]
+      )
     );
   });
 });

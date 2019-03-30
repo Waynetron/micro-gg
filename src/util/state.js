@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {matches, mergeWith, merge, isNumber} from 'lodash';
+import {matches, mergeWith, merge} from 'lodash';
 import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 
 export const createNewSprite = (name, x, y)=> ({
@@ -208,8 +208,8 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   // <------- leftWordArrays ----->    <--- rightWordArrays -->
   // <---words--> < ----words----->    <-words-> <---words---->
   // [ UP Player | Goomba | Brick ] -> [ Player | DEAD Goomba ]
-  const leftWordArrays = leftGroup.split('|').map((string)=> separateWords(string))
-  const rightWordArrays = rightGroup.split('|').map((string)=> separateWords(string))
+  const leftWordGroupArrays = leftGroup.split('|').map((string)=> stringToWordGroups(string))
+  const rightWordGroupArrays = rightGroup.split('|').map((string)=> stringToWordGroups(string))
 
   let leftStates = [];
   let rightStates = [];
@@ -217,7 +217,7 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   // Left
   // The left side is what the rule is looking to match.
   // The colliding state should recursively nest colliding states if the rule has multiple collisions
-  for (const words of leftWordArrays) {
+  for (const words of leftWordGroupArrays) {
     const state = {
       ...wordsToState(words, names)
     }
@@ -243,8 +243,8 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   // The right state is any changes to the left state. And includes the creation
   // of completely new state.
   let rightIndex = 0;
-  for (const words of rightWordArrays) {
-    const matchingLeft = leftWordArrays[rightIndex];
+  for (const words of rightWordGroupArrays) {
+    const matchingLeft = leftWordGroupArrays[rightIndex];
     let state;
     if (matchingLeft) {
       // If there's a matching left state, then this state is a transition of that
@@ -390,25 +390,22 @@ const splitOnFirstWordGroup = (string)=> {
   }
 }
 
-// input: '{ Player carrying: Brick }'
-// output: { name: 'Player', carrying: {name: 'Brick'} }
-const stringToState = (string, names)=> {  
+const stringToWordGroups = (string)=> {  
   const [left, rest] = splitOnFirstWordGroup(string)
 
   if (rest.length === 0) {
-    return [wordsToState([left], names)]
+    return [left]
   }
 
-  return [wordsToState([left], names), ...stringToState(rest, names)]
+  return [left, ...stringToWordGroups(rest)]
 }
 
-const flattenArrToObj = (states)=> {
-  let result = {}
-  for (const state of states) {
-    result = merge(state, result)
-  }
+// input: '{ Player carrying: Brick }'
+// output: { name: 'Player', carrying: {name: 'Brick'} }
+const stringToState = (string, names)=> {
+  const wordGroups = stringToWordGroups(string)
 
-  return result
+  return wordsToState(wordGroups, names)
 }
 
 // { Player } -> { Player carrying: Brick }
@@ -416,8 +413,8 @@ export const ruleStringToState = (ruleString, names)=> {
   const [left, right] = ruleString.split('->')
 
   return [
-    stringToState(left, names) |> flattenArrToObj,
-    stringToState(right, names) |> flattenArrToObj
+    stringToState(left, names),
+    stringToState(right, names)
   ]
 }
 
