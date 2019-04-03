@@ -20,7 +20,7 @@ export const createNewSprite = (name, x, y)=> ({
   inputs: {}
 });
 const trimBrackets = (string)=> string.replace('{', '').replace('}', '')
-const separateWords = (string)=> trimBrackets(string).trim().split(' ')
+const separateWords = (string)=> string.trim().split(' ')
 
 const states = {
   UP: {acceleration: {y: -1}},
@@ -413,8 +413,8 @@ export const ruleStringToState = (ruleString, names)=> {
   const [left, right] = ruleString.split('->')
 
   return [
-    stringToState(left, names),
-    stringToState(right, names)
+    stringToState(trimBrackets(left), names),
+    stringToState(trimBrackets(right), names)
   ]
 }
 
