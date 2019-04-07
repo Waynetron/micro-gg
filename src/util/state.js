@@ -23,9 +23,16 @@ export const createNewSprite = (name, x, y)=> ({
 // also removes a single space on the outside of the bracket (if one exists)
 // otherwise it's possible to end up with multiple spaces where brackets stack
 // eg: '{ velocity: { y: -150 } }'   *could become*   ' velocity: { y: -150  }'
-const trimBrackets = (string)=> string
-    .replace(/{[ ]{0,1}/, '')
-    .replace(/[ ]{0,1}}/, '')
+export const trimBrackets = (rawString)=> {
+  const string = rawString.trim()
+    if (!isObject(string)) {
+      return rawString
+    }
+    const openIndex = string.indexOf('{');
+    const closeIndex = string.lastIndexOf('}');
+    
+    return string.substr(openIndex + 1, closeIndex - 1).trim();
+}
 
 const separateWords = (string)=> string.trim().split(' ')
 
@@ -179,19 +186,16 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   const direction = firstWord.toLowerCase();
 
   // Get the left and right matches
-  const [left, right] = ruleString.split('->');
-  const [leftGroup] = left.match(/\{.+?\}/);
-  const [rightGroup] = right.match(/\{.+?\}/);
+  const [left, right] = ruleString.replace(firstWord, '').split('->');
 
   // <------- leftWordArrays ----->    <--- rightWordArrays -->
   // <---words--> < ----words----->    <-words-> <---words---->
   // [ UP Player | Goomba | Brick ] -> [ Player | DEAD Goomba ]
 
-  const leftWordGroupArrays = trimBrackets(leftGroup)
-    .split('|')
+  const leftWordGroupArrays = trimBrackets(left).split('|')
     .map((string)=> stringToWordGroups(string))
 
-  const rightWordGroupArrays = trimBrackets(rightGroup)
+  const rightWordGroupArrays = trimBrackets(right)
     .split('|')
     .map((string)=> stringToWordGroups(string))
 
@@ -229,13 +233,18 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   // of completely new state.
   let rightIndex = 0;
   for (const words of rightWordGroupArrays) {
-    const matchingLeft = leftWordGroupArrays[rightIndex];
-    let state;
+    const matchingLeft = leftWordGroupArrays[rightIndex]
+    let state = {};
     if (matchingLeft) {
       // If there's a matching left state, then this state is a transition of that
       // state. It may be a small change like adding DEAD to a Player.
       // Eg: [ Mario | Goomba ] -> [ DEAD Mario | Goomba ]
-      state = wordsToState(words, names);
+      
+      // Flatten and merge all the states together into a single state object
+      const states = words.map((string)=> stringToState(string, names))
+      for (const subState of states) {
+        merge(state, subState);
+      }
     }
     else {
       // If there is no matching let state, then this is a completely new state.

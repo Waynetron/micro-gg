@@ -1,4 +1,5 @@
-import {applyStateTransitions, ruleStringToState, collisionRuleStringToState} from './state'
+import {applyStateTransitions, ruleStringToState,
+  collisionRuleStringToState, trimBrackets} from './state'
 
 const names = {
   Player: true,
@@ -144,6 +145,23 @@ describe('converts collision rule string to state', ()=> {
     );
   });
 
+  it('collision rule with custom nested state', ()=> {
+    const rule = 'RIGHT { Brick | Player } -> { Brick velocity: { x: -100 } | Player }'
+
+    expect(collisionRuleStringToState(rule, names)).toEqual(
+      [
+        [
+          { name: 'Brick', colliding: {right: [{name: 'Player'}]} },
+          { name: 'Brick', velocity: {x: -100} },
+        ],
+        [
+          { name: 'Player', colliding: {left: [{name: 'Brick'}]} },
+          { name: 'Player' },
+        ]
+      ]
+    );
+  });
+
   it('multiple collision rule', ()=> {
     const rule = 'RIGHT { Player | Goomba | Goomba } -> { Player | Goomba | Goomba }'
 
@@ -166,6 +184,24 @@ describe('converts collision rule string to state', ()=> {
           ]
         ]
       )
+    );
+  });
+});
+
+describe('trimBrackets()', ()=> {
+  it('trims brackets (simple)', ()=> {
+    const input = '{ Hello }'
+
+    expect(trimBrackets(input)).toEqual(
+      'Hello'
+    );
+  });
+
+  it('trims brackets (nested)', ()=> {
+    const input = '{ Brick velocity: { x: -100 } | Player }'
+
+    expect(trimBrackets(input)).toEqual(
+      'Brick velocity: { x: -100 } | Player'
     );
   });
 });
