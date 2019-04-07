@@ -37,11 +37,11 @@ describe('converts rule string to state', ()=> {
   });
 
   it('keyboard input and movement rule', ()=> {
-    const rule = '{ <RIGHT> Player } -> { RIGHT Player }'
+    const rule = '{ <ACTION1> Player } -> { RIGHT Player }'
 
     expect(ruleStringToState(rule, names)).toEqual(
       [
-        { inputs: { right: true }, name: 'Player' },
+        { inputs: { action1: true }, name: 'Player' },
         { acceleration: { x: 1 }, name: 'Player' }
       ]
     );
@@ -65,6 +65,17 @@ describe('converts rule string to state', ()=> {
       [
         { name: 'Player' },
         { name: 'Player', carrying: {name: 'Brick'} }
+      ]
+    );
+  });
+
+  it('adds nested custom state', ()=> {
+    const rule = '{ Player } -> { Player velocity: { y: -150 } }'
+
+    expect(ruleStringToState(rule, names)).toEqual(
+      [
+        { name: 'Player' },
+        { name: 'Player', velocity: { y: -150 } }
       ]
     );
   });

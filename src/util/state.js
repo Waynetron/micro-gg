@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {matches, mergeWith, merge} from 'lodash';
+import {matches, mergeWith, merge, isNumber} from 'lodash';
 import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 
 export const createNewSprite = (name, x, y)=> ({
@@ -19,7 +19,14 @@ export const createNewSprite = (name, x, y)=> ({
   static: false,
   inputs: {}
 });
-const trimBrackets = (string)=> string.replace('{', '').replace('}', '')
+
+// also removes a single space on the outside of the bracket (if one exists)
+// otherwise it's possible to end up with multiple spaces where brackets stack
+// eg: '{ velocity: { y: -150 } }'   *could become*   ' velocity: { y: -150  }'
+const trimBrackets = (string)=> string
+    .replace(/{[ ]{0,1}/, '')
+    .replace(/[ ]{0,1}}/, '')
+
 const separateWords = (string)=> string.trim().split(' ')
 
 const states = {
@@ -104,8 +111,9 @@ const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
 
 const getColliding = (direction, leftStates, leftIndex)=> {
   // direction refers to the direction the collision rule is applied in.
-  // getCollidingForSide('bottom', 'forward' ... refers to searching for the colliding state for
-  // the bottom side by traversing the ruleString to the right (forward)
+  // getCollidingForSide('bottom', 'forward' ... refers to searching for the
+  // colliding state for the bottom side by traversing the ruleString to the
+  // right (forward)
   let colliding = {};
   const frontSide = directionToSide(direction);
   const backSide = getOpposite(frontSide);
@@ -175,48 +183,25 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   const [leftGroup] = left.match(/\{.+?\}/);
   const [rightGroup] = right.match(/\{.+?\}/);
 
-  // leftWords and rightWords can each be arbirary lengths
-  // Consider the left side could be a collision involving 3 parties but on the right side
-  // we only care about the first of those parties.
-  // [ Player | Goomba | Player2 ] -> [ | DEAD Goomba | ]
-
-  // Also consider the left side may involve no collisions, but the right side might
-  // as is the case of mario throwing a fireball
-  // HORIZONTAL [ <ACTION> Mario] -> [ Mario | HORIZONTAL Fireball ]
-  // HORIZONTAL [ <ACTION> Mario] -> [ Mario + HORIZONTAL Fireball ]
-  
-  // const min = Math.min(left.length, right.length);
-  // const max = Math.max(left.length, right.length);
-
-  // // Deal with the simple matches first
-  // for (let i = 0; i < min; i++) {
-
-  // }
-
-  // // These are the extras, the ones that don't have a match on the opposite side
-  // for (let i = min; i < max; i++) {
-  //   // If they exist on the left, but not the right. Then it is assumed the sprite is to remain as it was
-  //   if (left.length > right.length) {
-  //     const oldWords = left[i];
-  //   }
-  //   // But if they exist on the right, but not the left. Then these are new sprites to be spawned.
-  //   else {
-  //     const newWords = right[i];
-  //   }
-  // }
-
   // <------- leftWordArrays ----->    <--- rightWordArrays -->
   // <---words--> < ----words----->    <-words-> <---words---->
   // [ UP Player | Goomba | Brick ] -> [ Player | DEAD Goomba ]
-  const leftWordGroupArrays = leftGroup.split('|').map((string)=> stringToWordGroups(string))
-  const rightWordGroupArrays = rightGroup.split('|').map((string)=> stringToWordGroups(string))
+
+  const leftWordGroupArrays = trimBrackets(leftGroup)
+    .split('|')
+    .map((string)=> stringToWordGroups(string))
+
+  const rightWordGroupArrays = trimBrackets(rightGroup)
+    .split('|')
+    .map((string)=> stringToWordGroups(string))
 
   let leftStates = [];
   let rightStates = [];
 
   // Left
   // The left side is what the rule is looking to match.
-  // The colliding state should recursively nest colliding states if the rule has multiple collisions
+  // The colliding state should recursively nest colliding states if the rule
+  // has multiple collisions
   for (const words of leftWordGroupArrays) {
     const state = {
       ...wordsToState(words, names)
@@ -258,7 +243,8 @@ export const collisionRuleStringToState = (ruleString, names)=> {
       const newSprite = createNewSprite('TEMP_NAME', 0, 0);
       state = {
         ...newSprite,
-        createNew: {direction}, // indicates to applyRules not to merge this but create new state
+        // indicates to applyRules not to merge this but create new state
+        createNew: {direction},
         ...wordsToState(words, names)
         // I don't think the right side needs the colliding state calculated
       }
@@ -372,7 +358,7 @@ const wordsToState = (words, names)=> {
 // }
 
 /* Splits string into word groupings eg: 'Player', 'friction: 0.1' */
-const splitOnFirstWordGroup = (string)=> {
+const splitOnFirstWordGroupOldVersion = (string)=> {
   const words = separateWords(string)
 
   let i = 0
@@ -390,6 +376,117 @@ const splitOnFirstWordGroup = (string)=> {
   }
 }
 
+const propertyRegex = /^\b[a-z_]+\b\s{0,1}[:]/i // property can't have space before colon
+// word can still match on ':', so must come after property
+const wordRegex = /^[<]{0,1}[a-z_]+[0-9a-z_]*[>]{0,1}/i
+const objectRegex = /^\{/i // simply checks if string starts with '{'
+const numberRegex = /^[-]{0,1}[0-9]*[.]{0,1}[0-9]+/
+
+const isWord = (string)=> Boolean(string.match(wordRegex))
+const isProperty = (string)=> Boolean(string.match(propertyRegex))
+const isObject = (string)=> Boolean(string.match(objectRegex))
+const isNumberString = (string)=> Boolean(string.match(numberRegex))
+
+const splitOnProperty = (string)=> {
+  const [property] = string.match(propertyRegex)
+  const name = property.trim().replace(':', '')
+  const right = string.replace(property, '').trim()
+  
+  let numOpenBrackets = 0
+  for (var i = 0; i < right.length; i++) {
+    const char = right.charAt(i)
+
+    if (numOpenBrackets < 0) {
+      console.error('more closing brackets than opening brackets')
+    }
+
+    if (char === '{') {
+      numOpenBrackets++
+    }
+    else if (char === '}') {
+      numOpenBrackets--
+    }
+    else if (char === ' ' && numOpenBrackets === 0) {
+      const value = right.slice(0, i + 1).trim()
+      const remainder = right.slice(i + 1).trim()
+      
+      return [
+        `${name}: ${value}`,
+        remainder
+      ]
+    }
+  }
+
+  if (numOpenBrackets !== 0) {
+    console.error('unclosed brackets')
+  }
+  
+  // Made it to the end:
+  // value is entire string, no remainder
+  return  [`${name}: ${right}`, '']
+}
+
+const splitOnObject = (string)=> {
+  let numOpenBrackets = 0
+  for (var i = 0; i < string.length; i++) {
+    const char = string.charAt(i)
+
+    if (numOpenBrackets < 0) {
+      console.error('more closing brackets than opening brackets')
+    }
+
+    if (char === '{') {
+      numOpenBrackets++
+    }
+    else if (char === '}') {
+      numOpenBrackets--
+    }
+    else if (char === ' ' && numOpenBrackets === 0) {
+      const objectString = string.slice(0, i + 1).trim()
+      const remainder = string.slice(i + 1).trim()
+
+      return [
+        objectString,
+        remainder
+      ]
+    }
+  }
+
+  if (numOpenBrackets !== 0) {
+    console.error('unclosed brackets')
+  }
+  
+  // Made it to the end:
+  // value is entire string, no remainder
+  return  [string, '']
+}
+
+const splitOnFirstWordGroup = (rawString)=> {
+  const string = rawString.trim()
+
+  if (isObject(string)) {
+    return splitOnObject(string)
+  }
+
+  if (isProperty(string)) {
+    return splitOnProperty(string)
+  }
+
+  if (isWord(string)) {
+    const [word] = string.match(wordRegex)
+
+    return [word.trim(), string.replace(word, '')]
+  }
+
+  if (isNumberString(string)) {
+    const [numberString] = string.match(numberRegex)
+
+    return [numberString, string.replace(numberString, '')]
+  }
+
+  console.error('made it to the end without returning anything:', string)
+}
+
 const stringToWordGroups = (string)=> {  
   const [left, rest] = splitOnFirstWordGroup(string)
 
@@ -400,12 +497,70 @@ const stringToWordGroups = (string)=> {
   return [left, ...stringToWordGroups(rest)]
 }
 
+const propertyToState = (property, names)=> {
+  const firstColonRegex = /:(.+)/ 
+  // the (.+) in the regex is to ensure the rest of the string is included in the 2nd arg
+  // without it, the string will split on every colon, not just the first
+  const [name, right] = property.split(firstColonRegex)
+  
+  if (isObject(right.trim())) {
+    const trimmed = trimBrackets(right.trim())
+    const innerState = stringToState(trimmed, names)
+    
+    return {
+      [name]: {...innerState},
+    }
+  }
+  else {
+    const valueState = stringToState(right.trim(), names)
+
+    return {
+      [name]: valueState,
+    }
+  }
+}
+
 // input: '{ Player carrying: Brick }'
 // output: { name: 'Player', carrying: {name: 'Brick'} }
 const stringToState = (string, names)=> {
   const wordGroups = stringToWordGroups(string)
 
-  return wordsToState(wordGroups, names)
+  if (wordGroups.length === 0) {
+    console.error('No word groups')
+  }
+  else if (wordGroups.length === 1) {
+    const [group] = wordGroups
+
+    // Property
+    if (isProperty(group)) {
+      return propertyToState(group, names)
+    }
+
+    // Expandable keyword
+    if (isWord(group)) {
+      return wordsToState([group], names)
+    }
+
+    if (isNumberString(group)) {
+      return parseFloat(group)
+    }
+
+    console.error('not dealing with:', wordGroups)
+    return {}
+  }
+
+  let states = []
+  for (const group of wordGroups) {
+    states.push(stringToState(group, names))
+  }
+
+  // Flatten and merge all the states together into a single state object
+  let resultState = {};
+  for (const state of states) {
+    merge(resultState, state);
+  }
+
+  return resultState
 }
 
 // { Player } -> { Player carrying: Brick }
