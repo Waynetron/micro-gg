@@ -1,9 +1,9 @@
-# Game script
+# Micro gg
 
-Game script is a simple rules based language for making games
+Micro gg is a simple rules based language for making games
 
 
-## Some ideas around how it *might* work
+## How does it work?
 
 Levels can be drawn with ascii
 ```
@@ -18,7 +18,6 @@ Levels can be drawn with ascii
 ```
 
 Create things simply naming them in the legend
-Click on the name and you can edit the appearance in a little pixel editor to the side (haha, yeah right).
 ```
 P = Player
 ? = QuestionBrick
@@ -48,13 +47,7 @@ Contrast that to something like this, which would only apply to the player if it
 
 ```UP [ Player | Brick ] -> [ Player ]```
 
+
 ### Hit question brick and spawn mushroom
 
 ```UP [ Player | QuestionBrick ] -> [ Player | SolidBrick | Mushroom ]```
-
-
-## Game frameworks I've unsuccessfully tried so far ##
-
-[Flockn](https://github.com/flockn/flockn)
-[Phaser] (https://phaser.io)
-[React-game-kit] (https://github.com/FormidableLabs/react-game-kit)
