@@ -1,5 +1,5 @@
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
-  getLevelDimensions} from '../util/parse.js';
+  parseVariables, getLevelDimensions} from '../util/parse.js';
 import {getStateTransitions, isAlive, getNewStateToAdd, addNewState, applyStateTransitions} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
@@ -77,6 +77,8 @@ const gameReducer = (state = defaultState, action) => {
       // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
       const namesArr = parseNames(code);
       const names = arrayToObject(namesArr);
+
+      const variables = parseVariables(code);
       
       const imageMap = {...state.imageMap};
       for (const name of namesArr) {
@@ -87,7 +89,7 @@ const gameReducer = (state = defaultState, action) => {
       }
 
         // A rule consists of a before and an after state
-        const rules = parseRules(code, names);
+        const rules = parseRules(code, names, variables);
 
         const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 

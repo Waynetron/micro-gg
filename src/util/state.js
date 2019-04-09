@@ -51,7 +51,8 @@ const states = {
   SLOW_RIGHT: {acceleration: {x: 0.5}},
   JUMP: {velocity: {y: -150}},
   DEAD: {dead: true},
-  STATIC: {static: true}
+  STATIC: {static: true},
+  STATIONARY: {velocity: {x: 0, y: 0}}
 };
 
 const inputs = {
@@ -633,28 +634,6 @@ export const addNewState = (sprites, newState)=> {
 //     return objValue + srcValue;
 //   }
 // }
-
-export const getStateChanges = (sprites, transitions)=> {
-  if (transitions.length === 0) {
-    return {};
-  }
-
-  const stateChanges = sprites.map((sprite)=> {
-    let resultState = {...sprite};
-
-    for (const transition of transitions) {
-      const [left, right] = transition;
-
-      if (matches(left)(sprite)) {
-        resultState = mergeWith(resultState, right)
-      }
-    }
-
-    return resultState;
-  })
-
-  return stateChanges
-};
 
 export const getStateTransitions = (rules, sprites)=> {
   if (rules.length === 0) {

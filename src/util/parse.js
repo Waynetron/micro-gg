@@ -1,4 +1,4 @@
-import {createNewSprite} from './state.js';
+import {createNewSprite, trimBrackets} from './state.js';
 import {flatten} from 'lodash';
 import {TILE_SIZE} from '../Game/constants.js';
 import uniqid from 'uniqid';
@@ -8,6 +8,7 @@ const isCollisionRule = (line)=> line.includes('|');
 const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
 const isLevel = (line)=> line.match(/#.+#/g)
 export const isLegend = (line)=> line.includes('=');
+const isVariable = (line)=> line.match(/=[ ]{0,1}\{/g)
 
 export const parseLegend = (code)=> {
   let legend = {};
@@ -48,6 +49,24 @@ export const parseNames = (code)=> {
   return flatten(names);
 };
 
+export const parseVariables = (code)=> {
+  const lines = code.split('\n').filter(isVariable)
+
+  let results = {}
+  for (const line of lines) {
+    const [name, expansion] = line.split(' = ')
+    
+    // {CUSTOM_TEST: ['velocity: { y: 6 }']}
+    // expansion sits inside array because that is how it is done with the 
+    // standardExpansions. Doesn't make a whole lot of sense here,
+    // but with the standardExpansions (DOWN, UP etc) they can have multiple expansions
+    // per name, so I just wanted to keep the implementation simple
+    results[name] = [trimBrackets(expansion)]
+  }
+
+  return results
+}
+
 export const getLevelDimensions = (level)=> {
   const width_in_tiles = level[0].length;
   const height_in_tiles = level.length;
@@ -74,20 +93,10 @@ export const parseSprites = (level, legend)=> {
   return sprites;
 };
 
-const expansionMappings = {
+export const standardExpansions = {
   ALL: ['UP', 'DOWN', 'LEFT', 'RIGHT'],
   HORIZONTAL: ['LEFT', 'RIGHT'],
   VERTICAL: ['UP', 'DOWN']
-}
-
-const isExpandable = (line)=> {
-  for (const key of Object.keys(expansionMappings)) {
-    if (line.includes(key)) {
-      return true
-    }
-  }
-
-  return false
 }
 
 // replaces all occurrances of a word in a string with the given word
@@ -112,9 +121,10 @@ Becomes:
   LEFT [Player] -> [Player]
   RIGHT [Player] -> [Player]
  */
-const expandRule = (line)=> {
+const expandRule = (line, expansions)=> {
   const lines = []
-  for (const [key, words] of Object.entries(expansionMappings)) {
+  
+  for (const [key, words] of Object.entries(expansions)) {
     if (line.includes(key)) {
       for (const word of words) {
         lines.push(
@@ -143,20 +153,31 @@ const expandRule = (line)=> {
   return lines;
 }
 
-export const expandRules = (lines)=> {
-  const alreadyExpanded = lines.filter((line)=> !isExpandable(line))
-  const freshlyExpanded = flatten(
-    lines.filter(isExpandable).map(expandRule)
+const isExpandable = (line, expansions)=> {
+  for (const key of Object.keys(expansions)) {
+    if (line.includes(key)) {
+      return true
+    }
+  }
+
+  return false
+}
+
+export const expandRules = (lines, expansions)=> {
+  const notExpandable = lines.filter((line)=> !isExpandable(line, expansions))
+  const expanded = flatten(
+    lines.filter((line)=> isExpandable(line, expansions))
+      .map((line)=> expandRule(line, expansions))
   )
 
-  if (freshlyExpanded.length === 0) {
+  if (expanded.length === 0) {
     // fully expanded, stop recursing
     return lines
   }
   
   return [
-    ...alreadyExpanded,
-    ...expandRules(freshlyExpanded)
+    ...notExpandable,
+    ...expandRules(expanded, expansions)
   ]
 }
 
@@ -172,18 +193,21 @@ export const addImplicitKeywords = (line) => {
   return appendedLine;
 }
 
-export const parseRules = (code, names)=> {
+export const parseRules = (code, names, variables)=> {
+  const customExpansions = variables
+  const expansions = {...customExpansions, ...standardExpansions}
+  
   const regularRules = code
     .split('\n')
     .filter(isRule)
-    |> expandRules
+    |> ((ruleStrings)=> expandRules(ruleStrings, expansions))
     |> ((ruleStrings)=> ruleStrings.map((string)=> ruleStringToState(string, names)))
   
   const collisionRules = code
     .split('\n')
     .filter(isCollisionRule)
     .map(addImplicitKeywords)
-    |> expandRules
+    |> ((ruleStrings)=> expandRules(ruleStrings, expansions))
     |> ((ruleStrings)=> ruleStrings.map((string)=> collisionRuleStringToState(string, names)))
     |> flatten
   
