@@ -186,6 +186,7 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   const [firstWord] = ruleString.match(/^([A-Z]+)\b/);
   const direction = firstWord.toLowerCase();
 
+
   // Get the left and right matches
   const [left, right] = ruleString.replace(firstWord, '').split('->');
 

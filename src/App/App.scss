@@ -64,7 +64,7 @@ header {
   justify-content: space-between;
 }
 
-h1.logo {
+logo h1 {
   flex-grow: 1;
   margin: 0;
   margin-top: -5px;
@@ -80,6 +80,7 @@ button {
   font-size: 0.8rem;
   width: 6rem;
   margin-right: 1rem;
+  cursor: pointer;
 
   &:focus {
     outline: 0;
@@ -101,17 +102,25 @@ button.secondary {
   color: var(--dark-color);
 }
 
+button.collapsible {
+  text-align: left;
+  opacity: 0.33;
+  padding-left: 1rem;
+}
+
 .code, .game-container {
   display: flex;
   flex-direction: column;
 }
 
 .code {
-  flex-grow: 1;
-
   .rule:hover {
     background-color: var(--hover-color);
   }
+}
+
+.rules {
+  flex-grow: 20;
 }
 
 .stage {
@@ -128,7 +137,7 @@ button.secondary {
   background-color: var(--dark-color);
   font-size: 1.0rem;
   font-family: 'Fira Code';
-  padding: 1rem;
+  padding: 1rem 2rem;
   color: var(--primary-color);
 }
 

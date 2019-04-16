@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {updateCode, compile} from './actions.js';
+import React, {Fragment, useEffect, useState} from 'react';
+import {compile} from './actions.js';
 import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
@@ -16,16 +16,6 @@ const makeGrammar = ()=> {
 }
 
 const grammar = makeGrammar();
-
-const onKeyDown = (event, editor, next)=> {
-  if (event.ctrlKey && event.key === 'b') {
-    event.preventDefault()
-    console.log('add bold')
-    editor.addMark('bold')
-  } else {
-    return next()
-  }
-}
 
 const getContent = (token)=> {
   if (typeof token == 'string') {
@@ -128,32 +118,87 @@ const renderMark = (props, editor, next, imageMap) => {
   }
 }
 
-const Code = ({code, imageMap, onUpdateCode, onCompile})=> {
+const Code = ({level, legend, rules, imageMap,
+  onUpdateRules, onUpdateLevel, onUpdateLegend, onCompile}
+)=> {
   // manually trigger code change on first load
   useEffect(() => {
-    onCompile(code);
-  }, []);
+    onCompile({level, legend, rules});
+  }, [])
 
-  return <Editor
-    className={'code'}
-    defaultValue={Plain.deserialize(code)}
-    onChange={onUpdateCode}
-    onKeyDown={onKeyDown}
-    decorateNode={decorateNode}
-    renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
-  />
+  const [expanded, setExpanded] = useState({
+    level: true,
+    legend: true,
+    rules: true
+  })
+
+  const toggleExpanded = (section)=> {
+    setExpanded({...expanded, [section]: !expanded[section]})
+  }
+
+  return (
+    <Fragment>
+      <button className='primary collapsible' onClick={()=> toggleExpanded('level')}>
+        Level
+      </button>
+      {expanded.level && <Editor
+        className={'code level'}
+        defaultValue={Plain.deserialize(level)}
+        onChange={onUpdateLevel}
+        decorateNode={decorateNode}
+        renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+      />}
+      <button className='primary collapsible' onClick={()=> toggleExpanded('legend')}>
+        Legend
+      </button>
+      {expanded.legend && <Editor
+        className={'code legend'}
+        defaultValue={Plain.deserialize(legend)}
+        onChange={onUpdateLegend}
+        decorateNode={decorateNode}
+        renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+      />}
+      <button className='primary collapsible' onClick={()=> toggleExpanded('rules')}>
+        Rules
+      </button>
+      {expanded.rules && <Editor
+        className={'code rules'}
+        defaultValue={Plain.deserialize(rules)}
+        onChange={onUpdateRules}
+        decorateNode={decorateNode}
+        renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+      />}
+    </Fragment>
+  )
 };
 
 const mapStateToProps = ({code, game})=> ({
-  code: code.code,
+  level: code.level,
+  legend: code.legend,
+  rules: code.rules,
   width: game.width, 
   height: game.height,
   imageMap: game.imageMap
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  onUpdateCode: ({value})=> {
-    dispatch(updateCode(Plain.serialize(value)));
+  onUpdateRules: ({value})=> {
+    dispatch({
+      type: 'UPDATE_RULES',
+      rules: Plain.serialize(value)
+    })
+  },
+  onUpdateLevel: ({value})=> {
+    dispatch({
+      type: 'UPDATE_LEVEL',
+      level: Plain.serialize(value)
+    })
+  },
+  onUpdateLegend: ({value})=> {
+    dispatch({
+      type: 'UPDATE_LEGEND',
+      legend: Plain.serialize(value)
+    })
   },
   onCompile: (code)=> {
     dispatch(compile(code));

@@ -202,7 +202,7 @@ export const parseRules = (code, names, variables)=> {
     .filter(isRule)
     |> ((ruleStrings)=> expandRules(ruleStrings, expansions))
     |> ((ruleStrings)=> ruleStrings.map((string)=> ruleStringToState(string, names)))
-  
+
   const collisionRules = code
     .split('\n')
     .filter(isCollisionRule)

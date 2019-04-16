@@ -64,9 +64,8 @@ const gameReducer = (state = defaultState, action) => {
     
     case 'COMPILE':
       try {
-        const code = removeComments(action.code);
-        const level = parseLevel(code);
-        const legend = parseLegend(code);
+        const level = parseLevel(removeComments(action.code.level));
+        const legend = parseLegend(removeComments(action.code.legend));
         const sprites = parseSprites(level, legend);
     
       // Names is the legend mapped to have the values as keys. Used for fast name lookup.
@@ -75,10 +74,10 @@ const gameReducer = (state = defaultState, action) => {
       // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
       // not also appear in the legend.
       // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-      const namesArr = parseNames(code);
+      const namesArr = parseNames(action.code.legend);
       const names = arrayToObject(namesArr);
 
-      const variables = parseVariables(code);
+      const variables = parseVariables(action.code.rules);
       
       const imageMap = {...state.imageMap};
       for (const name of namesArr) {
@@ -89,7 +88,7 @@ const gameReducer = (state = defaultState, action) => {
       }
 
         // A rule consists of a before and an after state
-        const rules = parseRules(code, names, variables);
+        const rules = parseRules(removeComments(action.code.rules), names, variables);
 
         const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 

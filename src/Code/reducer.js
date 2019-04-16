@@ -1,6 +1,7 @@
 
-const initialCode = `
-##################
+const initialCode = {
+  level:
+`##################
 #                #
 #                #
 #                #
@@ -9,14 +10,14 @@ const initialCode = `
 #     ###?#      #
 #                #
 #    P       G   #
-##################
-
-P = Player
+##################`,
+  legend:
+`P = Player
 # = Brick
 ? = QuestionBrick
-G = Goomba
-
-// Accelerate down, like gravity
+G = Goomba`,
+  rules:
+`// Accelerate down, like gravity
 { Player } -> { DOWN Player }
 { Goomba } -> { DOWN Goomba }
 
@@ -37,17 +38,23 @@ DOWN { Player | Goomba } -> { Player | DEAD Goomba }
 UP { Player | Brick } -> { Player | DEAD Brick }
 
 // Head-butting QuestionBrick turns it into another Player
-UP { Player | QuestionBrick } -> { Player | JUMP Player }
-`;
+UP { Player | QuestionBrick } -> { Player | JUMP Player }`
+}
 
 const defaultState = {
-  code: initialCode
+  level: initialCode.level,
+  legend: initialCode.legend,
+  rules: initialCode.rules
 }
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case 'UPDATE_CODE':
-      return {...state, code: action.code}
+    case 'UPDATE_LEVEL':
+      return {...state, level: action.level}
+    case 'UPDATE_LEGEND':
+      return {...state, legend: action.legend}
+    case 'UPDATE_RULES':
+      return {...state, rules: action.rules}
     default:
       return state
   }
