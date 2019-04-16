@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {matches, mergeWith, merge, isNumber} from 'lodash';
+import {matches, mergeWith, merge} from 'lodash';
 import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 
 export const createNewSprite = (name, x, y)=> ({
@@ -33,8 +33,6 @@ export const trimBrackets = (rawString)=> {
     
     return string.substr(openIndex + 1, closeIndex - 1).trim();
 }
-
-const separateWords = (string)=> string.trim().split(' ')
 
 const states = {
   UP: {acceleration: {y: -1}},
@@ -367,25 +365,6 @@ const wordsToState = (words, names)=> {
 
 //   return ruleString;
 // }
-
-/* Splits string into word groupings eg: 'Player', 'friction: 0.1' */
-const splitOnFirstWordGroupOldVersion = (string)=> {
-  const words = separateWords(string)
-
-  let i = 0
-  for (const word of words) {
-    if (!word.includes(':')) {
-      const split = [
-        words.slice(0, i + 1).join(" "),
-        words.slice(i + 1).join(" ")
-      ]
-
-      return split
-    }
-
-    i++
-  }
-}
 
 const propertyRegex = /^\b[a-z_]+\b\s{0,1}[:]/i // property can't have space before colon
 // word can still match on ':', so must come after property
