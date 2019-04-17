@@ -7,24 +7,6 @@ const names = {
   Goomba: true
 }
 
-// describe('trim preceeding keywords', ()=> {
-//   it('trims preceeding direction (& ignores others)', ()=> {
-//     const rule = 'RIGHT { Player } -> { Player RIGHT }'
-
-//     expect(trimPreceedingKeyword(rule)).toEqual(
-//       '{ Player } -> { Player RIGHT }'
-//     );
-//   });
-
-//   it('doesnt trim if no keyword', ()=> {
-//     const rule = '{ Player } -> { Player DOWN }'
-
-//     expect(trimPreceedingKeyword(rule)).toEqual(
-//       '{ Player } -> { Player DOWN }'
-//     );
-//   });
-// });
-
 describe('converts rule string to state', ()=> {
   it('simple rule', ()=> {
     const rule = '{ Player } -> { Player DOWN }'

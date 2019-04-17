@@ -354,18 +354,6 @@ const wordsToState = (words, names)=> {
   return resultState;
 };
 
-// export const trimPreceedingKeyword = (ruleString)=> {
-//   const directions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
-//   const [left] = ruleString.split('[')
-//   const firstWord = left.trim()
-  
-//   if (directions.includes(firstWord)) {
-//     return ruleString.replace(firstWord, '').trim()
-//   }
-
-//   return ruleString;
-// }
-
 const propertyRegex = /^\b[a-z_]+\b\s{0,1}[:]/i // property can't have space before colon
 // word can still match on ':', so must come after property
 const wordRegex = /^[<]{0,1}[a-z_]+[0-9a-z_]*[>]{0,1}/i
