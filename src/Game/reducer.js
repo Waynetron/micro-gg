@@ -1,5 +1,5 @@
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
-  parseVariables, getLevelDimensions} from '../util/parse.js';
+  parseVariables, getLevelDimensions} from '../util/parse.js'
 import {getStateTransitions, isAlive, getNewStateToAdd, addNewState, applyStateTransitions} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
@@ -8,6 +8,7 @@ import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
 import {TILE_SIZE} from '../Game/constants.js'
 
 const defaultState = {
+  currentView: 'game',
   sprites: [],
   legend: {},
   names: {},
@@ -26,7 +27,7 @@ const defaultState = {
     regular: {}
   },
   images: ['player', 'brick', 'questionbrick', 'spike', 'goomba', 'goombared']
-};
+}
 
 const arrayToObject = (array) =>
    array.reduce((obj, item) => {
@@ -64,8 +65,8 @@ const gameReducer = (state = defaultState, action) => {
     
     case 'COMPILE':
       try {
-        const level = parseLevel(removeComments(action.code.level));
-        const legend = parseLegend(removeComments(action.code.legend));
+        const level = parseLevel(removeComments(action.level));
+        const legend = parseLegend(removeComments(action.legend));
         const sprites = parseSprites(level, legend);
     
       // Names is the legend mapped to have the values as keys. Used for fast name lookup.
@@ -74,10 +75,10 @@ const gameReducer = (state = defaultState, action) => {
       // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
       // not also appear in the legend.
       // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-      const namesArr = parseNames(action.code.legend);
+      const namesArr = parseNames(action.legend);
       const names = arrayToObject(namesArr);
 
-      const variables = parseVariables(action.code.rules);
+      const variables = parseVariables(action.rules);
       
       const imageMap = {...state.imageMap};
       for (const name of namesArr) {
@@ -88,7 +89,7 @@ const gameReducer = (state = defaultState, action) => {
       }
 
         // A rule consists of a before and an after state
-        const rules = parseRules(removeComments(action.code.rules), names, variables);
+        const rules = parseRules(removeComments(action.rules), names, variables);
 
         const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 
@@ -112,6 +113,9 @@ const gameReducer = (state = defaultState, action) => {
       }
 
     case 'UPDATE':
+      if (state.currentView !== 'game') {
+        return state;
+      }
       const previousState = {...state};
       const stateToAdd = getNewStateToAdd(state.sprites, state.rules.create)
       
@@ -119,6 +123,8 @@ const gameReducer = (state = defaultState, action) => {
         modify: getStateTransitions(state.rules.modify, state.sprites),
         create: getStateTransitions(state.rules.create, state.sprites),
       }
+
+      const winners = state.sprites.filter((sprite)=> Boolean(sprite.win))
 
       const newSprites = state.sprites.filter(isAlive)
         |> ((sprites)=> addNewState(sprites, stateToAdd))
@@ -140,7 +146,8 @@ const gameReducer = (state = defaultState, action) => {
       return {
           ...state,
           sprites: newSprites,
-          stateTransitions
+          stateTransitions,
+          currentView: winners.length > 0 ? 'menu' : state.currentView
       }
     case 'SET_INPUT':
     return {

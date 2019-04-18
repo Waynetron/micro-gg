@@ -100,3 +100,46 @@ TOO_MANY = ONE or TWO or THREE
   { Creature <LEFT> } -> { Creature TOO_MANY },
   { Creature <RIGHT> } -> { Creature TOO_MANY }
 ]
+
+* -----------------------------------
+* Ideas around win conditions
+{ Player | Goal } -> { Player | Goal } WIN
+{ Player carrying: Flag } -> win
+no Enemy -> win
+
+{ Level } -> { Level: _+1 }
+
+
+* -----------------------------------
+* Win rule to state transition
+
+* Rule string
+{ Player carrying: Flag } -> WIN
+
+* Gets parsed as a win rule rather than a regular or collision rule
+* Gets converted to state and added to rules.win
+
+* Rule state (rules.win)
+[
+  { name: 'Player' },
+  { level: 'win' }
+]
+
+* Gets converted to a state transition. Likely through a custom function
+* rather than getStateTransitions() which is tailored for sprites
+
+* State transition
+settings: {
+  level: 'win',
+}
+
+* Once it is a state transition, should be able to use the regular applyStateTransition
+* function to get the state merged.
+* Just by passing in [settings] rather than sprites
+
+* -----------------------------------
+* Simpler win rule idea
+
+{ Player carrying: Flag } -> { Player WIN }
+* Works for any number of players
+* Take the name of the sprite that won, and use that in the win text "Player wins"

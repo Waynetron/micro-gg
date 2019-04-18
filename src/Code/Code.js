@@ -1,5 +1,4 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {compile} from './actions.js';
 import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
@@ -119,11 +118,11 @@ const renderMark = (props, editor, next, imageMap) => {
 }
 
 const Code = ({level, legend, rules, imageMap,
-  onUpdateRules, onUpdateLevel, onUpdateLegend, onCompile}
+  onUpdateRules, onUpdateLevel, onUpdateLegend, compile}
 )=> {
   // manually trigger code change on first load
   useEffect(() => {
-    onCompile({level, legend, rules});
+    compile(level, legend, rules);
   }, [])
 
   const [expanded, setExpanded] = useState({
@@ -200,8 +199,11 @@ const mapDispatchToProps = (dispatch)=> ({
       legend: Plain.serialize(value)
     })
   },
-  onCompile: (code)=> {
-    dispatch(compile(code));
+  compile: (level, legend, rules)=> {
+    dispatch({
+      type: 'COMPILE',
+      level, legend, rules
+    });
   }
 });
 

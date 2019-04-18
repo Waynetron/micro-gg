@@ -50,7 +50,8 @@ const states = {
   JUMP: {velocity: {y: -150}},
   DEAD: {dead: true},
   STATIC: {static: true},
-  STATIONARY: {velocity: {x: 0, y: 0}}
+  STATIONARY: {velocity: {x: 0, y: 0}},
+  WIN: {win: true}
 };
 
 const inputs = {

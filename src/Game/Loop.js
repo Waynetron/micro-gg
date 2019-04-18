@@ -22,7 +22,9 @@ const Loop = ({onTimeChange})=> {
 
 const mapDispatchToProps = (dispatch)=> ({
   onTimeChange: ()=> {
-    dispatch(update());
+    dispatch({
+      type: 'UPDATE'
+    });
   }
 });
 

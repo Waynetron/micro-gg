@@ -7,7 +7,6 @@ import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import SpriteEditor from '../SpriteEditor/SpriteEditor';
 import ExamplesModal from '../Examples/ExamplesModal';
-import {compile, setActive} from '../Code/actions';
 import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput, toggleTheme} from './actions.js';
 import CustomProperties from 'react-custom-properties';
@@ -63,9 +62,9 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 });
 
 const App = ({
-    code, compile, theme, sprites, imageMap, width, height, debug, error,
-    isGameActive, setGameActive, onToggleDebug, onSetInput, onCancelInput, onToggleTheme,
-    onToggleExamples, onOpenCloseSpriteEditor
+    legend, level, rules, compile, theme, sprites, imageMap, width, height, debug,
+    error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
+    onCancelInput, onToggleTheme, onOpenCloseSpriteEditor
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
   
@@ -92,7 +91,7 @@ const App = ({
           handlers={handlers(
             onSetInput,
             onCancelInput,
-            ()=> compile(code),
+            ()=> compile(level, legend, rules),
             (active)=> setGameActive(active),
             ()=> onToggleDebug(),
             isGameActive
@@ -101,7 +100,11 @@ const App = ({
         >
           <div className="right">
             <header>
-              <button className='primary' onClick={()=> compile(code)}>compile</button>
+              <button
+                className='primary'
+                onClick={()=> compile(level, legend, rules)}>
+                compile
+              </button>
               <button className='secondary' onClick={()=> setGameActive(!isGameActive)}>
                 {isGameActive ? 'pause' : 'run'}
               </button>
@@ -111,15 +114,18 @@ const App = ({
               <SpriteEditor
                 onClose={()=> onOpenCloseSpriteEditor(false)}
               />
-              <Game
-              sprites={sprites}
-              imageMap={imageMap}
-              width={width}
-              height={height}
-              debug={debug}
-              error={error}
-            />
-          </div>
+              {currentView === 'game'
+                ? <Game
+                    sprites={sprites}
+                    imageMap={imageMap}
+                    width={width}
+                    height={height}
+                    debug={debug}
+                    error={error}
+                  />
+                : <p>You are a winner</p>
+              }
+            </div>
           </div>
         </HotKeys>
       </div>
@@ -128,7 +134,9 @@ const App = ({
 };
 
 const mapStateToProps = ({code, game})=> ({
-  code: code.code,
+  level: code.level,
+  legend: code.legend,
+  rules: code.rules,
   theme: game.theme,
   isGameActive: game.active,
   sprites: game.sprites,
@@ -136,15 +144,22 @@ const mapStateToProps = ({code, game})=> ({
   width: game.width,
   height: game.height,
   debug: game.debug,
-  error: game.error
+  error: game.error,
+  currentView: game.currentView
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  compile: (code)=> {
-    dispatch(compile(code));
+  compile: (level, legend, rules)=> {
+    dispatch({
+      type: 'COMPILE',
+      level, legend, rules
+    });
   },
   setGameActive: (active)=> {
-    dispatch(setActive(active));
+    dispatch({
+      type: 'SET_ACTIVE',
+      active
+    });
   },
   onSetInput: (input)=> {
     dispatch(setInput(input));
@@ -157,9 +172,6 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onToggleTheme: ()=> {
     dispatch(toggleTheme());
-  },
-  onToggleExamples: ()=> {
-    dispatch({type: 'app/OPEN_EXAMPLES'})
   },
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
