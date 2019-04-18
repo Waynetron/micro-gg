@@ -78,8 +78,9 @@ button {
   text-transform: uppercase;
   font-weight: 800;
   font-size: 0.8rem;
-  width: 6rem;
+  min-width: 6rem;
   margin-right: 1rem;
+  padding: auto 1rem;
   cursor: pointer;
 
   &:focus {
@@ -94,6 +95,11 @@ button:last-child {
 button.primary {
   background-color: var(--dark-color);
   color: var(--primary-color);
+}
+
+button.primary.inverted {
+  background-color: var(--primary-color);
+  color: var(--dark-color);
 }
 
 button.secondary {

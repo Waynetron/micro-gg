@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys';
 
 import Game from '../Game/Game.js';
+import {Menu} from '../Menu/Menu.js';
 import Loop from '../Game/Loop.js';
 import Code from '../Code/Code.js';
 import SpriteEditor from '../SpriteEditor/SpriteEditor';
@@ -123,7 +124,10 @@ const App = ({
                     debug={debug}
                     error={error}
                   />
-                : <p>You are a winner</p>
+                : <Menu
+                    width={width}
+                    height={height}
+                  />
               }
             </div>
           </div>
