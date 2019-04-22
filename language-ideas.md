@@ -143,3 +143,11 @@ settings: {
 { Player carrying: Flag } -> { Player WIN }
 * Works for any number of players
 * Take the name of the sprite that won, and use that in the win text "Player wins"
+
+
+* ------------------------------------
+* Alternate DEAD syntax idea
+
+{ Player | Enemy } -> { Player FLASH | _ | Giblets }
+
+{ Enemy DEAD } -> { Explosion }
