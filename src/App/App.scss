@@ -82,6 +82,8 @@ button {
   margin-right: 1rem;
   padding: auto 1rem;
   cursor: pointer;
+  background-color: var(--dark-color);
+  color: var(--primary-color);
 
   &:focus {
     outline: 0;
@@ -92,19 +94,14 @@ button:last-child {
   margin-right: 0;
 }
 
-button.primary {
-  background-color: var(--dark-color);
-  color: var(--primary-color);
-}
-
-button.primary.inverted {
-  background-color: var(--primary-color);
-  color: var(--dark-color);
-}
-
 button.secondary {
   background-color: transparent;
   border: solid 2px var(--dark-color);
+  color: var(--dark-color);
+}
+
+button.inverted {
+  background-color: var(--primary-color);
   color: var(--dark-color);
 }
 

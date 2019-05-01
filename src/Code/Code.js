@@ -146,6 +146,7 @@ const Code = ({level, legend, rules, imageMap,
         onChange={onUpdateLevel}
         decorateNode={decorateNode}
         renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+        spellCheck={false}
       />}
       <button className='primary collapsible' onClick={()=> toggleExpanded('legend')}>
         Legend
@@ -156,6 +157,7 @@ const Code = ({level, legend, rules, imageMap,
         onChange={onUpdateLegend}
         decorateNode={decorateNode}
         renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+        spellCheck={false}
       />}
       <button className='primary collapsible' onClick={()=> toggleExpanded('rules')}>
         Rules
@@ -166,6 +168,7 @@ const Code = ({level, legend, rules, imageMap,
         onChange={onUpdateRules}
         decorateNode={decorateNode}
         renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+        spellCheck={false}
       />}
     </Fragment>
   )

@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.9.2",
+    "firebase": "^5.10.0",
     "immutable": "^4.0.0-rc.12",
     "node-sass": "^4.11.0",
     "prismjs": "^1.15.0",
@@ -15,6 +16,7 @@
     "react-redux": "^7.0.2",
     "react-scripts": "2.1.1",
     "react-textarea-autosize": "^7.1.0",
+    "react-with-firebase-auth": "^1.0.2",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
     "slate": "^0.44.10",

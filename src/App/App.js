@@ -1,6 +1,10 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys';
+import firebase from '../firebase.js'
+import withFirebaseAuth from 'react-with-firebase-auth'
+import * as firebaseApp from 'firebase/app';
+import 'firebase/auth';
 
 import Game from '../Game/Game.js';
 import {Menu} from '../Menu/Menu.js';
@@ -12,6 +16,15 @@ import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput, toggleTheme} from './actions.js';
 import CustomProperties from 'react-custom-properties';
 import './App.scss';
+
+
+const firestore = firebase.firestore()
+
+const firebaseAppAuth = firebase.auth();
+const providers = {
+  googleProvider: new firebaseApp.auth.GoogleAuthProvider(),
+};
+
 
 const darkColors = {
   primary: '#F1A0A0',
@@ -65,7 +78,8 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 const App = ({
     legend, level, rules, compile, theme, sprites, imageMap, width, height, debug,
     error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
-    onCancelInput, onToggleTheme, onOpenCloseSpriteEditor
+    onCancelInput, onToggleTheme, onOpenCloseSpriteEditor,
+    user, signOut, save, load, signInWithGoogle, // Firebase auth
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
   
@@ -82,9 +96,20 @@ const App = ({
           <header>
             <h1 className='logo'>micro gg</h1>
             <ExamplesModal />
-            <button className='primary' onClick={()=> onToggleTheme()}>
+            <button onClick={()=> onToggleTheme()}>
               {theme === 'dark' ? 'light' : 'dark'}
             </button>
+            {
+              user || true
+                ? <Fragment>
+                    <button onClick={()=> save(level, legend, rules)}>Save</button>
+                    <button onClick={()=> load()}>Load</button>
+                    <button onClick={signOut}>Sign out</button>
+                  </Fragment>
+                : <Fragment>
+                    <button onClick={signInWithGoogle}>Sign in with Google to save</button>
+                  </Fragment>
+            }
           </header>
           <Code imageMap={imageMap} />
         </div>
@@ -179,10 +204,43 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
+  },
+  save: (level, legend, rules)=> {
+    dispatch({type: 'SAVE_START'});
+
+    firestore.collection('games-v0.1')
+      .add({level, legend, rules})
+      .then(function(docRef) {
+        console.log("Document written with ID: ", docRef.id)
+        dispatch({type: 'SAVE_SUCCESS'});
+      })
+      .catch(function(error) {
+        console.error("Error adding document: ", error)
+        dispatch({type: 'SAVE_ERROR'});
+      })
+  
+    console.log('saved')
+  },
+  load: ()=> {
+    dispatch({type: 'LOAD_START'});
+
+    firestore.collection('games-v0.1').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+          console.log(doc.data())
+
+          dispatch({type: 'LOAD_SUCCESS', ...doc.data()});
+      });
+    });
   }
 });
+
+// magically injects 'user' prop once user logs in
+const appWithAuth = withFirebaseAuth({
+  providers,
+  firebaseAppAuth,
+})(App);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(appWithAuth);

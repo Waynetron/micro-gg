@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import {update} from './actions.js';
 import {connect} from 'react-redux'
 
 const Loop = ({onTimeChange})=> {
