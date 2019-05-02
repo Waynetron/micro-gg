@@ -1,3 +1,4 @@
+import Plain from 'slate-plain-serializer';
 
 const initialCode = {
   level:
@@ -42,9 +43,9 @@ UP { Player | QuestionBrick } -> { Player | JUMP Player }`
 }
 
 const defaultState = {
-  level: initialCode.level,
-  legend: initialCode.legend,
-  rules: initialCode.rules
+  level: Plain.deserialize(initialCode.level),
+  legend: Plain.deserialize(initialCode.legend),
+  rules: Plain.deserialize(initialCode.rules)
 }
 
 const gameReducer = (state = defaultState, action) => {
@@ -55,6 +56,9 @@ const gameReducer = (state = defaultState, action) => {
       return {...state, legend: action.legend}
     case 'UPDATE_RULES':
       return {...state, rules: action.rules}
+    case 'LOAD_SUCCESS':
+      const {level, legend, rules} = action
+      return {...state, level, legend, rules}
     default:
       return state
   }

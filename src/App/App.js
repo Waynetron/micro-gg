@@ -15,6 +15,7 @@ import ExamplesModal from '../Examples/ExamplesModal';
 import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput, toggleTheme} from './actions.js';
 import CustomProperties from 'react-custom-properties';
+import Plain from 'slate-plain-serializer';
 import './App.scss';
 
 
@@ -209,7 +210,11 @@ const mapDispatchToProps = (dispatch)=> ({
     dispatch({type: 'SAVE_START'});
 
     firestore.collection('games-v0.1')
-      .add({level, legend, rules})
+      .add({
+        level: Plain.serialize(level),
+        legend: Plain.serialize(legend),
+        rules: Plain.serialize(rules)
+      })
       .then(function(docRef) {
         console.log("Document written with ID: ", docRef.id)
         dispatch({type: 'SAVE_SUCCESS'});
@@ -225,10 +230,16 @@ const mapDispatchToProps = (dispatch)=> ({
     dispatch({type: 'LOAD_START'});
 
     firestore.collection('games-v0.1').get().then((querySnapshot) => {
+      console.log('loaded')
       querySnapshot.forEach((doc) => {
-          console.log(doc.data())
+          const {level, legend, rules} = doc.data()
 
-          dispatch({type: 'LOAD_SUCCESS', ...doc.data()});
+          dispatch({
+            type: 'LOAD_SUCCESS',
+            level: Plain.deserialize(level),
+            legend: Plain.deserialize(legend),
+            rules: Plain.deserialize(rules)
+          })
       });
     });
   }

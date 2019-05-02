@@ -6,6 +6,7 @@ import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   applyWallCollisions, resetColliding
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
+import Plain from 'slate-plain-serializer';
 
 const defaultState = {
   currentView: 'game',
@@ -65,9 +66,10 @@ const gameReducer = (state = defaultState, action) => {
     
     case 'COMPILE':
       try {
-        const level = parseLevel(removeComments(action.level));
-        const legend = parseLegend(removeComments(action.legend));
-        const sprites = parseSprites(level, legend);
+        const {serialize} = Plain
+        const level = action.level |> serialize |> removeComments |> parseLevel
+        const legend = action.legend |> serialize |> removeComments |> parseLegend
+        const sprites = parseSprites(level, legend)
     
       // Names is the legend mapped to have the values as keys. Used for fast name lookup.
       // this used to use the legend before the random features were added.
@@ -75,10 +77,10 @@ const gameReducer = (state = defaultState, action) => {
       // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
       // not also appear in the legend.
       // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-      const namesArr = parseNames(action.legend);
+      const namesArr = parseNames(action.legend |> serialize);
       const names = arrayToObject(namesArr);
 
-      const variables = parseVariables(action.rules);
+      const variables = parseVariables(action.rules |> serialize);
       
       const imageMap = {...state.imageMap};
       for (const name of namesArr) {
@@ -89,7 +91,11 @@ const gameReducer = (state = defaultState, action) => {
       }
 
         // A rule consists of a before and an after state
-        const rules = parseRules(removeComments(action.rules), names, variables);
+        const rules = parseRules(
+          action.rules |> serialize |> removeComments,
+          names,
+          variables
+        )
 
         const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
 

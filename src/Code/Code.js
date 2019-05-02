@@ -142,7 +142,7 @@ const Code = ({level, legend, rules, imageMap,
       </button>
       {expanded.level && <Editor
         className={'code level'}
-        defaultValue={Plain.deserialize(level)}
+        value={level}
         onChange={onUpdateLevel}
         decorateNode={decorateNode}
         renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
@@ -153,7 +153,7 @@ const Code = ({level, legend, rules, imageMap,
       </button>
       {expanded.legend && <Editor
         className={'code legend'}
-        defaultValue={Plain.deserialize(legend)}
+        value={legend}
         onChange={onUpdateLegend}
         decorateNode={decorateNode}
         renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
@@ -164,7 +164,7 @@ const Code = ({level, legend, rules, imageMap,
       </button>
       {expanded.rules && <Editor
         className={'code rules'}
-        defaultValue={Plain.deserialize(rules)}
+        value={rules}
         onChange={onUpdateRules}
         decorateNode={decorateNode}
         renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
@@ -187,19 +187,19 @@ const mapDispatchToProps = (dispatch)=> ({
   onUpdateRules: ({value})=> {
     dispatch({
       type: 'UPDATE_RULES',
-      rules: Plain.serialize(value)
+      rules: value
     })
   },
   onUpdateLevel: ({value})=> {
     dispatch({
       type: 'UPDATE_LEVEL',
-      level: Plain.serialize(value)
+      level: value
     })
   },
   onUpdateLegend: ({value})=> {
     dispatch({
       type: 'UPDATE_LEGEND',
-      legend: Plain.serialize(value)
+      legend: value
     })
   },
   compile: (level, legend, rules)=> {
