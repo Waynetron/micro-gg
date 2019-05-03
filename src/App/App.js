@@ -1,31 +1,35 @@
-import React, {Fragment} from 'react';
+import React, {Fragment} from 'react'
 import {connect} from 'react-redux'
-import {HotKeys} from 'react-hotkeys';
+import {HotKeys} from 'react-hotkeys'
 import firebase from '../firebase.js'
 import withFirebaseAuth from 'react-with-firebase-auth'
-import * as firebaseApp from 'firebase/app';
-import 'firebase/auth';
+import * as firebaseApp from 'firebase/app'
+import 'firebase/auth'
 
-import Game from '../Game/Game.js';
-import {Menu} from '../Menu/Menu.js';
-import Loop from '../Game/Loop.js';
-import Code from '../Code/Code.js';
-import SpriteEditor from '../SpriteEditor/SpriteEditor';
-import ExamplesModal from '../Examples/ExamplesModal';
-import {toggleDebug} from '../Game/actions.js';
-import {setInput, cancelInput, toggleTheme} from './actions.js';
-import CustomProperties from 'react-custom-properties';
-import Plain from 'slate-plain-serializer';
+import Game from '../Game/Game.js'
+import {Menu} from '../Menu/Menu.js'
+import Loop from '../Game/Loop.js'
+import Code from '../Code/Code.js'
+import SpriteEditor from '../SpriteEditor/SpriteEditor'
+import ExamplesModal from '../Examples/ExamplesModal'
+import {toggleDebug} from '../Game/actions.js'
+import {setInput, cancelInput, toggleTheme} from './actions.js'
+import CustomProperties from 'react-custom-properties'
+import Plain from 'slate-plain-serializer'
+import IconButton from '@material-ui/core/IconButton'
 
-import './App.scss';
+import './App.scss'
+import moon from '../icons/moon.svg'
+import sun from '../icons/sun.svg'
+
 
 
 const firestore = firebase.firestore()
 
-const firebaseAppAuth = firebase.auth();
+const firebaseAppAuth = firebase.auth()
 const providers = {
   googleProvider: new firebaseApp.auth.GoogleAuthProvider(),
-};
+}
 
 
 const darkColors = {
@@ -98,9 +102,6 @@ const App = ({
           <header>
             <h1 className='logo'>micro gg</h1>
             <ExamplesModal />
-            <button onClick={()=> onToggleTheme()}>
-              {theme === 'dark' ? 'light' : 'dark'}
-            </button>
             {
               user
                 ? <Fragment>
@@ -112,6 +113,12 @@ const App = ({
                     <button onClick={signInWithGoogle}>Sign in with Google to save</button>
                   </Fragment>
             }
+          <button className='icon' onClick={()=> onToggleTheme()}>
+            {theme === 'dark'
+              ? <img src={sun} alt="Light UI" />
+              : <img src={moon} alt="Dark UI" />
+            }
+          </button>
           </header>
           <Code imageMap={imageMap} />
         </div>

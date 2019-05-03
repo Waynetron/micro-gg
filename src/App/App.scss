@@ -88,6 +88,17 @@ button {
   &:focus {
     outline: 0;
   }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+button.icon {
+  min-width: auto;
+  &:hover {
+    transform: scale(1.1);
+  }
 }
 
 button:last-child {
