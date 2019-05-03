@@ -16,6 +16,7 @@ import {toggleDebug} from '../Game/actions.js';
 import {setInput, cancelInput, toggleTheme} from './actions.js';
 import CustomProperties from 'react-custom-properties';
 import Plain from 'slate-plain-serializer';
+
 import './App.scss';
 
 
@@ -101,7 +102,7 @@ const App = ({
               {theme === 'dark' ? 'light' : 'dark'}
             </button>
             {
-              user || true
+              user
                 ? <Fragment>
                     <button onClick={()=> save(level, legend, rules)}>Save</button>
                     <button onClick={()=> load()}>Load</button>
