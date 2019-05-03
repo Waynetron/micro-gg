@@ -51,3 +51,8 @@ Contrast that to something like this, which would only apply to the player if it
 ### Hit question brick and spawn mushroom
 
 ```UP [ Player | QuestionBrick ] -> [ Player | SolidBrick | Mushroom ]```
+
+
+### Win condition
+
+```[ Player | Goal ] -> [ Player | Goal ] WIN```
