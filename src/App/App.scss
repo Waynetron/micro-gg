@@ -23,7 +23,7 @@ div[tabindex="-1"]:focus {
 
 .main {
   display: flex;
-  min-height: 100%;
+  height: 100%;
   background-color: var(--primary-color);
 }
 
@@ -35,6 +35,19 @@ div[tabindex="-1"]:focus {
 .left {
   flex-grow: 1;
   background-color: var(--dark-color);
+  overflow-x: hidden;
+
+  // gives some fake padding around the custom scroll bar
+  border: 1px solid var(--dark-color);  
+
+  &::-webkit-scrollbar {
+    width: 1em;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+  }
+
 }
 
 @media only screen and (max-width: 900px) {
@@ -94,10 +107,45 @@ button {
   }
 }
 
+@keyframes shrink {
+  0% {
+    transform: scale(1.2);
+    easing: 'ease-out'
+  }
+  30% {
+    transform: scale(0.9);
+    easing: 'ease-in-out'
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(1.0);
+    easing: 'ease-out'
+  }
+  30% {
+    transform: scale(1.3);
+    easing: 'ease-in-out'
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
 button.icon {
   min-width: auto;
+  background-color: transparent;
+
+  animation-name: shrink;
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
   &:hover {
-    transform: scale(1.1);
+    animation-name: grow;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
   }
 }
 
@@ -172,13 +220,6 @@ button.collapsible {
   padding: 1rem;
   padding-top: 0;
   flex-direction: column;
-}
-
-@media only screen and (max-width: 900px) {
-  .game-container { 
-    border-left: none;
-    // border-bottom: solid 4px #20385B;
-  }
 }
 
 select {

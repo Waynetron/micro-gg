@@ -13,7 +13,7 @@ const initialCode = {
 #    P       G   #
 ##################`,
   legend:
-`P = Player
+`P = Player or Monkey or Rabbit
 # = Brick
 ? = QuestionBrick
 G = Goomba`,

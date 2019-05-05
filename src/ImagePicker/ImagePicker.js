@@ -14,6 +14,7 @@ const ImagePicker = ({variableName, imageMap, images, onSelect})=> {
   return (
     <Tooltip
       interactive
+      className='tooltip'
       title={
         <div className='tooltip-content'>
           {images.map((name)=> (

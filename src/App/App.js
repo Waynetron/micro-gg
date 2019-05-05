@@ -21,6 +21,9 @@ import IconButton from '@material-ui/core/IconButton'
 import './App.scss'
 import moon from '../icons/moon.svg'
 import sun from '../icons/sun.svg'
+import play from '../icons/play.svg'
+import stop from '../icons/stop.svg'
+import menu from '../icons/menu.svg'
 
 
 
@@ -34,14 +37,14 @@ const providers = {
 
 const darkColors = {
   primary: '#F1A0A0',
-  secondary: '#87FFAE',
+  secondary: '#70EFA6',
   dark: '#000000',
   light: '#FDF6E2'
 }
 
 const lightColors = {
   primary: '#43153F',
-  secondary: '#87FFAE',
+  secondary: '#70EFA6',
   dark: '#FDF6E2',
   light: '#FFFFFF'
 }
@@ -135,14 +138,20 @@ const App = ({
         >
           <div className="right">
             <header>
-              <button
-                className='primary'
-                onClick={()=> compile(level, legend, rules)}>
-                compile
-              </button>
-              <button className='secondary' onClick={()=> setGameActive(!isGameActive)}>
-                {isGameActive ? 'pause' : 'run'}
-              </button>
+              {isGameActive
+                ? <button className='icon stop' onClick={()=> {
+                    compile(level, legend, rules)
+                    setGameActive(false)
+                  }}>
+                    <img src={stop} alt="Stop" />
+                  </button>
+                : <button className='icon' onClick={()=> {
+                    compile(level, legend, rules)
+                    setGameActive(true)
+                  }}>
+                    <img src={play} alt="Play" />
+                  </button>
+              }
               {isGameActive && <Loop />}
             </header>
             <div className="game-container">

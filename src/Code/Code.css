@@ -45,7 +45,6 @@ header button {
 }
 
 #game {
-  border-left: solid 4px #20385B;
   padding: 1rem;
   color: white;
   flex-direction: column;
