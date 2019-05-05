@@ -8,9 +8,14 @@ import ImagePicker from '../ImagePicker/ImagePicker.js';
 const makeGrammar = ()=> {
   return {
     comment: /\/\/.*/,
-    variable: {
-      pattern: new RegExp('[^ ]{1} = ([A-Z]+)', 'i'),
-    }
+    variable: [
+      {
+        pattern: new RegExp('[^ ]{1} = ([A-Z]+) ', 'i')
+      },
+      // {
+      //   pattern: new RegExp('or (.+)\\b', 'i'),
+      // }
+    ]
   }
 }
 
@@ -88,19 +93,20 @@ const decorateNode = (node, editor, next)=> {
   return [...others, ...decorations]
 }
 
-const renderMark = (props, editor, next, imageMap) => {
+const renderMark = (props, editor, next) => {
   const { children, attributes, node } = props
 
   switch (props.mark.type) {
     case 'variable':
-      const [, right] = node.text.split('=').map((str)=> str.trim())
-      const [firstName,] = right.split(' or ')
+      const [left, right] = node.text.split('=').map((str)=> str.trim())
+      const names = right.split(' or ')
 
       return <span {...attributes}>
-        {children}
-        <ImagePicker variableName={firstName} />
-      </span>
-    case 'comment':
+          {children}
+          <ImagePicker variableName={names[0]} />
+        </span>
+
+    case 'comment': 
       return (
         <span {...attributes} style={{ opacity: '0.33' }}>
           {children}
@@ -145,7 +151,9 @@ const Code = ({level, legend, rules, imageMap,
         value={level}
         onChange={onUpdateLevel}
         decorateNode={decorateNode}
-        renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
+        renderMark={(props, editor, next)=>
+          renderMark(props, editor, next, imageMap)
+        }
         spellCheck={false}
       />}
       <button className='primary collapsible' onClick={()=> toggleExpanded('legend')}>
