@@ -1,5 +1,6 @@
 export const examples = {
-simple_movement: `
+simple_movement: {
+  level: `
 ##################
 #                #
 #                #
@@ -9,18 +10,22 @@ simple_movement: `
 #     #####      #
 #                #
 #                #
-##################
-
+##################`,
+  
+  legend: `
 P = Player
-# = Brick
-
+# = Brick`,
+  
+  rules: `
 // Accelerate down, like gravity
 { Player } -> { DOWN Player }
 
 // Move sideways with <LEFT> and <RIGHT> arrow keys
 { <HORIZONTAL> Player } -> { HORIZONTAL Player }
-`,
-simple_platformer: `
+`},
+
+simple_platformer: {
+  level: `
 ##################
 #                #
 #                #
@@ -30,13 +35,15 @@ simple_platformer: `
 #     ###?#      #
 #                #
 #    P       G   #
-##################
+##################`,
 
+  legend: `
 P = Player
 # = Brick
 ? = QuestionBrick
-G = Goomba
+G = Goomba`,
 
+  rules: `
 // Accelerate down, like gravity
 { Player } -> { DOWN Player }
 { Goomba } -> { DOWN Goomba }
@@ -59,8 +66,10 @@ UP { Player | Brick } -> { Player | DEAD Brick }
 
 // Head-butting QuestionBrick turns it into another Player
 UP { Player | QuestionBrick } -> { Player | JUMP Player }
-`,
-four_way_movement: `
+`},
+
+four_way_movement: {
+  level: `
 ###############
 #             #
 #             #
@@ -68,13 +77,14 @@ four_way_movement: `
 #      P      #
 #             #
 #             #
-###############
+###############`,
 
+  legend: `
 P = Player
-# = Brick
+# = Brick`,
 
+  rules: `
 { <HORIZONTAL> Player } -> { HORIZONTAL Player }
-{ <VERTICAL> Player } -> { VERTICAL Player }
-
-`
+{ <VERTICAL> Player } -> { VERTICAL Player }`
+}
 }

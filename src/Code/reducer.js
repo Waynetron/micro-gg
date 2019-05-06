@@ -13,7 +13,7 @@ const initialCode = {
 #    P       G   #
 ##################`,
   legend:
-`P = Player or Monkey or Rabbit
+`P = Player
 # = Brick
 ? = QuestionBrick
 G = Goomba`,
@@ -57,8 +57,19 @@ const gameReducer = (state = defaultState, action) => {
     case 'UPDATE_RULES':
       return {...state, rules: action.rules}
     case 'LOAD_SUCCESS':
-      const {level, legend, rules} = action
-      return {...state, level, legend, rules}
+      return {
+        ...state,
+        level: action.level,
+        legend: action.legend,
+        rules: action.rules
+      }
+    case 'LOAD_PRESET':
+      return {
+        ...state,
+        level: action.level,
+        legend: action.legend,
+        rules: action.rules
+      }
     default:
       return state
   }

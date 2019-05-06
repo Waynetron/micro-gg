@@ -2,7 +2,6 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
-import Plain from 'slate-plain-serializer';
 import ImagePicker from '../ImagePicker/ImagePicker.js';
 
 const makeGrammar = ()=> {

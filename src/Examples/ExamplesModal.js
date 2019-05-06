@@ -1,9 +1,10 @@
-import React, {useState, Fragment} from 'react';
+import React, {useState, Fragment} from 'react'
 import {connect} from 'react-redux'
-import Textarea from 'react-textarea-autosize';
-import {examples} from './exampleCode';
+import Textarea from 'react-textarea-autosize'
+import Plain from 'slate-plain-serializer'
+import {examples} from './exampleCode'
 
-const ExamplesModal = ()=> {
+const ExamplesModal = ({loadPreset})=> {
   const [visible, setVisible] = useState(false)
 
   return visible 
@@ -11,13 +12,24 @@ const ExamplesModal = ()=> {
     <div className='blanket' onClick={()=> setVisible(false)}>
       <div className='modal' onClick={(e)=> e.stopPropagation()}>
         <h1>Examples</h1>
-        {Object.entries(examples).map(([key, value])=> 
-          <Fragment key={key}>
+        {Object.entries(examples).map(([key, code])=> {
+          const level = code.level.trim()
+          const legend = code.legend.trim()
+          const rules = code.rules.trim()
+          
+          return <Fragment key={key}>
             <h2>{key}</h2>
+            <button onClick={()=> {
+              loadPreset(level, legend, rules)
+              setVisible(false)
+            }}>
+              Load
+            </button>
             <div className='example'>
-              <Textarea value={value} />
+              <Textarea value={level + '\n' + legend + '\n' + rules} />
             </div>
           </Fragment>
+        }
         )}
       </div>
     </div>
@@ -30,8 +42,19 @@ const ExamplesModal = ()=> {
 const mapStateToProps = ()=> ({})
 
 const mapDispatchToProps = (dispatch)=> ({
-  loadPreset: (value)=> {
-    dispatch({type: 'code/LOAD_PRESET', value})
+  loadPreset: (levelText, legendText, rulesText)=> {
+    const level = Plain.deserialize(levelText)
+    const legend = Plain.deserialize(legendText)
+    const rules = Plain.deserialize(rulesText)
+
+    dispatch({
+      type: 'LOAD_PRESET',
+      level, legend, rules
+    })
+    dispatch({
+      type: 'COMPILE',
+      level, legend, rules
+    });
   }
 });
 
