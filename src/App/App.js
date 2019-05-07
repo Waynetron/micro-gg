@@ -153,7 +153,7 @@ const App = ({
                   }}>
                     <img src={stop} alt="Stop" />
                   </button>
-                : <button className='icon' onClick={()=> {
+                : <button className='icon play' onClick={()=> {
                     compile(level, legend, rules)
                     setGameActive(true)
                   }}>

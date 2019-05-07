@@ -77,6 +77,11 @@ header {
   justify-content: space-between;
 }
 
+.icon.stop, .icon.play {
+  margin-bottom: .5rem;
+  margin-top: .75rem;
+}
+
 logo h1 {
   flex-grow: 1;
   margin: 0;
