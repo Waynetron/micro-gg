@@ -264,6 +264,13 @@ select {
     line-height: 2rem;
   }
 
+  .columns {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
   .example {
     padding: 1.5rem;
     margin-bottom: 1rem;

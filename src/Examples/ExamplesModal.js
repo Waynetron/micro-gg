@@ -18,13 +18,15 @@ const ExamplesModal = ({loadPreset})=> {
           const rules = code.rules.trim()
           
           return <Fragment key={key}>
-            <h2>{key}</h2>
-            <button onClick={()=> {
-              loadPreset(level, legend, rules)
-              setVisible(false)
-            }}>
-              Load
-            </button>
+            <div className='columns'>
+              <h2>{key}</h2>
+              <button className='secondary' onClick={()=> {
+                loadPreset(level, legend, rules)
+                setVisible(false)
+              }}>
+                Load
+              </button>
+            </div>
             <div className='example'>
               <Textarea value={level + '\n' + legend + '\n' + rules} />
             </div>
