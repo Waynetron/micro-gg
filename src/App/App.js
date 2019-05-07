@@ -91,10 +91,12 @@ const App = ({
     user, signOut, save, load, signInWithGoogle, // Firebase auth
 })=> {
   // load data once user is authenticated
-  useEffect(() => {
-    console.log('loading')
-    load()
-  }, [user])
+  // useEffect(() => {
+  //   if (user) {
+  //     console.log('loading')
+  //     load()
+  //   }
+  // }, [user])
 
   const colors = theme === 'light' ? lightColors : darkColors;
   
@@ -114,8 +116,8 @@ const App = ({
             {
               user
                 ? <Fragment>
-                    <button onClick={()=> save(level, legend, rules)}>Save</button>
-                    <button onClick={()=> load()}>Load</button>
+                    <button onClick={()=> save(level, legend, rules, user)}>Save</button>
+                    <button onClick={()=> load(user)}>Load</button>
                     <button onClick={signOut}>Sign out</button>
                   </Fragment>
                 : <Fragment>
@@ -229,17 +231,17 @@ const mapDispatchToProps = (dispatch)=> ({
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
   },
-  save: (level, legend, rules)=> {
+  save: (level, legend, rules, user)=> {
+    console.log(user)
     dispatch({type: 'SAVE_START'});
 
-    firestore.collection('games-v0.1').doc('default')
-      .set({
+    const docRef = firestore.collection(user.uid).doc('default')
+    docRef.set({
         level: Plain.serialize(level),
         legend: Plain.serialize(legend),
         rules: Plain.serialize(rules)
       })
-      .then(function(docRef) {
-        console.log("Document written with ID: ", docRef.id)
+      .then(function() {
         dispatch({type: 'SAVE_SUCCESS'});
       })
       .catch(function(error) {
@@ -249,10 +251,12 @@ const mapDispatchToProps = (dispatch)=> ({
   
     console.log('saving...')
   },
-  load: ()=> {
+  load: (user)=> {
     dispatch({type: 'LOAD_START'});
+    console.log(user)
 
-    firestore.collection('games-v0.1').doc('default').get().then((doc) => {
+    const docRef = firestore.collection(user.uid).doc('default')
+    docRef.get().then((doc) => {
       if (!doc.exists) {
         console.error('No doc found')
         return
