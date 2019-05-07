@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react'
+import React, {Fragment, useEffect} from 'react'
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys'
 import firebase from '../firebase.js'
@@ -90,6 +90,12 @@ const App = ({
     onCancelInput, onToggleTheme, onOpenCloseSpriteEditor,
     user, signOut, save, load, signInWithGoogle, // Firebase auth
 })=> {
+  // load data once user is authenticated
+  useEffect(() => {
+    console.log('loading')
+    load()
+  }, [user])
+
   const colors = theme === 'light' ? lightColors : darkColors;
   
   return (
@@ -226,8 +232,8 @@ const mapDispatchToProps = (dispatch)=> ({
   save: (level, legend, rules)=> {
     dispatch({type: 'SAVE_START'});
 
-    firestore.collection('games-v0.1')
-      .add({
+    firestore.collection('games-v0.1').doc('default')
+      .set({
         level: Plain.serialize(level),
         legend: Plain.serialize(legend),
         rules: Plain.serialize(rules)
@@ -241,24 +247,26 @@ const mapDispatchToProps = (dispatch)=> ({
         dispatch({type: 'SAVE_ERROR'});
       })
   
-    console.log('saved')
+    console.log('saving...')
   },
   load: ()=> {
     dispatch({type: 'LOAD_START'});
 
-    firestore.collection('games-v0.1').get().then((querySnapshot) => {
-      console.log('loaded')
-      querySnapshot.forEach((doc) => {
-          const {level, legend, rules} = doc.data()
+    firestore.collection('games-v0.1').doc('default').get().then((doc) => {
+      if (!doc.exists) {
+        console.error('No doc found')
+        return
+      }
+      
+      const {level, legend, rules} = doc.data()
 
-          dispatch({
-            type: 'LOAD_SUCCESS',
-            level: Plain.deserialize(level),
-            legend: Plain.deserialize(legend),
-            rules: Plain.deserialize(rules)
-          })
-      });
-    });
+      dispatch({
+        type: 'LOAD_SUCCESS',
+        level: Plain.deserialize(level),
+        legend: Plain.deserialize(legend),
+        rules: Plain.deserialize(rules)
+      })      
+    })
   }
 });
 
