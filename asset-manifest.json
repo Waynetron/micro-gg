@@ -1,12 +1,12 @@
 {
   "main.css": "/micro-gg/static/css/main.0f8d0a53.chunk.css",
-  "main.js": "/micro-gg/static/js/main.4a0dcf1d.chunk.js",
-  "main.js.map": "/micro-gg/static/js/main.4a0dcf1d.chunk.js.map",
+  "main.js": "/micro-gg/static/js/main.5b0cfda5.chunk.js",
+  "main.js.map": "/micro-gg/static/js/main.5b0cfda5.chunk.js.map",
   "static/js/1.6aa259bd.chunk.js": "/micro-gg/static/js/1.6aa259bd.chunk.js",
   "static/js/1.6aa259bd.chunk.js.map": "/micro-gg/static/js/1.6aa259bd.chunk.js.map",
   "runtime~main.js": "/micro-gg/static/js/runtime~main.e630c52e.js",
   "runtime~main.js.map": "/micro-gg/static/js/runtime~main.e630c52e.js.map",
-  "static/media/fira_code.css": "/micro-gg/static/media/FiraCode-Medium.010c2e55.ttf",
+  "static/media/fira_code.css": "/micro-gg/static/media/FiraCode-Bold.8236190c.ttf",
   "static/media/moon.svg": "/micro-gg/static/media/moon.80d90aa7.svg",
   "static/media/play.svg": "/micro-gg/static/media/play.e5a8524f.svg",
   "static/media/stop.svg": "/micro-gg/static/media/stop.f437901f.svg",
@@ -14,6 +14,6 @@
   "static/media/menu.svg": "/micro-gg/static/media/menu.25a60c04.svg",
   "static/css/main.0f8d0a53.chunk.css.map": "/micro-gg/static/css/main.0f8d0a53.chunk.css.map",
   "index.html": "/micro-gg/index.html",
-  "precache-manifest.631954d265896357105f7cdb94e72f54.js": "/micro-gg/precache-manifest.631954d265896357105f7cdb94e72f54.js",
+  "precache-manifest.df2312c5c7073e63be250ad7112e1e8c.js": "/micro-gg/precache-manifest.df2312c5c7073e63be250ad7112e1e8c.js",
   "service-worker.js": "/micro-gg/service-worker.js"
 }
