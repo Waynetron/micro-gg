@@ -85,7 +85,7 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 });
 
 const App = ({
-    legend, level, rules, compile, theme, sprites, imageMap, width, height, debug,
+    code, compile, theme, sprites, imageMap, width, height, debug,
     error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
     onCancelInput, onToggleTheme, onOpenCloseSpriteEditor,
     user, signOut, save, load, signInWithGoogle, // Firebase auth
@@ -116,7 +116,7 @@ const App = ({
             {
               user
                 ? <Fragment>
-                    <button onClick={()=> save(level, legend, rules, user)}>Save</button>
+                    <button onClick={()=> save(code, user)}>Save</button>
                     <button onClick={()=> load(user)}>Load</button>
                     <button onClick={signOut}>Sign out</button>
                   </Fragment>
@@ -137,7 +137,7 @@ const App = ({
           handlers={handlers(
             onSetInput,
             onCancelInput,
-            ()=> compile(level, legend, rules),
+            ()=> compile(code),
             (active)=> setGameActive(active),
             ()=> onToggleDebug(),
             isGameActive
@@ -148,13 +148,13 @@ const App = ({
             <header>
               {isGameActive
                 ? <button className='icon stop' onClick={()=> {
-                    compile(level, legend, rules)
+                    compile(code)
                     setGameActive(false)
                   }}>
                     <img src={stop} alt="Stop" />
                   </button>
                 : <button className='icon play' onClick={()=> {
-                    compile(level, legend, rules)
+                    compile(code)
                     setGameActive(true)
                   }}>
                     <img src={play} alt="Play" />
@@ -189,9 +189,7 @@ const App = ({
 };
 
 const mapStateToProps = ({code, game})=> ({
-  level: code.level,
-  legend: code.legend,
-  rules: code.rules,
+  code: code.code,
   theme: game.theme,
   isGameActive: game.active,
   sprites: game.sprites,
@@ -204,10 +202,10 @@ const mapStateToProps = ({code, game})=> ({
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  compile: (level, legend, rules)=> {
+  compile: (code)=> {
     dispatch({
       type: 'COMPILE',
-      level, legend, rules
+      code
     });
   },
   setGameActive: (active)=> {
@@ -231,15 +229,12 @@ const mapDispatchToProps = (dispatch)=> ({
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
   },
-  save: (level, legend, rules, user)=> {
-    console.log(user)
+  save: (code, user)=> {
     dispatch({type: 'SAVE_START'});
 
     const docRef = firestore.collection(user.uid).doc('default')
     docRef.set({
-        level: Plain.serialize(level),
-        legend: Plain.serialize(legend),
-        rules: Plain.serialize(rules)
+        code: Plain.serialize(code)
       })
       .then(function() {
         dispatch({type: 'SAVE_SUCCESS'});
@@ -262,13 +257,11 @@ const mapDispatchToProps = (dispatch)=> ({
         return
       }
       
-      const {level, legend, rules} = doc.data()
+      const {code} = doc.data()
 
       dispatch({
         type: 'LOAD_SUCCESS',
-        level: Plain.deserialize(level),
-        legend: Plain.deserialize(legend),
-        rules: Plain.deserialize(rules)
+        code: Plain.deserialize(code)
       })      
     })
   }

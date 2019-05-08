@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
@@ -122,97 +122,44 @@ const renderMark = (props, editor, next) => {
   }
 }
 
-const Code = ({level, legend, rules, imageMap,
-  onUpdateRules, onUpdateLevel, onUpdateLegend, compile}
-)=> {
+const Code = ({code, imageMap, onUpdateCode, compile})=> {
   // manually trigger code change on first load
   useEffect(() => {
-    compile(level, legend, rules);
+    compile(code);
   }, [])
 
-  const [expanded, setExpanded] = useState({
-    level: true,
-    legend: true,
-    rules: true
-  })
-
-  const toggleExpanded = (section)=> {
-    setExpanded({...expanded, [section]: !expanded[section]})
-  }
-
   return (
-    <Fragment>
-      <button className='primary collapsible' onClick={()=> toggleExpanded('level')}>
-        Level
-      </button>
-      {expanded.level && <Editor
-        className={'code level'}
-        value={level}
-        onChange={onUpdateLevel}
-        decorateNode={decorateNode}
-        renderMark={(props, editor, next)=>
-          renderMark(props, editor, next, imageMap)
-        }
-        spellCheck={false}
-      />}
-      <button className='primary collapsible' onClick={()=> toggleExpanded('legend')}>
-        Legend
-      </button>
-      {expanded.legend && <Editor
-        className={'code legend'}
-        value={legend}
-        onChange={onUpdateLegend}
-        decorateNode={decorateNode}
-        renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
-        spellCheck={false}
-      />}
-      <button className='primary collapsible' onClick={()=> toggleExpanded('rules')}>
-        Rules
-      </button>
-      {expanded.rules && <Editor
-        className={'code rules'}
-        value={rules}
-        onChange={onUpdateRules}
-        decorateNode={decorateNode}
-        renderMark={(props, editor, next)=> renderMark(props, editor, next, imageMap)}
-        spellCheck={false}
-      />}
-    </Fragment>
+    <Editor
+      className={'code'}
+      value={code}
+      onChange={onUpdateCode}
+      decorateNode={decorateNode}
+      renderMark={(props, editor, next)=>
+        renderMark(props, editor, next, imageMap)
+      }
+      spellCheck={false}
+    />
   )
 };
 
 const mapStateToProps = ({code, game})=> ({
-  level: code.level,
-  legend: code.legend,
-  rules: code.rules,
+  code: code.code,
   width: game.width, 
   height: game.height,
   imageMap: game.imageMap
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  onUpdateRules: ({value})=> {
+  onUpdateCode: ({value})=> {
     dispatch({
-      type: 'UPDATE_RULES',
-      rules: value
+      type: 'UPDATE_CODE',
+      code: value
     })
   },
-  onUpdateLevel: ({value})=> {
-    dispatch({
-      type: 'UPDATE_LEVEL',
-      level: value
-    })
-  },
-  onUpdateLegend: ({value})=> {
-    dispatch({
-      type: 'UPDATE_LEGEND',
-      legend: value
-    })
-  },
-  compile: (level, legend, rules)=> {
+  compile: (code)=> {
     dispatch({
       type: 'COMPILE',
-      level, legend, rules
+      code
     });
   }
 });

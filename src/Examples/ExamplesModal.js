@@ -13,22 +13,19 @@ const ExamplesModal = ({loadPreset})=> {
       <div className='modal' onClick={(e)=> e.stopPropagation()}>
         <h1>Examples</h1>
         {Object.entries(examples).map(([key, code])=> {
-          const level = code.level.trim()
-          const legend = code.legend.trim()
-          const rules = code.rules.trim()
           
           return <Fragment key={key}>
             <div className='columns'>
               <h2>{key}</h2>
               <button className='secondary' onClick={()=> {
-                loadPreset(level, legend, rules)
+                loadPreset(code)
                 setVisible(false)
               }}>
                 Load
               </button>
             </div>
             <div className='example'>
-              <Textarea value={level + '\n' + legend + '\n' + rules} />
+              <Textarea value={code} />
             </div>
           </Fragment>
         }
@@ -44,18 +41,16 @@ const ExamplesModal = ({loadPreset})=> {
 const mapStateToProps = ()=> ({})
 
 const mapDispatchToProps = (dispatch)=> ({
-  loadPreset: (levelText, legendText, rulesText)=> {
-    const level = Plain.deserialize(levelText)
-    const legend = Plain.deserialize(legendText)
-    const rules = Plain.deserialize(rulesText)
+  loadPreset: (codeText)=> {
+    const code = Plain.deserialize(codeText)
 
     dispatch({
       type: 'LOAD_PRESET',
-      level, legend, rules
+      code
     })
     dispatch({
       type: 'COMPILE',
-      level, legend, rules
+      code
     });
   }
 });

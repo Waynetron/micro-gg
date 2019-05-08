@@ -1,7 +1,6 @@
 import Plain from 'slate-plain-serializer';
 
-const initialCode = {
-  level:
+const initialCode = 
 `##################
 #                #
 #                #
@@ -11,14 +10,14 @@ const initialCode = {
 #     ###?#      #
 #                #
 #    P       G   #
-##################`,
-  legend:
-`P = Player
+##################
+
+P = Player
 # = Brick
 ? = QuestionBrick
-G = Goomba`,
-  rules:
-`// Accelerate down, like gravity
+G = Goomba
+
+// Accelerate down, like gravity
 { Player } -> { DOWN Player }
 { Goomba } -> { DOWN Goomba }
 
@@ -40,35 +39,24 @@ UP { Player | Brick } -> { Player | DEAD Brick }
 
 // Head-butting QuestionBrick turns it into another Player
 UP { Player | QuestionBrick } -> { Player | JUMP Player }`
-}
 
 const defaultState = {
-  level: Plain.deserialize(initialCode.level),
-  legend: Plain.deserialize(initialCode.legend),
-  rules: Plain.deserialize(initialCode.rules)
+  code: Plain.deserialize(initialCode)
 }
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case 'UPDATE_LEVEL':
-      return {...state, level: action.level}
-    case 'UPDATE_LEGEND':
-      return {...state, legend: action.legend}
-    case 'UPDATE_RULES':
-      return {...state, rules: action.rules}
+    case 'UPDATE_CODE':
+      return {...state, code: action.code}
     case 'LOAD_SUCCESS':
       return {
         ...state,
-        level: action.level,
-        legend: action.legend,
-        rules: action.rules
+        code: action.code
       }
     case 'LOAD_PRESET':
       return {
         ...state,
-        level: action.level,
-        legend: action.legend,
-        rules: action.rules
+        code: action.code
       }
     default:
       return state
