@@ -77,28 +77,22 @@ header {
   justify-content: space-between;
 }
 
-.icon.stop, .icon.play {
-  margin-bottom: .5rem;
-  margin-top: .75rem;
-}
-
-logo h1 {
+h1.logo {
   flex-grow: 1;
   margin: 0;
   margin-top: -5px;
-  line-height: 0;
+  line-height: 1.3rem;
 }
 
 button {
   border: none;
   border-radius: 0.4rem;
-  height: 2rem;
   text-transform: uppercase;
   font-weight: 800;
   font-size: 0.8rem;
   min-width: 6rem;
   margin-right: 1rem;
-  padding: auto 1rem;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   background-color: var(--dark-color);
   color: var(--primary-color);
@@ -142,6 +136,7 @@ button {
 
 button.icon {
   min-width: auto;
+  padding: 0;
   background-color: transparent;
 
   animation-name: shrink;
@@ -184,10 +179,6 @@ button.collapsible {
   .rule:hover {
     background-color: var(--hover-color);
   }
-}
-
-.rules {
-  flex-grow: 20;
 }
 
 .stage {

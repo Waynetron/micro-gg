@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
     <title>moon</title>
     <desc>Created with Sketch.</desc>
     <g id="moon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9,21.8686933 C11.9768549,20.2646166 14,17.1185738 14,13.5 C14,9.88142625 11.9768549,6.73538336 9,5.13130671 C10.3393981,4.40957276 11.8718686,4 13.5,4 C18.7467051,4 23,8.25329488 23,13.5 C23,18.7467051 18.7467051,23 13.5,23 C11.8718686,23 10.3393981,22.5904272 9,21.8686933 Z" id="icon_moon" stroke="#43153F" stroke-width="3"></path>
+        <path d="M15,26.8686933 C17.9768549,25.2646166 20,22.1185738 20,18.5 C20,14.8814262 17.9768549,11.7353834 15,10.1313067 C16.3393981,9.40957276 17.8718686,9 19.5,9 C24.7467051,9 29,13.2532949 29,18.5 C29,23.7467051 24.7467051,28 19.5,28 C17.8718686,28 16.3393981,27.5904272 15,26.8686933 Z" id="icon_moon" stroke="#43153F" stroke-width="3"></path>
     </g>
 </svg>
