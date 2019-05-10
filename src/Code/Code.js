@@ -142,8 +142,8 @@ const Code = ({code, imageMap, onUpdateCode, compile})=> {
   )
 };
 
-const mapStateToProps = ({code, game})=> ({
-  code: code.code,
+const mapStateToProps = ({app, game})=> ({
+  code: app.code,
   width: game.width, 
   height: game.height,
   imageMap: game.imageMap

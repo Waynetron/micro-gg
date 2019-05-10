@@ -1,10 +1,7 @@
-import React, {Fragment, useEffect} from 'react'
+import React, {Fragment, useState} from 'react'
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys'
 import firebase from '../firebase.js'
-import withFirebaseAuth from 'react-with-firebase-auth'
-import * as firebaseApp from 'firebase/app'
-import 'firebase/auth'
 
 import Game from '../Game/Game.js'
 import {Menu} from '../Menu/Menu.js'
@@ -16,24 +13,19 @@ import {toggleDebug} from '../Game/actions.js'
 import {setInput, cancelInput, toggleTheme} from './actions.js'
 import CustomProperties from 'react-custom-properties'
 import Plain from 'slate-plain-serializer'
-import IconButton from '@material-ui/core/IconButton'
+import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@material-ui/core/Select'
+import Loader from '../Loader/Loader'
 
 import './App.scss'
 import moon from '../icons/moon.svg'
 import sun from '../icons/sun.svg'
 import play from '../icons/play.svg'
 import stop from '../icons/stop.svg'
-import menu from '../icons/menu.svg'
 
 
 
 const firestore = firebase.firestore()
-
-const firebaseAppAuth = firebase.auth()
-const providers = {
-  googleProvider: new firebaseApp.auth.GoogleAuthProvider(),
-}
-
 
 const darkColors = {
   primary: '#F1A0A0',
@@ -85,21 +77,21 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 });
 
 const App = ({
-    code, compile, theme, sprites, imageMap, width, height, debug,
+    name, id, code, compile, theme, sprites, imageMap, width, height, debug,
     error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
     onCancelInput, onToggleTheme, onOpenCloseSpriteEditor,
     user, signOut, save, load, signInWithGoogle, // Firebase auth
 })=> {
-  // load data once user is authenticated
-  // useEffect(() => {
-  //   if (user) {
-  //     console.log('loading')
-  //     load()
-  //   }
-  // }, [user])
-
   const colors = theme === 'light' ? lightColors : darkColors;
   
+  const games = [
+    {name: 'My game', id: '1'},
+    {name: 'Game two', id: '2'},
+    {name: 'Game three', id: '3'}
+  ]
+
+  const [currentGame, setCurrentGame] = useState('1')
+
   return (
     <CustomProperties className="custom-properties-container" properties={{
       '--primary-color': colors.primary,
@@ -109,14 +101,29 @@ const App = ({
       '--hover-color': `${colors.primary}22`  // 22 is is the alpha in hex
     }}>
       <div className="main">
+        <Loader />
         <div className="left">
           <header>
             <h1 className='logo'>micro gg</h1>
+            <Select
+              disableUnderline
+              value={currentGame}
+              onChange={(e)=> {
+                setCurrentGame(e.target.value)
+              }}
+              variant='filled'
+              displayEmpty
+              className={'dropdown'}
+            >
+              {games.map(({name, id})=>
+                <MenuItem value={id}>{name}</MenuItem>
+              )}
+            </Select>
             <ExamplesModal />
             {
               user
                 ? <Fragment>
-                    <button onClick={()=> save(code, user)}>Save</button>
+                    <button onClick={()=> save({name, code, id}, user)}>Save</button>
                     <button onClick={()=> load(user)}>Load</button>
                     <button onClick={signOut}>Sign out</button>
                   </Fragment>
@@ -188,8 +195,11 @@ const App = ({
   );
 };
 
-const mapStateToProps = ({code, game})=> ({
-  code: code.code,
+const mapStateToProps = ({app, game})=> ({
+  user: app.user,
+  name: app.name,
+  id: app.id,
+  code: app.code,
   theme: game.theme,
   isGameActive: game.active,
   sprites: game.sprites,
@@ -202,6 +212,12 @@ const mapStateToProps = ({code, game})=> ({
 })
 
 const mapDispatchToProps = (dispatch)=> ({
+  setCurrentGame: (id)=> {
+    dispatch({
+      type: 'SET_CURRENT_GAME',
+      currentGame: id
+    });
+  },
   compile: (code)=> {
     dispatch({
       type: 'COMPILE',
@@ -229,12 +245,15 @@ const mapDispatchToProps = (dispatch)=> ({
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
   },
-  save: (code, user)=> {
+  save: ({name, code, id}, user)=> {
     dispatch({type: 'SAVE_START'});
+    console.log('saving...')
 
-    const docRef = firestore.collection(user.uid).doc('default')
+    const docRef = firestore.collection(user.uid).doc(id)
     docRef.set({
-        code: Plain.serialize(code)
+        name,
+        code: Plain.serialize(code),
+        id
       })
       .then(function() {
         dispatch({type: 'SAVE_SUCCESS'});
@@ -243,8 +262,6 @@ const mapDispatchToProps = (dispatch)=> ({
         console.error("Error adding document: ", error)
         dispatch({type: 'SAVE_ERROR'});
       })
-  
-    console.log('saving...')
   },
   load: (user)=> {
     dispatch({type: 'LOAD_START'});
@@ -267,13 +284,7 @@ const mapDispatchToProps = (dispatch)=> ({
   }
 });
 
-// magically injects 'user' prop once user logs in
-const appWithAuth = withFirebaseAuth({
-  providers,
-  firebaseAppAuth,
-})(App);
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(appWithAuth);
+)(App);

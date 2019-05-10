@@ -1,3 +1,19 @@
+export const EMPTY_GAME =
+`#################
+#               #
+#               #
+#       P       #
+#               #
+#               #
+#################
+
+// Legend
+P = Player
+
+// Rules
+{ Player } -> { DOWN Player }
+`
+
 export const examples = {
 simple_movement:
 `

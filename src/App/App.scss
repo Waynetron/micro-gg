@@ -164,12 +164,6 @@ button.inverted {
   color: var(--dark-color);
 }
 
-button.collapsible {
-  text-align: left;
-  opacity: 0.33;
-  padding-left: 1rem;
-}
-
 .code, .game-container {
   display: flex;
   flex-direction: column;
@@ -288,4 +282,11 @@ select {
     width: 100%;
     padding: 0;
   }
+}
+
+.dropdown {
+  background-color: var(--primary-color);
+  padding-left: .5rem;
+  border-radius: 0.3rem;
+  margin-right: 2rem;
 }
