@@ -21,15 +21,13 @@ const Loader = ({user, setGames, setUser})=> {
       setUser(user)
 
       const gamesRef = firestore.collection(user.uid)
-      gamesRef.get().then((games) => {
-        if (games.exists) {
-          console.log(games)
-          setGames(games.data())
-        }
-        else {
-          console.log('no games')
-
-        }
+      gamesRef.get().then(function(querySnapshot) {
+        let games = []
+        querySnapshot.forEach(function(doc) {
+          const {name, id, code} = doc.data()
+          games.push({name, id, code})
+        });
+        setGames(games)
       })
     }
   }, [user])

@@ -24,7 +24,6 @@ import play from '../icons/play.svg'
 import stop from '../icons/stop.svg'
 
 
-
 const firestore = firebase.firestore()
 
 const darkColors = {
@@ -80,7 +79,7 @@ const App = ({
     name, id, code, compile, theme, sprites, imageMap, width, height, debug,
     error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
     onCancelInput, onToggleTheme, onOpenCloseSpriteEditor,
-    user, signOut, save, load, signInWithGoogle, // Firebase auth
+    user, signOut, load, signInWithGoogle, // Firebase auth
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
   
@@ -123,8 +122,8 @@ const App = ({
             {
               user
                 ? <Fragment>
-                    <button onClick={()=> save({name, code, id}, user)}>Save</button>
-                    <button onClick={()=> load(user)}>Load</button>
+                    {/* <button onClick={()=> save({name, code, id}, user)}>Save</button> */}
+                    <button onClick={()=> load(user, id)}>Load</button>
                     <button onClick={signOut}>Sign out</button>
                   </Fragment>
                 : <Fragment>
@@ -263,11 +262,11 @@ const mapDispatchToProps = (dispatch)=> ({
         dispatch({type: 'SAVE_ERROR'});
       })
   },
-  load: (user)=> {
+  load: (user, id)=> {
     dispatch({type: 'LOAD_START'});
     console.log(user)
 
-    const docRef = firestore.collection(user.uid).doc('default')
+    const docRef = firestore.collection(user.uid).doc(id)
     docRef.get().then((doc) => {
       if (!doc.exists) {
         console.error('No doc found')

@@ -18,6 +18,11 @@ const appReducer = (state = defaultState, action) => {
         ...state,
         user: action.user
       }
+    case 'SET_GAMES':
+      return {
+        ...state,
+        games: action.games
+      }
     case 'SET_CURRENT_GAME':
       return {
         ...state,
