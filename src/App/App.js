@@ -30,6 +30,7 @@ const providers = {
 
 const darkColors = {
   primary: '#F1A0A0',
+  primaryTransparent: '#F1A0A055',
   secondary: '#70EFA6',
   dark: '#000000',
   light: '#FDF6E2'
@@ -90,6 +91,7 @@ const App = ({
       '--primary-color': colors.primary,
       '--secondary-color': colors.secondary,
       '--dark-color': colors.dark,
+      '--primary-transparent-color': colors.primaryTransparent,
       '--light-color': colors.light,
       '--hover-color': `${colors.primary}22`  // 22 is is the alpha in hex
     }}>
@@ -98,7 +100,11 @@ const App = ({
         <div className="left">
           <header>
             <h1 className='logo'>micro gg</h1>
-            <input type="text" value={name} onChange={updateName} />
+            <input
+              type="text"
+              value={name}
+              onChange={(e)=> updateName(e.target.value.toUpperCase())}
+            />
             <GamesModal />
             <ExamplesModal />
             {
@@ -187,10 +193,10 @@ const mapStateToProps = ({app, game})=> ({
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  updateName: ({target})=> {
+  updateName: (name)=> {
     dispatch({
       type: 'SET_NAME',
-      name: target.value
+      name
     });
   },
   signOut: ()=> {
