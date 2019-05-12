@@ -16,6 +16,7 @@ import GamesModal from '../GamesModal/GamesModal'
 import {toggleDebug} from '../Game/actions.js'
 import {setInput, cancelInput, toggleTheme} from './actions.js'
 import CustomProperties from 'react-custom-properties'
+import styled, { css } from 'styled-components'
 
 import './App.scss'
 import moon from '../icons/moon.svg'
@@ -78,6 +79,23 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
   'cancel_action2': ()=> onCancelInput('action2'),
 });
 
+const alpha = 30; // hex
+const Input = styled.input`
+  background-color: ${props => props.colors.primary}${alpha};
+  &:hover, &:focus{
+    background-color: ${props => props.colors.primary}${alpha * 1.5};
+  }
+  &:focus{
+    outline: none;
+  }
+  color: ${props => props.colors.primary};
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.3rem;
+`;
+
 const App = ({
     name, id, code, compile, theme, sprites, imageMap, width, height, debug,
     error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
@@ -100,10 +118,11 @@ const App = ({
         <div className="left">
           <header>
             <h1 className='logo'>micro gg</h1>
-            <input
+            <Input
               type="text"
               value={name}
               onChange={(e)=> updateName(e.target.value.toUpperCase())}
+              colors={colors}
             />
             <GamesModal />
             <ExamplesModal />

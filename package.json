@@ -21,6 +21,7 @@
     "redux-persist": "^5.10.0",
     "slate": "^0.44.10",
     "slate-react": "^0.21.16",
+    "styled-components": "^4.2.0",
     "uniqid": "^5.0.3"
   },
   "scripts": {
@@ -42,9 +43,11 @@
   ],
   "devDependencies": {
     "@babel/cli": "^7.2.3",
+    "@babel/plugin-proposal-do-expressions": "^7.2.0",
     "@babel/plugin-proposal-pipeline-operator": "^7.2.0",
     "@babel/preset-env": "^7.3.4",
     "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-styled-components": "^1.10.0",
     "customize-cra": "^0.2.8",
     "gh-pages": "^2.0.1",
     "react-app-rewired": "^1.6.2"

@@ -1,5 +1,8 @@
-const {override, useBabelRc} = require("customize-cra");
+const {override, useBabelRc, addBabelPlugins} = require("customize-cra");
 
 module.exports = override(
-  useBabelRc()
+  useBabelRc(),
+  ...addBabelPlugins(
+    "babel-plugin-styled-components"
+  )
 );
