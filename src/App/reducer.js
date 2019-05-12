@@ -1,5 +1,5 @@
 import uniqid from 'uniqid';
-import {EMPTY_GAME} from '../Examples/exampleCode'
+import {EMPTY_GAME} from '../ExamplesModal/exampleCode'
 import Plain from 'slate-plain-serializer'
 
 const defaultState = {
