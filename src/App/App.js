@@ -1,6 +1,5 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {HotKeys} from 'react-hotkeys'
 import firebase from '../firebase.js'
 import * as firebaseApp from 'firebase/app'
 import 'firebase/auth'
@@ -11,73 +10,24 @@ import Loop from '../Game/Loop.js'
 import Code from '../Code/Code.js'
 import SpriteEditor from '../SpriteEditor/SpriteEditor'
 import Persister from '../Persistor/Persistor'
-import ExamplesModal from '../Examples/ExamplesModal'
+import ExamplesModal from '../ExamplesModal/ExamplesModal'
 import GamesModal from '../GamesModal/GamesModal'
-import {toggleDebug} from '../Game/actions.js'
-import {setInput, cancelInput, toggleTheme} from './actions.js'
+import {toggleTheme} from './actions.js'
 import CustomProperties from 'react-custom-properties'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 import './App.scss'
 import moon from '../icons/moon.svg'
 import sun from '../icons/sun.svg'
 import play from '../icons/play.svg'
 import stop from '../icons/stop.svg'
+import {darkColors, lightColors} from './colors'
+import Keyboard from '../Keyboard/Keyboard'
 
 
 const providers = {
   google: new firebaseApp.auth.GoogleAuthProvider(),
 }
-
-const darkColors = {
-  primary: '#F1A0A0',
-  primaryTransparent: '#F1A0A055',
-  secondary: '#70EFA6',
-  dark: '#000000',
-  light: '#FDF6E2'
-}
-
-const lightColors = {
-  primary: '#43153F',
-  secondary: '#70EFA6',
-  dark: '#FDF6E2',
-  light: '#FFFFFF'
-}
-
-const keyMap = {
-  'up': {sequence: 'up', action: 'keydown'},
-  'down': {sequence: 'down', action: 'keydown'},
-  'left': {sequence: 'left', action: 'keydown'},
-  'right': {sequence: 'right', action: 'keydown'},
-  'action1': {sequence: 'x', action: 'keydown'},
-  'action2': {sequence: 'z', action: 'keydown'},
-
-  'cancel_up': {sequence: 'up', action: 'keyup'},
-  'cancel_down': {sequence: 'down', action: 'keyup'},
-  'cancel_left': {sequence: 'left', action: 'keyup'},
-  'cancel_right': {sequence: 'right', action: 'keyup'},
-  'cancel_action1': {sequence: 'x', action: 'keyup'},
-  'cancel_action2': {sequence: 'z', action: 'keyup'},
-};
-
-const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGameActive)=> ({
-  'up': ()=> onSetInput('up'),
-  'down': ()=> onSetInput('down'),
-  'left': ()=> onSetInput('left'),
-  'right': ()=> onSetInput('right'),
-  'action1': ()=> onSetInput('action1'),
-  'action2': ()=> onSetInput('action2'),
-  'r': ()=> onReset(),
-  'd': ()=> onToggleDebug(),
-  'space': ()=> onRun(!isGameActive),
-
-  'cancel_up': ()=> onCancelInput('up'),
-  'cancel_down': ()=> onCancelInput('down'),
-  'cancel_left': ()=> onCancelInput('left'),
-  'cancel_right': ()=> onCancelInput('right'),
-  'cancel_action1': ()=> onCancelInput('action1'),
-  'cancel_action2': ()=> onCancelInput('action2'),
-});
 
 const alpha = 30; // hex
 const Input = styled.input`
@@ -98,9 +48,8 @@ const Input = styled.input`
 
 const App = ({
     name, id, code, compile, theme, sprites, imageMap, width, height, debug,
-    error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
-    onCancelInput, onToggleTheme, onOpenCloseSpriteEditor, updateName,
-    user, signOut, signInWithGoogle // Firebase auth
+    error, isGameActive, currentView, setGameActive, onOpenCloseSpriteEditor,
+    onToggleTheme, updateName, user, signOut, signInWithGoogle
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
 
@@ -140,17 +89,7 @@ const App = ({
           </header>
           <Code imageMap={imageMap} />
         </div>
-        <HotKeys
-          handlers={handlers(
-            onSetInput,
-            onCancelInput,
-            ()=> compile(code),
-            (active)=> setGameActive(active),
-            ()=> onToggleDebug(),
-            isGameActive
-          )}
-          keyMap={keyMap}
-        >
+        <Keyboard>
           <div className="right">
             <header>
               {isGameActive
@@ -189,7 +128,7 @@ const App = ({
               }
             </div>
           </div>
-        </HotKeys>
+        </Keyboard>
       </div>
     </CustomProperties>
   );
@@ -249,15 +188,6 @@ const mapDispatchToProps = (dispatch)=> ({
       type: 'SET_ACTIVE',
       active
     });
-  },
-  onSetInput: (input)=> {
-    dispatch(setInput(input));
-  },
-  onCancelInput: (input)=> {
-    dispatch(cancelInput(input));
-  },
-  onToggleDebug: ()=> {
-    dispatch(toggleDebug());
   },
   onToggleTheme: ()=> {
     dispatch(toggleTheme());

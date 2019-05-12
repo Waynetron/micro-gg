@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
@@ -101,7 +101,7 @@ const renderMark = (props, editor, next) => {
 
   switch (props.mark.type) {
     case 'variable':
-      const [left, right] = node.text.split('=').map((str)=> str.trim())
+      const [, right] = node.text.split('=').map((str)=> str.trim())
       const names = right.split(' or ')
 
       return <span {...attributes}>
