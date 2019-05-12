@@ -13,10 +13,20 @@ const defaultState = {
 
 const appReducer = (state = defaultState, action) => {
   switch (action.type) {
+    case 'SET_NAME':
+      return {
+        ...state,
+        name: action.name
+      }
     case 'SET_USER':
       return {
         ...state,
         user: action.user
+      }
+    case 'SIGN_OUT':
+      return {
+        ...state,
+        user: null
       }
     case 'SET_GAMES':
       return {
@@ -35,7 +45,7 @@ const appReducer = (state = defaultState, action) => {
         ...state,
         code: action.code
       }
-    case 'LOAD_PRESET':
+    case 'LOAD_CODE':
       return {
         ...state,
         code: action.code

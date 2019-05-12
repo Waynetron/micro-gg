@@ -45,7 +45,7 @@ const mapDispatchToProps = (dispatch)=> ({
     const code = Plain.deserialize(codeText)
 
     dispatch({
-      type: 'LOAD_PRESET',
+      type: 'LOAD_CODE',
       code
     })
     dispatch({

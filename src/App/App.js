@@ -1,21 +1,21 @@
-import React, {Fragment, useState} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
 import {HotKeys} from 'react-hotkeys'
 import firebase from '../firebase.js'
+import * as firebaseApp from 'firebase/app'
+import 'firebase/auth'
 
 import Game from '../Game/Game.js'
 import {Menu} from '../Menu/Menu.js'
 import Loop from '../Game/Loop.js'
 import Code from '../Code/Code.js'
 import SpriteEditor from '../SpriteEditor/SpriteEditor'
+import Persister from '../Persistor/Persistor'
 import ExamplesModal from '../Examples/ExamplesModal'
+import GamesModal from '../GamesModal/GamesModal'
 import {toggleDebug} from '../Game/actions.js'
 import {setInput, cancelInput, toggleTheme} from './actions.js'
 import CustomProperties from 'react-custom-properties'
-import Plain from 'slate-plain-serializer'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
-import Loader from '../Loader/Loader'
 
 import './App.scss'
 import moon from '../icons/moon.svg'
@@ -24,7 +24,9 @@ import play from '../icons/play.svg'
 import stop from '../icons/stop.svg'
 
 
-const firestore = firebase.firestore()
+const providers = {
+  google: new firebaseApp.auth.GoogleAuthProvider(),
+}
 
 const darkColors = {
   primary: '#F1A0A0',
@@ -78,18 +80,10 @@ const handlers = (onSetInput, onCancelInput, onReset, onRun, onToggleDebug, isGa
 const App = ({
     name, id, code, compile, theme, sprites, imageMap, width, height, debug,
     error, isGameActive, currentView, setGameActive, onToggleDebug, onSetInput,
-    onCancelInput, onToggleTheme, onOpenCloseSpriteEditor,
-    user, signOut, load, signInWithGoogle, // Firebase auth
+    onCancelInput, onToggleTheme, onOpenCloseSpriteEditor, updateName,
+    user, signOut, signInWithGoogle // Firebase auth
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
-  
-  const games = [
-    {name: 'My game', id: '1'},
-    {name: 'Game two', id: '2'},
-    {name: 'Game three', id: '3'}
-  ]
-
-  const [currentGame, setCurrentGame] = useState('1')
 
   return (
     <CustomProperties className="custom-properties-container" properties={{
@@ -100,35 +94,17 @@ const App = ({
       '--hover-color': `${colors.primary}22`  // 22 is is the alpha in hex
     }}>
       <div className="main">
-        <Loader />
+        {user && <Persister />}
         <div className="left">
           <header>
             <h1 className='logo'>micro gg</h1>
-            <Select
-              disableUnderline
-              value={currentGame}
-              onChange={(e)=> {
-                setCurrentGame(e.target.value)
-              }}
-              variant='filled'
-              displayEmpty
-              className={'dropdown'}
-            >
-              {games.map(({name, id})=>
-                <MenuItem value={id}>{name}</MenuItem>
-              )}
-            </Select>
+            <input type="text" value={name} onChange={updateName} />
+            <GamesModal />
             <ExamplesModal />
             {
               user
-                ? <Fragment>
-                    {/* <button onClick={()=> save({name, code, id}, user)}>Save</button> */}
-                    <button onClick={()=> load(user, id)}>Load</button>
-                    <button onClick={signOut}>Sign out</button>
-                  </Fragment>
-                : <Fragment>
-                    <button onClick={signInWithGoogle}>Sign in with Google to save</button>
-                  </Fragment>
+                ? <button onClick={signOut}>Sign out</button>
+                : <button onClick={signInWithGoogle}>Sign in with Google to save</button>
             }
           <button className='icon' onClick={()=> onToggleTheme()}>
             {theme === 'dark'
@@ -211,10 +187,30 @@ const mapStateToProps = ({app, game})=> ({
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  setCurrentGame: (id)=> {
+  updateName: ({target})=> {
     dispatch({
-      type: 'SET_CURRENT_GAME',
-      currentGame: id
+      type: 'SET_NAME',
+      name: target.value
+    });
+  },
+  signOut: ()=> {
+    firebase.auth().signOut().then(function() {
+      dispatch({
+        type: 'SIGN_OUT'
+      });
+    }).catch(function(error) {
+      console.error('could not sign out')
+    });
+  },
+  signInWithGoogle: ()=> {
+    firebase.auth().signInWithPopup(providers.google).then(function(result) {
+      // var token = result.credential.accessToken;
+      dispatch({
+        type: 'SET_USER',
+        user: result.user
+      });
+    }).catch(function(error) {
+      console.error(error)
     });
   },
   compile: (code)=> {
@@ -243,45 +239,8 @@ const mapDispatchToProps = (dispatch)=> ({
   },
   onOpenCloseSpriteEditor: (open)=> {
     dispatch({type: 'spriteEditor/SET_OPEN', open: open})
-  },
-  save: ({name, code, id}, user)=> {
-    dispatch({type: 'SAVE_START'});
-    console.log('saving...')
-
-    const docRef = firestore.collection(user.uid).doc(id)
-    docRef.set({
-        name,
-        code: Plain.serialize(code),
-        id
-      })
-      .then(function() {
-        dispatch({type: 'SAVE_SUCCESS'});
-      })
-      .catch(function(error) {
-        console.error("Error adding document: ", error)
-        dispatch({type: 'SAVE_ERROR'});
-      })
-  },
-  load: (user, id)=> {
-    dispatch({type: 'LOAD_START'});
-    console.log(user)
-
-    const docRef = firestore.collection(user.uid).doc(id)
-    docRef.get().then((doc) => {
-      if (!doc.exists) {
-        console.error('No doc found')
-        return
-      }
-      
-      const {code} = doc.data()
-
-      dispatch({
-        type: 'LOAD_SUCCESS',
-        code: Plain.deserialize(code)
-      })      
-    })
   }
-});
+})
 
 export default connect(
   mapStateToProps,
