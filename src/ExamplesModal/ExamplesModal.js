@@ -3,8 +3,9 @@ import {connect} from 'react-redux'
 import Textarea from 'react-textarea-autosize'
 import Plain from 'slate-plain-serializer'
 import {examples} from './exampleCode'
+import Button from '../components/Button'
 
-const ExamplesModal = ({loadPreset})=> {
+const ExamplesModal = ({colors, loadPreset})=> {
   const [visible, setVisible] = useState(false)
 
   return visible 
@@ -17,12 +18,12 @@ const ExamplesModal = ({loadPreset})=> {
           return <Fragment key={key}>
             <div className='columns'>
               <h2>{key}</h2>
-              <button className='secondary' onClick={()=> {
+              <Button colors={colors} secondary onClick={()=> {
                 loadPreset(code)
                 setVisible(false)
               }}>
                 Load
-              </button>
+              </Button>
             </div>
             <div className='example'>
               <Textarea value={code} />
@@ -33,9 +34,9 @@ const ExamplesModal = ({loadPreset})=> {
       </div>
     </div>
   :
-    <button className='primary' onClick={()=> setVisible(true)}>
+    <Button colors={colors} onClick={()=> setVisible(true)}>
       Examples
-    </button>
+    </Button>
 }
 
 const mapStateToProps = ()=> ({})

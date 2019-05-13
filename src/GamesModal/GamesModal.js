@@ -1,8 +1,9 @@
 import React, {useState} from 'react'
 import {connect} from 'react-redux'
 import Plain from 'slate-plain-serializer'
+import Button from '../components/Button'
 
-const ExamplesModal = ({games, loadGame})=> {
+const ExamplesModal = ({colors, games, loadGame})=> {
   const [visible, setVisible] = useState(false)
 
   return visible 
@@ -13,20 +14,20 @@ const ExamplesModal = ({games, loadGame})=> {
         {games.map(({name, id, code})=>
           <div className='item' key={id}>
             <h2>{name}</h2>
-            <button className='secondary' onClick={()=> {
+            <Button secondary colors={colors} onClick={()=> {
               loadGame(code)
               setVisible(false)
             }}>
               Load
-            </button>
+            </Button>
           </div>
         )}
       </div>
     </div>
   :
-    <button className='primary' onClick={()=> setVisible(true)}>
+    <Button colors={colors} onClick={()=> setVisible(true)}>
       Games
-    </button>
+    </Button>
 }
 
 const mapStateToProps = ({app})=> ({

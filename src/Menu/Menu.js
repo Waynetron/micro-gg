@@ -1,11 +1,12 @@
 import React from 'react';
+import Button from '../components/Button'
 import './Menu.scss';
 
-export const Menu = ({width, height, play})=> (
+export const Menu = ({width, height, onPlay, colors})=> (
   <div className='menu' style={{width, height}}>
-    <h1 className='title'>Tiny game</h1>
-    <button className='inverted' onClick={play}>
+    <h1 className='title'>Win.</h1>
+    <Button colors={colors} inverted onClick={onPlay}>
       Play again
-    </button>
+    </Button>
   </div>
 );

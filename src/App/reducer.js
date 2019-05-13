@@ -3,7 +3,7 @@ import {EMPTY_GAME} from '../ExamplesModal/exampleCode'
 import Plain from 'slate-plain-serializer'
 
 const defaultState = {
-  name: 'Untitled game',
+  name: 'UNTITLED GAME',
   code: Plain.deserialize(EMPTY_GAME), 
   id: uniqid(),
   games: [],

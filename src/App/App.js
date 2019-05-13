@@ -14,7 +14,9 @@ import ExamplesModal from '../ExamplesModal/ExamplesModal'
 import GamesModal from '../GamesModal/GamesModal'
 import {toggleTheme} from './actions.js'
 import CustomProperties from 'react-custom-properties'
-import styled from 'styled-components'
+import Input from '../components/Input'
+import Button from '../components/Button'
+import IconButton from '../components/IconButton'
 
 import './App.scss'
 import moon from '../icons/moon.svg'
@@ -28,23 +30,6 @@ import Keyboard from '../Keyboard/Keyboard'
 const providers = {
   google: new firebaseApp.auth.GoogleAuthProvider(),
 }
-
-const alpha = 30; // hex
-const Input = styled.input`
-  background-color: ${props => props.colors.primary}${alpha};
-  &:hover, &:focus{
-    background-color: ${props => props.colors.primary}${alpha * 1.5};
-  }
-  &:focus{
-    outline: none;
-  }
-  color: ${props => props.colors.primary};
-  font-size: 0.8rem;
-  font-weight: 800;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.3rem;
-`;
 
 const App = ({
     name, id, code, compile, theme, sprites, imageMap, width, height, debug,
@@ -72,20 +57,25 @@ const App = ({
               value={name}
               onChange={(e)=> updateName(e.target.value.toUpperCase())}
               colors={colors}
+              onFocus={(e)=> e.target.select()}
             />
-            <GamesModal />
-            <ExamplesModal />
+            <GamesModal colors={colors} />
+            <ExamplesModal colors={colors} />
             {
               user
-                ? <button onClick={signOut}>Sign out</button>
-                : <button onClick={signInWithGoogle}>Sign in with Google to save</button>
+                ? <Button onClick={signOut} colors={colors}>
+                    Sign out
+                  </Button>
+                : <Button onClick={signInWithGoogle} colors={colors}>
+                    Sign in with Google to save
+                  </Button>
             }
-          <button className='icon' onClick={()=> onToggleTheme()}>
+          <IconButton colors={colors} className='icon' onClick={()=> onToggleTheme()}>
             {theme === 'dark'
               ? <img src={sun} alt="Light UI" />
               : <img src={moon} alt="Dark UI" />
             }
-          </button>
+          </IconButton>
           </header>
           <Code imageMap={imageMap} />
         </div>
@@ -93,18 +83,18 @@ const App = ({
           <div className="right">
             <header>
               {isGameActive
-                ? <button className='icon stop' onClick={()=> {
+                ? <IconButton colors={colors} className='icon stop' onClick={()=> {
                     compile(code)
                     setGameActive(false)
                   }}>
                     <img src={stop} alt="Stop" />
-                  </button>
-                : <button className='icon play' onClick={()=> {
+                  </IconButton>
+                : <IconButton colors={colors} className='icon play' onClick={()=> {
                     compile(code)
                     setGameActive(true)
                   }}>
                     <img src={play} alt="Play" />
-                  </button>
+                  </IconButton>
               }
               {isGameActive && <Loop />}
             </header>
@@ -124,6 +114,11 @@ const App = ({
                 : <Menu
                     width={width}
                     height={height}
+                    onPlay={()=> {
+                      compile(code)
+                      setGameActive(true)
+                    }}
+                    colors={colors}
                   />
               }
             </div>
