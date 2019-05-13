@@ -36,7 +36,6 @@ const mapStateToProps = ({app})=> ({
 
 const mapDispatchToProps = (dispatch)=> ({
   saveGame: (name, id, code, user)=> {
-    console.log(name, id, code)
     const codeText = Plain.serialize(code)
     firestore.collection(user.uid).doc(id).set({
       name,

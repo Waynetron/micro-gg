@@ -138,10 +138,6 @@ const Code = ({user, name, id, code, imageMap, setCode, save, compile})=> {
       value={code}
       onChange={({value})=> {
         setCode(value)
-        
-        if (user) {
-          save({name, id, code}, user)
-        }
       }}
       decorateNode={decorateNode}
       renderMark={(props, editor, next)=>
@@ -167,24 +163,6 @@ const mapDispatchToProps = (dispatch)=> ({
     dispatch({
       type: 'UPDATE_CODE',
       code
-    })
-  },
-  save: ({name, id, code}, user)=> {
-    dispatch({type: 'SAVE_START'});
-    console.log('saving...')
-
-    const docRef = firestore.collection(user.uid).doc(id)
-    docRef.set({
-      name,
-      code: Plain.serialize(code),
-      id
-    })
-    .then(function() {
-      dispatch({type: 'SAVE_SUCCESS'});
-    })
-    .catch(function(error) {
-      console.error("Error adding document: ", error)
-      dispatch({type: 'SAVE_ERROR'});
     })
   },
   compile: (code)=> {
