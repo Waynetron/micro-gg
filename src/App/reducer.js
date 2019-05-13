@@ -2,11 +2,20 @@ import uniqid from 'uniqid';
 import {EMPTY_GAME} from '../ExamplesModal/exampleCode'
 import Plain from 'slate-plain-serializer'
 
-const defaultState = {
-  name: 'UNTITLED GAME',
-  code: Plain.deserialize(EMPTY_GAME), 
+
+const createNewGame = ()=> ({
+  name: 'UNTITILED GAME',
   id: uniqid(),
-  games: [],
+  code: Plain.deserialize(EMPTY_GAME)
+})
+
+const initialGame = createNewGame()
+
+const defaultState = {
+  name: initialGame.name,
+  code: initialGame.code, 
+  id: initialGame.id,
+  games: [initialGame],
   user: null
 }
 
