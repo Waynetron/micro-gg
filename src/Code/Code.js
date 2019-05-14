@@ -13,7 +13,7 @@ const makeGrammar = ()=> {
     comment: /\/\/.*/,
     variable: [
       {
-        pattern: new RegExp('[^ ]{1} = ([A-Z]+) ', 'i')
+        pattern: new RegExp('[^ ]{1} = ([A-Z]+)', 'i')
       },
       // {
       //   pattern: new RegExp('or (.+)\\b', 'i'),
