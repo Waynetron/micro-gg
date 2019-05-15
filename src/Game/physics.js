@@ -186,6 +186,43 @@ export const updateSpriteCollidingState = (spriteA, sprites, width, height)=> {
   return {...spriteA, colliding};
 };
 
+export const updateSpritePositioningState = (spriteA, sprites)=> {
+  if (spriteA.static) {
+    return spriteA;
+  }
+
+  let positioning = {...spriteA.positioning};
+
+  // sprites
+  for (const spriteB of sprites) {
+    if (spriteA.id === spriteB.id) {
+      continue;
+    }
+
+    // prevent recursion of positioning state by removing the positioning state from spriteB
+    // otherwise it can recurse forever: state.positioning.bottom.positioning.top.positioning.bottom...
+    const removePositioningState = (spriteB)=> ({
+      ...spriteB, positioning: undefined
+    })
+
+    if (spriteA.position.x < spriteB.position.x) {
+      positioning.right.push(removePositioningState(spriteB))
+    }
+    else {
+      positioning.left.push(removePositioningState(spriteB))
+    }
+
+    if (spriteA.position.y < spriteB.position.y) {
+      positioning.bottom.push(removePositioningState(spriteB))
+    }
+    else {
+      positioning.top.push(removePositioningState(spriteB))
+    }
+  }
+
+  return {...spriteA, positioning};
+};
+
 export const applySpriteCollisions = (spriteA, sprites)=> {
   if (spriteA.static) {
     return spriteA;
@@ -295,6 +332,12 @@ export const applyVelocity = (sprite)=> ({
 export const resetColliding = (sprite)=> ({
   ...sprite,
   colliding: {top: [], bottom: [], left: [], right: []},
+
+});
+
+export const resetPositioning = (sprite)=> ({
+  ...sprite,
+  positioning: {top: [], bottom: [], left: [], right: []},
 
 });
 

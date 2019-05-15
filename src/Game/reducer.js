@@ -2,8 +2,9 @@ import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   parseVariables, getLevelDimensions} from '../util/parse.js'
 import {getStateTransitions, isAlive, getNewStateToAdd, addNewState, applyStateTransitions} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
-  updateSpriteCollidingState, applySpriteCollisions, roundToPixels,
-  applyWallCollisions, resetColliding
+  updateSpriteCollidingState, updateSpritePositioningState,
+  applySpriteCollisions, applyWallCollisions, roundToPixels,
+  resetColliding, resetPositioning
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 import Plain from 'slate-plain-serializer';
@@ -135,8 +136,12 @@ const gameReducer = (state = defaultState, action) => {
       const newSprites = state.sprites.filter(isAlive)
         |> ((sprites)=> addNewState(sprites, stateToAdd))
         |> ((sprites)=> sprites.map(resetColliding))
+        |> ((sprites)=> sprites.map(resetPositioning))
         |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(
           sprite, state.sprites, state.width, state.height
+        )))
+        |> ((sprites)=> sprites.map((sprite)=> updateSpritePositioningState(
+          sprite, state.sprites
         )))
         |> ((sprites)=> sprites.map(storePreviousPosition))
         |> ((sprites)=> applyStateTransitions(stateTransitions.modify, sprites))

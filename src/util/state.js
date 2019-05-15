@@ -16,6 +16,12 @@ export const createNewSprite = (name, x, y)=> ({
     left: [],
     right: []
   },
+  positioning: {
+    top: [],
+    bottom: [],
+    left: [],
+    right: []
+  },
   static: false,
   inputs: {}
 });
@@ -90,7 +96,9 @@ const directionToSide = (direction)=> {
 }
 
 // Recursively finds the colliding state
-const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
+const getCollidingForSide = (
+  side, traverseDirection, states, currentIndex, COLLIDING_OR_POSITIONING
+)=> {
   const nextIndex = traverseDirection === 'forward' ? currentIndex + 1 : currentIndex - 1;
   // outside range
   if (nextIndex < 0 || nextIndex === states.length) {
@@ -106,9 +114,11 @@ const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
     ...collidesWith
   }];
 
-  const nextColliding = getCollidingForSide(side, traverseDirection, states, nextIndex);
+  const nextColliding = getCollidingForSide(
+    side, traverseDirection, states, nextIndex, COLLIDING_OR_POSITIONING
+  );
   if (nextColliding) {
-    state.colliding = {
+    state[COLLIDING_OR_POSITIONING] = {
       [side]: nextColliding
     }  
   }
@@ -116,7 +126,9 @@ const getCollidingForSide = (side, traverseDirection, states, currentIndex)=> {
   return state;
 }
 
-const getColliding = (direction, leftStates, leftIndex)=> {
+const getColliding = (
+  direction, leftStates, leftIndex, COLLIDING_OR_POSITIONING
+)=> {
   // direction refers to the direction the collision rule is applied in.
   // getCollidingForSide('bottom', 'forward' ... refers to searching for the
   // colliding state for the bottom side by traversing the ruleString to the
@@ -124,8 +136,12 @@ const getColliding = (direction, leftStates, leftIndex)=> {
   let colliding = {};
   const frontSide = directionToSide(direction);
   const backSide = getOpposite(frontSide);
-  const frontColliding = getCollidingForSide(frontSide, 'forward', leftStates, leftIndex);
-  const backColliding = getCollidingForSide(backSide, 'backward', leftStates, leftIndex);
+  const frontColliding = getCollidingForSide(
+    frontSide, 'forward', leftStates, leftIndex, COLLIDING_OR_POSITIONING
+  );
+  const backColliding = getCollidingForSide(
+    backSide, 'backward', leftStates, leftIndex, COLLIDING_OR_POSITIONING
+  );
 
   if (backColliding) {
     colliding[backSide] = backColliding;
@@ -189,15 +205,28 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   // Get the left and right matches
   const [left, right] = ruleString.replace(firstWord, '').split('->');
 
+  let separator;
+  if (left.includes(' > ')) {
+    separator = '>'
+  }
+  else if (left.includes(' < ')) {
+    separator = '<'
+  }
+  else {
+    separator = '|'
+  }
+
+  const COLLIDING_OR_POSITIONING = separator === '|' ? 'colliding' : 'positioning'
+
   // <------- leftWordArrays ----->    <--- rightWordArrays -->
   // <---words--> < ----words----->    <-words-> <---words---->
   // [ UP Player | Goomba | Brick ] -> [ Player | DEAD Goomba ]
 
-  const leftWordGroupArrays = trimBrackets(left).split('|')
+  const leftWordGroupArrays = trimBrackets(left).split(separator)
     .map((string)=> stringToWordGroups(string))
 
   const rightWordGroupArrays = trimBrackets(right)
-    .split('|')
+    .split(separator)
     .map((string)=> stringToWordGroups(string))
 
   let leftStates = [];
@@ -216,12 +245,17 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   }
 
   const leftStatesWithColliding = leftStates.map((state, index)=> {
-    const colliding = getColliding(direction, leftStates, index);
+    const colliding = getColliding(
+      direction, leftStates, index, COLLIDING_OR_POSITIONING
+    );
+  
 
     if (colliding) {
       return {
         ...state,
-        colliding: getColliding(direction, leftStates, index),
+        [COLLIDING_OR_POSITIONING]: getColliding(
+          direction, leftStates, index, COLLIDING_OR_POSITIONING
+        ),
       }
     }
     else {

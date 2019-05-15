@@ -11,7 +11,7 @@ export const EMPTY_GAME =
 P = Player
 
 // Rules
-{ Player } -> { DOWN Player }
+{ <MOVE> Player } -> { MOVE Player }
 `
 
 export const examples = {
@@ -92,9 +92,33 @@ four_way_movement:
 ###############
 
 P = Player
-# = Brick
 
-{ <HORIZONTAL> Player } -> { HORIZONTAL Player }
-{ <VERTICAL> Player } -> { VERTICAL Player }
+// MOVE is shorthand for UP, DOWN, LEFT and RIGHT
+// You can also use HORIZONTAL or VERTICAL
+{ <MOVE> Player } -> { MOVE Player }
+`,
+
+follow_player:
+`
+##################
+#                #
+#   G            #
+#                #
+#                #
+#                #
+#                #
+#           P    #
+#                #
+##################
+
+P = Player
+G = Goomba
+
+{ <MOVE> Player } -> { MOVE Player }
+UP { Bro > Player } -> { SLOW_UP Bro > Player }
+DOWN { Bro > Player } -> { SLOW_DOWN Bro > Player }
+LEFT { Bro > Player } -> { SLOW_LEFT Bro > Player }
+RIGHT { Bro > Player } -> { SLOW_RIGHT Bro > Player }
+
 `
 }

@@ -170,6 +170,26 @@ describe('converts collision rule string to state', ()=> {
   });
 });
 
+describe('converts position rule string to state', ()=> {
+  it('simple position rule', ()=> {
+    const rule = 'RIGHT { Player > Goomba } -> { Player > RIGHT Goomba }'
+
+    expect(collisionRuleStringToState(rule, names)).toEqual(
+      [
+        [
+          { name: 'Player', positioning: {right: [{name: 'Goomba'}]} },
+          { name: 'Player' },
+        ],
+        [
+          { name: 'Goomba', positioning: {left: [{name: 'Player'}]} },
+          { name: 'Goomba', acceleration: {x: 1} },
+        ]
+      ]
+    );
+  });
+});
+
+
 describe('trimBrackets()', ()=> {
   it('trims brackets (simple)', ()=> {
     const input = '{ Hello }'

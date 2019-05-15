@@ -1,28 +1,29 @@
-import {createNewSprite, trimBrackets} from './state.js';
-import {flatten} from 'lodash';
-import {TILE_SIZE} from '../Game/constants.js';
-import uniqid from 'uniqid';
+import {createNewSprite, trimBrackets} from './state.js'
+import {flatten} from 'lodash'
+import {TILE_SIZE} from '../Game/constants.js'
+import uniqid from 'uniqid'
 import {ruleStringToState, collisionRuleStringToState, isCreateNewState} from '../util/state.js'
 
-const isCollisionRule = (line)=> line.includes('|');
-const isRule = (line)=> line.includes('->') && !isCollisionRule(line);
+const isCollisionRule = (line)=>
+  line.includes('|') || line.includes(' >') || line.includes(' <')
+const isRule = (line)=> line.includes('->') && !isCollisionRule(line)
 const isLevel = (line)=> line.match(/#.+#/g)
-export const isLegend = (line)=> line.includes('=');
+export const isLegend = (line)=> line.includes('=')
 const isVariable = (line)=> line.match(/=[ ]{0,1}\{/g)
 
 export const parseLegend = (code)=> {
-  let legend = {};
+  let legend = {}
 
   code.split('\n')
     .filter(isLegend)
     .forEach((line)=> {
       const [symbol, right] = line.split('=').map((str)=> str.trim());
-      const names = right.split(' or ');
+      const names = right.split(' or ')
       // this is a function to allow returning a random name in the case of:
       // G = Goomba or Tree or Brick
       legend[symbol] = ()=> {
-        const randIndex = Math.floor(Math.random() * names.length);
-        return names[randIndex];
+        const randIndex = Math.floor(Math.random() * names.length)
+        return names[randIndex]
       }
     });
 
@@ -95,6 +96,8 @@ export const parseSprites = (level, legend)=> {
 
 export const standardExpansions = {
   ALL: ['UP', 'DOWN', 'LEFT', 'RIGHT'],
+  MOVE: ['UP', 'DOWN', 'LEFT', 'RIGHT'],
+  SLOW_MOVE: ['SLOW_UP', 'SLOW_DOWN', 'SLOW_LEFT', 'SLOW_RIGHT'],
   HORIZONTAL: ['LEFT', 'RIGHT'],
   VERTICAL: ['UP', 'DOWN']
 }
