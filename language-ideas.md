@@ -72,8 +72,8 @@ Airborne = { Player !Grounded }
 
 * -----------------------------------
 * Ideas around custom expansion keywords
-HORIZONTAL = LEFT or RIGHT
-VERTICAL = UP or DOWN
+HORIZONTAL = LEFT and RIGHT
+VERTICAL = UP and DOWN
 { Creature HORIZONTAL }
 * becomes
 [{ Creature LEFT }, { Creature RIGHT }]

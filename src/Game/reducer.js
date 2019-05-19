@@ -12,7 +12,6 @@ import Plain from 'slate-plain-serializer';
 const defaultState = {
   currentView: 'game',
   sprites: [],
-  legend: {},
   names: {},
   width_in_tiles: 0,
   height_in_tiles: 0,
@@ -28,7 +27,7 @@ const defaultState = {
   stateTransitions: {
     regular: {}
   },
-  images: ['player', 'brick', 'questionbrick', 'spike', 'goomba', 'goombared']
+  availableImages: ['Player', 'Brick', 'QuestionBrick', 'Spike', 'Goomba', 'GoombaRed']
 }
 
 const arrayToObject = (array) =>
@@ -50,22 +49,40 @@ const gameReducer = (state = defaultState, action) => {
         active: action.active
       }
 
-    case 'TOGGLE_DEBUG':
+    case 'TOGGLE_DEBUG': {
       return {
         ...state,
         debug: !state.debug
       }
+    }
     
-    case 'SELECT_IMAGE':
+    case 'SET_IMAGE': {
       const imageMap = {...state.imageMap}
       const {variableName, imageName} = action
-      imageMap[variableName] = imageName;
+      imageMap[variableName] = imageName
+      
       return {
         ...state,
         imageMap
       }
+    }
     
-    case 'COMPILE':
+    case 'SET_NO_IMAGE': {
+      const imageMap = {...state.imageMap}
+      const {variableName} = action
+      imageMap[variableName] = null
+      // null means the user intended to use ascii
+      // whereas undefined is a lack of choice - we do not know what the user wants
+      // So we can switch on undefined in places to show default images for some
+      // sprites: Player, Goomba etc
+      
+      return {
+        ...state,
+        imageMap
+      }
+    }
+    
+    case 'COMPILE': {
       try {
         const {serialize} = Plain
         const level = action.code |> serialize |> removeComments |> parseLevel
@@ -83,13 +100,13 @@ const gameReducer = (state = defaultState, action) => {
 
       const variables = parseVariables(action.code |> serialize);
       
-      const imageMap = {...state.imageMap};
-      for (const name of namesArr) {
-        if (!imageMap[name]) {
-          const imageAvailable = state.images.includes(name.toLowerCase())
-          imageMap[name] = imageAvailable ? name.toLowerCase() : 'player';
-        }
-      }
+      // const imageMap = {...state.imageMap};
+      // for (const name of namesArr) {
+      //   if (!imageMap[name]) {
+      //     const imageAvailable = state.images.includes(name)
+      //     imageMap[name] = imageAvailable ? name : 'player';
+      //   }
+      // }
 
         // A rule consists of a before and an after state
         const rules = parseRules(
@@ -103,12 +120,12 @@ const gameReducer = (state = defaultState, action) => {
         return {
           ...defaultState,
           sprites,
-          legend,
           rules,
           width: width_in_tiles * TILE_SIZE,
           height: height_in_tiles * TILE_SIZE,
           names,
-          imageMap
+          imageMap: {...state.imageMap}
+          // imageMap
         }
       }
       catch(err) {
@@ -118,8 +135,9 @@ const gameReducer = (state = defaultState, action) => {
           error: 'Compilation error 😞'
         }
       }
+    }
 
-    case 'UPDATE':
+    case 'UPDATE': {
       if (state.currentView !== 'game') {
         return state;
       }
@@ -160,21 +178,25 @@ const gameReducer = (state = defaultState, action) => {
           stateTransitions,
           currentView: winners.length > 0 ? 'menu' : state.currentView
       }
-    case 'SET_INPUT':
-    return {
-      ...state,
-      sprites: state.sprites.map(
-        (sprite)=> ({...sprite, inputs: {...sprite.inputs, [action.input]: true}})
-      )
-    };
+    }
 
-    case 'TOGGLE_THEME':
+    case 'SET_INPUT': {
+      return {
+        ...state,
+        sprites: state.sprites.map(
+          (sprite)=> ({...sprite, inputs: {...sprite.inputs, [action.input]: true}})
+        )
+      };
+    }
+
+    case 'TOGGLE_THEME': {
       return {
         ...state,
         theme: state.theme === 'light' ? 'dark' : 'light'
       };
+    }
 
-    case 'CANCEL_INPUT':
+    case 'CANCEL_INPUT': {
       return {
         ...state,
         sprites: state.sprites.map(
@@ -185,9 +207,11 @@ const gameReducer = (state = defaultState, action) => {
           }
         )
       };
+    }
 
-    default:
+    default: {
       return state
+    }
   }
 }
 

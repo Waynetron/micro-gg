@@ -2,8 +2,9 @@ import uniqid from 'uniqid';
 import {matches, mergeWith, merge} from 'lodash';
 import {MAX_VELOCITY, TILE_SIZE} from '../Game/constants.js';
 
-export const createNewSprite = (name, x, y)=> ({
+export const createNewSprite = (name, x, y, letter)=> ({
   name: name,
+  letter: letter,
   position: {x, y},
   prevPosition: {x, y},
   velocity: {x: 0, y: 0},
@@ -284,7 +285,7 @@ export const collisionRuleStringToState = (ruleString, names)=> {
     else {
       // If there is no matching let state, then this is a completely new state.
       // Eg: the fireball in this rule: [ <ACTION> Mario ] -> [ Mario | Fireball ]
-      const newSprite = createNewSprite('TEMP_NAME', 0, 0);
+      const newSprite = createNewSprite('TEMP_NAME', 0, 0, 'X');
       state = {
         ...newSprite,
         // indicates to applyRules not to merge this but create new state

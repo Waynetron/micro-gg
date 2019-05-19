@@ -85,7 +85,7 @@ export const parseSprites = (level, legend)=> {
       sprites.push(
         {
           id: uniqid(),
-          ...createNewSprite(getName(), x, y)
+          ...createNewSprite(getName(), x, y, char)
         }
       );
     }

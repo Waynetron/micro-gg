@@ -32,8 +32,8 @@ const providers = {
 }
 
 const App = ({
-    name, id, code, compile, theme, sprites, imageMap, width, height, debug,
-    error, isGameActive, currentView, setGameActive, onOpenCloseSpriteEditor,
+    name, id, code, compile, theme, sprites, imageMap, availableImages, width, height,
+    debug, error, isGameActive, currentView, setGameActive, onOpenCloseSpriteEditor,
     onToggleTheme, updateName, user, signOut, signInWithGoogle
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
@@ -108,6 +108,7 @@ const App = ({
                     imageMap={imageMap}
                     width={width}
                     height={height}
+                    availableImages={availableImages}
                     debug={debug}
                     error={error}
                   />
@@ -138,6 +139,7 @@ const mapStateToProps = ({app, game})=> ({
   isGameActive: game.active,
   sprites: game.sprites,
   imageMap: game.imageMap,
+  availableImages: game.availableImages,
   width: game.width,
   height: game.height,
   debug: game.debug,

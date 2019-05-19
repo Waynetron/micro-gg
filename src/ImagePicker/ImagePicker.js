@@ -1,15 +1,12 @@
-import React from 'react';
-import {connect} from 'react-redux';
-import Tooltip from '@material-ui/core/Tooltip';
+import React from 'react'
+import {connect} from 'react-redux'
+import Tooltip from '@material-ui/core/Tooltip'
+import LetterImage from '../Image/LetterImage'
+import {getImageFilename} from '../Image/helper'
 
-const ImagePicker = ({variableName, imageMap, images, onSelect})=> {  
-  // imageMap will be an empty object before <Code /> has been loaded
-  // this protects against that case
-  if (Object.keys(imageMap).length === 0) {
-    return null;
-  }
 
-  const image = imageMap[variableName] ? imageMap[variableName] : 'player';
+const ImagePicker = ({letter, variableName, imageMap, availableImages, onSetImage, onSetNoImage})=> {
+  const imageFilename = getImageFilename(variableName, imageMap, availableImages)
 
   return (
     <Tooltip
@@ -17,36 +14,54 @@ const ImagePicker = ({variableName, imageMap, images, onSelect})=> {
       className='tooltip'
       title={
         <div className='tooltip-content'>
-          {images.map((name)=> (
+          <LetterImage
+            letter={letter}
+            onClick={()=> onSetNoImage(variableName)}
+          />
+          {availableImages.map((imageName)=> (
             <img
-              key={name}
+              key={imageName}
               alt=''
-              src={require(`../Game/images/${name}.png`)}
-              onClick={()=> onSelect(variableName, name)}
+              src={require(`../Game/images/${imageName}.png`)}
+              onClick={()=> onSetImage(variableName, imageName)}
             />
           ))}
         </div>
       }
     >
-      <img className='code-sprite'
-        alt=''
-        src={require(`../Game/images/${image}.png`)}
-      />
+      {imageFilename
+        ? 
+          <img
+            className='code-sprite'
+            alt=''
+            src={require(`../Game/images/${imageFilename}.png`)}
+          />
+        : <LetterImage
+            className='code-sprite'
+            letter={letter}
+          />
+      }
     </Tooltip>
   )
 };
 
 const mapStateToProps = ({game})=> ({
   imageMap: game.imageMap,
-  images: game.images
+  availableImages: game.availableImages
 })
 
 const mapDispatchToProps = (dispatch)=> ({
-  onSelect: (variableName, imageName)=> {
+  onSetImage: (variableName, imageName)=> {
     dispatch({
-      type: 'SELECT_IMAGE',
+      type: 'SET_IMAGE',
       variableName,
       imageName
+    });
+  },
+  onSetNoImage: (variableName)=> {
+    dispatch({
+      type: 'SET_NO_IMAGE',
+      variableName,
     });
   }
 });

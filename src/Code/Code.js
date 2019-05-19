@@ -101,12 +101,12 @@ const renderMark = (props, editor, next) => {
 
   switch (props.mark.type) {
     case 'variable':
-      const [, right] = node.text.split('=').map((str)=> str.trim())
+      const [key, right] = node.text.split('=').map((str)=> str.trim())
       const names = right.split(' or ')
 
       return <span {...attributes}>
           {children}
-          <ImagePicker variableName={names[0]} />
+          <ImagePicker letter={key} variableName={names[0]} />
         </span>
 
     case 'comment': 
