@@ -1,6 +1,5 @@
-import React, {useState, Fragment} from 'react'
+import React, {useState} from 'react'
 import {connect} from 'react-redux'
-import {debounce} from 'lodash';
 import LetterImage from '../Image/LetterImage'
 import {getImageFilename} from '../Image/helper'
 
@@ -11,7 +10,6 @@ const PickerContainer = styled.div`
   display: inline-flex;
   cursor: pointer;
   margin-top: -0.5rem;
-  z-index: 1;
 `
 
 const PickerBox = styled.div`
@@ -21,10 +19,11 @@ const PickerBox = styled.div`
   border-radius: .5rem;
   padding: 0.5rem;
   margin-top: -0.5rem;
+  z-index: 1;
 
   div, img {
     margin-right: 0.5rem;
-    
+
     &:last-child {
       margin-right: 0
     }
@@ -38,7 +37,7 @@ const ImagePicker = ({letter, variableName, imageMap, availableImages, onSetImag
   return (
     <PickerContainer
       onMouseOver={()=> setOpen(true)}
-      onMouseLeave={debounce(()=> setOpen(false), 250)}
+      onMouseLeave={()=> setOpen(false)}
     >
       {!open
         ?
