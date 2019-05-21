@@ -1,6 +1,7 @@
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
   parseVariables, getLevelDimensions} from '../util/parse.js'
-import {getStateTransitions, isAlive, getNewStateToAdd, addNewState, applyStateTransitions} from '../util/state.js'
+import {getStateTransitions, isAlive, getNewStateToAdd, addNewState,
+  applyStateTransitions, flagDeadForRemoval, flashDead} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, updateSpritePositioningState,
   applySpriteCollisions, applyWallCollisions, roundToPixels,
@@ -12,6 +13,7 @@ import Plain from 'slate-plain-serializer';
 const defaultState = {
   currentView: 'game',
   sprites: [],
+  effects: [],
   names: {},
   width_in_tiles: 0,
   height_in_tiles: 0,
@@ -27,7 +29,9 @@ const defaultState = {
   stateTransitions: {
     regular: {}
   },
-  availableImages: ['Player', 'Brick', 'QuestionBrick', 'Spike', 'Goomba', 'GoombaRed']
+  availableImages: ['Player', 'Brick', 'QuestionBrick', 'Spike', 'Goomba', 'GoombaRed'],
+  freezeFrames: 0,
+  shake: false
 }
 
 const arrayToObject = (array) =>
@@ -141,6 +145,15 @@ const gameReducer = (state = defaultState, action) => {
       if (state.currentView !== 'game') {
         return state;
       }
+
+      // Decrement freezeFrames
+      if (state.freezeFrames > 0) {
+        return {
+          ...state,
+          freezeFrames: state.freezeFrames - 1
+        }
+      }
+
       const previousState = {...state};
       const stateToAdd = getNewStateToAdd(state.sprites, state.rules.create)
       
@@ -150,8 +163,18 @@ const gameReducer = (state = defaultState, action) => {
       }
 
       const winners = state.sprites.filter((sprite)=> Boolean(sprite.win))
+      const alive = state.sprites.filter(isAlive)
+      const somethingDied = state.sprites.length - alive.length > 0
 
-      const newSprites = state.sprites.filter(isAlive)
+      // Dead sprites aren't removed right away, instead they are flashed
+      // white then flagged for removal.
+      // This allows for them to stay on screen in their flashed state for
+      // the duration of the freezeFrames
+      const spritesToKeep = state.sprites.filter((sprite)=> !sprite.remove)
+
+      const newSprites = spritesToKeep
+        |> ((sprites)=> sprites.map(flashDead))
+        |> ((sprites)=> sprites.map(flagDeadForRemoval))
         |> ((sprites)=> addNewState(sprites, stateToAdd))
         |> ((sprites)=> sprites.map(resetColliding))
         |> ((sprites)=> sprites.map(resetPositioning))
@@ -176,7 +199,9 @@ const gameReducer = (state = defaultState, action) => {
           ...state,
           sprites: newSprites,
           stateTransitions,
-          currentView: winners.length > 0 ? 'menu' : state.currentView
+          currentView: winners.length > 0 ? 'menu' : state.currentView,
+          freezeFrames: somethingDied ? 3 : state.freezeFrames,
+          shake: somethingDied ? true : false
       }
     }
 

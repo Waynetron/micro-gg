@@ -682,3 +682,26 @@ export const isCreateNewState = (rule)=> {
   const [, right] = rule;
   return right.createNew !== undefined;
 };
+
+export const flashDead = (sprite)=> {
+  if (!sprite.dead) {
+    return sprite
+  }
+
+  return {
+    ...sprite,
+    // color: '#ffffff'
+    flash: true
+  }
+}
+
+export const flagDeadForRemoval = (sprite)=> {
+  if (!sprite.dead) {
+    return sprite
+  }
+
+  return {
+    ...sprite,
+    remove: true
+  }
+}

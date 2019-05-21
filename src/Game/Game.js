@@ -1,8 +1,24 @@
 import React from 'react';
 import Sprite from './Sprite.js';
+import styled, {css} from 'styled-components'
 
-const Game = ({sprites, width, height, availableImages, imageMap, error, debug})=> (
-  <div className='stage' style={{width, height}}>
+const Stage = styled.div`
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+  background-color: var(--dark-color);
+  overflow: hidden;
+
+  ${props => props.shake && css`
+      transform: translate3d(
+        ${Math.random() * 4 - 2}px,
+        ${Math.random() * 4 - 2}px,
+        0px
+      )
+  `}
+`
+
+const Game = ({sprites, width, height, shake, availableImages, imageMap, error, debug})=> (
+  <Stage width={width} height={height} shake={shake}>
     {error && <p className='error' >{error}</p>}
     {sprites.map((sprite)=>
       <Sprite
@@ -19,7 +35,7 @@ const Game = ({sprites, width, height, availableImages, imageMap, error, debug})
         debug={debug}
       />
     )}
-  </div>
+  </Stage>
 );
 
 export default Game

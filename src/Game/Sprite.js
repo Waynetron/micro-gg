@@ -2,16 +2,28 @@ import React from 'react';
 import {DebugColliding} from '../debug/DebugColliding.js';
 import LetterImage from '../Image/LetterImage'
 import {getImageFilename} from '../Image/helper'
-import './Sprite.css';
+import styled, {css} from 'styled-components'
 
 const getPositionStyle = (x, y)=> ({
   position: 'relative', left: x, top: y
 });
 
+const SpriteContainer = styled.div`
+  width: 0;
+  height: 0;
+
+  ${props => props.flash && css`
+    filter: brightness(2);
+  `}
+`
+
 const Sprite = ({x, y, imageName, availableImages, letter, imageMap, sprite, debug})=> {
   const imageFilename = getImageFilename(imageName, imageMap, availableImages)
 
-  return <div className="sprite" style={getPositionStyle(x, y)}>
+  return <SpriteContainer
+    style={getPositionStyle(x, y)}
+    flash={sprite.flash}
+  >
     {imageFilename
       ? <img
           alt=''
@@ -22,7 +34,7 @@ const Sprite = ({x, y, imageName, availableImages, letter, imageMap, sprite, deb
         />
     }
     {debug && <DebugColliding sprite={sprite} />}
-  </div>
+  </SpriteContainer>
 };
 
 export default Sprite;
