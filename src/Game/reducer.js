@@ -18,7 +18,6 @@ const defaultState = {
   width_in_tiles: 0,
   height_in_tiles: 0,
   active: false,
-  theme: 'dark',
   debug: false,
   imageMap: {},
   rules: {
@@ -200,7 +199,7 @@ const gameReducer = (state = defaultState, action) => {
           sprites: newSprites,
           stateTransitions,
           currentView: winners.length > 0 ? 'menu' : state.currentView,
-          freezeFrames: somethingDied ? 3 : state.freezeFrames,
+          freezeFrames: somethingDied ? 2 : state.freezeFrames,
           shake: somethingDied ? true : false
       }
     }
@@ -211,13 +210,6 @@ const gameReducer = (state = defaultState, action) => {
         sprites: state.sprites.map(
           (sprite)=> ({...sprite, inputs: {...sprite.inputs, [action.input]: true}})
         )
-      };
-    }
-
-    case 'TOGGLE_THEME': {
-      return {
-        ...state,
-        theme: state.theme === 'light' ? 'dark' : 'light'
       };
     }
 

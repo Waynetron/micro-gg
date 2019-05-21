@@ -32,8 +32,8 @@ const providers = {
 }
 
 const App = ({
-    name, id, code, compile, theme, sprites, imageMap, availableImages, width, height,
-    shake, debug, error, isGameActive, currentView, setGameActive, onOpenCloseSpriteEditor,
+    name, code, compile, theme, imageMap, width, height,
+    isGameActive, currentView, setGameActive, onOpenCloseSpriteEditor,
     onToggleTheme, updateName, user, signOut, signInWithGoogle
 })=> {
   const colors = theme === 'light' ? lightColors : darkColors;
@@ -103,16 +103,7 @@ const App = ({
                 onClose={()=> onOpenCloseSpriteEditor(false)}
               />
               {currentView === 'game'
-                ? <Game
-                    sprites={sprites}
-                    imageMap={imageMap}
-                    width={width}
-                    height={height}
-                    availableImages={availableImages}
-                    shake={shake}
-                    debug={debug}
-                    error={error}
-                  />
+                ? <Game />
                 : <Menu
                     width={width}
                     height={height}
@@ -136,17 +127,11 @@ const mapStateToProps = ({app, game})=> ({
   name: app.name,
   id: app.id,
   code: app.code,
-  theme: game.theme,
+  theme: app.theme,
   isGameActive: game.active,
-  sprites: game.sprites,
-  imageMap: game.imageMap,
-  availableImages: game.availableImages,
+  currentView: game.currentView,
   width: game.width,
-  height: game.height,
-  shake: game.shake,
-  debug: game.debug,
-  error: game.error,
-  currentView: game.currentView
+  height: game.height
 })
 
 const mapDispatchToProps = (dispatch)=> ({

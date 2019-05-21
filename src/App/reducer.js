@@ -16,12 +16,19 @@ const defaultState = {
   code: initialGame.code, 
   id: initialGame.id,
   games: [initialGame],
+  theme: 'dark',
   user: null
 }
 
 
 const appReducer = (state = defaultState, action) => {
   switch (action.type) {
+    case 'TOGGLE_THEME': {
+      return {
+        ...state,
+        theme: state.theme === 'light' ? 'dark' : 'light'
+      };
+    }
     case 'SET_NAME':
       return {
         ...state,

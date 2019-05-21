@@ -1,4 +1,5 @@
 import React from 'react';
+import {connect} from 'react-redux'
 import Sprite from './Sprite.js';
 import styled, {css} from 'styled-components'
 
@@ -17,7 +18,9 @@ const Stage = styled.div`
   `}
 `
 
-const Game = ({sprites, width, height, shake, availableImages, imageMap, error, debug})=> (
+const Game = ({
+  sprites, width, height, shake, availableImages, imageMap, error, debug
+})=> (
   <Stage width={width} height={height} shake={shake}>
     {error && <p className='error' >{error}</p>}
     {sprites.map((sprite)=>
@@ -38,4 +41,20 @@ const Game = ({sprites, width, height, shake, availableImages, imageMap, error, 
   </Stage>
 );
 
-export default Game
+const mapStateToProps = ({game})=> ({
+  isGameActive: game.active,
+  sprites: game.sprites,
+  imageMap: game.imageMap,
+  availableImages: game.availableImages,
+  width: game.width,
+  height: game.height,
+  shake: game.shake,
+  debug: game.debug,
+  error: game.error,
+  currentView: game.currentView
+})
+
+export default connect(
+  mapStateToProps,
+  null
+)(Game);
