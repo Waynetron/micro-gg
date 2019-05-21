@@ -153,44 +153,57 @@ const gameReducer = (state = defaultState, action) => {
         }
       }
 
-      const previousState = {...state};
-      const stateToAdd = getNewStateToAdd(state.sprites, state.rules.create)
+      const spritesToKeep = state.sprites.filter((sprite)=> !sprite.remove)
       
-      const stateTransitions = {
-        modify: getStateTransitions(state.rules.modify, state.sprites),
-        create: getStateTransitions(state.rules.create, state.sprites),
+      const alive = spritesToKeep.filter(isAlive)
+      const somethingDied = spritesToKeep.length - alive.length > 0
+
+      if (somethingDied) {
+        const newSprites = spritesToKeep
+        |> ((sprites)=> sprites.map(flashDead))
+        |> ((sprites)=> sprites.map(flagDeadForRemoval))
+
+        return {
+          ...state,
+          sprites: newSprites,
+          freezeFrames: 5,
+          shake: true
+        }
       }
 
-      const winners = state.sprites.filter((sprite)=> Boolean(sprite.win))
-      const alive = state.sprites.filter(isAlive)
-      const somethingDied = state.sprites.length - alive.length > 0
+      const previousState = {...state};
+      const stateToAdd = getNewStateToAdd(spritesToKeep, state.rules.create)
+      
+      const stateTransitions = {
+        modify: getStateTransitions(state.rules.modify, spritesToKeep),
+        create: getStateTransitions(state.rules.create, spritesToKeep),
+      }
+
+      const winners = spritesToKeep.filter((sprite)=> Boolean(sprite.win))
 
       // Dead sprites aren't removed right away, instead they are flashed
       // white then flagged for removal.
       // This allows for them to stay on screen in their flashed state for
       // the duration of the freezeFrames
-      const spritesToKeep = state.sprites.filter((sprite)=> !sprite.remove)
 
       const newSprites = spritesToKeep
-        |> ((sprites)=> sprites.map(flashDead))
-        |> ((sprites)=> sprites.map(flagDeadForRemoval))
         |> ((sprites)=> addNewState(sprites, stateToAdd))
         |> ((sprites)=> sprites.map(resetColliding))
         |> ((sprites)=> sprites.map(resetPositioning))
         |> ((sprites)=> sprites.map((sprite)=> updateSpriteCollidingState(
-          sprite, state.sprites, state.width, state.height
+          sprite, spritesToKeep, state.width, state.height
         )))
         |> ((sprites)=> sprites.map((sprite)=> updateSpritePositioningState(
-          sprite, state.sprites
+          sprite, spritesToKeep
         )))
         |> ((sprites)=> sprites.map(storePreviousPosition))
         |> ((sprites)=> applyStateTransitions(stateTransitions.modify, sprites))
         |> ((sprites)=> sprites.map(applyFriction))
         |> ((sprites)=> sprites.map(applyAcceleration))
         |> ((sprites)=> sprites.map(applyVelocity))
-        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
-        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, state.sprites, previousState)))
+        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, spritesToKeep, previousState)))
+        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, spritesToKeep, previousState)))
+        |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, spritesToKeep, previousState)))
         |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
         |> ((sprites)=> sprites.map(roundToPixels))
         
@@ -199,8 +212,7 @@ const gameReducer = (state = defaultState, action) => {
           sprites: newSprites,
           stateTransitions,
           currentView: winners.length > 0 ? 'menu' : state.currentView,
-          freezeFrames: somethingDied ? 2 : state.freezeFrames,
-          shake: somethingDied ? true : false
+          shake: false
       }
     }
 

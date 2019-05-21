@@ -9,8 +9,9 @@ const getPositionStyle = (x, y)=> ({
 });
 
 const SpriteContainer = styled.div`
-  width: 0;
-  height: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
 
   ${props => props.flash && css`
     filter: brightness(2);

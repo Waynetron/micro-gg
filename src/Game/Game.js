@@ -11,8 +11,8 @@ const Stage = styled.div`
 
   ${props => props.shake && css`
       transform: translate3d(
-        ${Math.random() * 4 - 2}px,
-        ${Math.random() * 4 - 2}px,
+        ${Math.random() * 8 - 4}px,
+        ${Math.random() * 8 - 4}px,
         0px
       )
   `}
