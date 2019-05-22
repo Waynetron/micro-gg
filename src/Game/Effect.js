@@ -34,7 +34,6 @@ const Explosion = styled.div`
 
 const Effect = ({effect})=>
   <Container
-    key={effect.id}
     x={effect.position.x}
     y={effect.position.y}
   >

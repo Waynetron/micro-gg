@@ -40,7 +40,7 @@ const Game = ({
       />
     )}
     {effects.map((effect)=>
-      <Effect effect={effect} />
+      <Effect key={effect.id} effect={effect} />
     )}
   </Stage>
 );
