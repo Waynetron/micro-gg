@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import Sprite from './Sprite.js';
+import Effect from './Effect.js';
 import styled, {css} from 'styled-components'
 
 const Stage = styled.div`
@@ -14,12 +15,12 @@ const Stage = styled.div`
         ${Math.random() * 8 - 4}px,
         ${Math.random() * 8 - 4}px,
         0px
-      )
+      );
   `}
 `
 
 const Game = ({
-  sprites, width, height, shake, availableImages, imageMap, error, debug
+  width, height, sprites, effects, imageMap, availableImages, shake, error, debug
 })=> (
   <Stage width={width} height={height} shake={shake}>
     {error && <p className='error' >{error}</p>}
@@ -38,16 +39,20 @@ const Game = ({
         debug={debug}
       />
     )}
+    {effects.map((effect)=>
+      <Effect effect={effect} />
+    )}
   </Stage>
 );
 
 const mapStateToProps = ({game})=> ({
   isGameActive: game.active,
-  sprites: game.sprites,
-  imageMap: game.imageMap,
-  availableImages: game.availableImages,
   width: game.width,
   height: game.height,
+  sprites: game.sprites,
+  effects: game.effects,
+  imageMap: game.imageMap,
+  availableImages: game.availableImages,
   shake: game.shake,
   debug: game.debug,
   error: game.error,

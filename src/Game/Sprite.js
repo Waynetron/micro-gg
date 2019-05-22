@@ -4,14 +4,12 @@ import LetterImage from '../Image/LetterImage'
 import {getImageFilename} from '../Image/helper'
 import styled, {css} from 'styled-components'
 
-const getPositionStyle = (x, y)=> ({
-  position: 'relative', left: x, top: y
-});
-
 const SpriteContainer = styled.div`
-  width: 32px;
-  height: 32px;
-  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+  left: ${props => props.x}px;
+  top: ${props => props.y}px;
 
   ${props => props.flash && css`
     filter: brightness(2);
@@ -22,8 +20,9 @@ const Sprite = ({x, y, imageName, availableImages, letter, imageMap, sprite, deb
   const imageFilename = getImageFilename(imageName, imageMap, availableImages)
 
   return <SpriteContainer
-    style={getPositionStyle(x, y)}
     flash={sprite.flash}
+    x= {x}
+    y= {y}
   >
     {imageFilename
       ? <img

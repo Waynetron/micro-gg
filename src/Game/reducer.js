@@ -9,6 +9,7 @@ import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
 } from './physics';
 import {TILE_SIZE} from '../Game/constants.js'
 import Plain from 'slate-plain-serializer';
+import uniqid from 'uniqid';
 
 const defaultState = {
   currentView: 'game',
@@ -154,20 +155,33 @@ const gameReducer = (state = defaultState, action) => {
       }
 
       const spritesToKeep = state.sprites.filter((sprite)=> !sprite.remove)
-      
+      const effectsToKeep = state.effects.filter((effect)=>
+          effect.progress < effect.duration
+        )
+    
+      // Freeze frames and add effects if something has died
       const alive = spritesToKeep.filter(isAlive)
-      const somethingDied = spritesToKeep.length - alive.length > 0
-
-      if (somethingDied) {
+      const dead = spritesToKeep.filter((sprite)=> isAlive(sprite) === false)
+    
+      if (dead.length > 0) {
         const newSprites = spritesToKeep
-        |> ((sprites)=> sprites.map(flashDead))
-        |> ((sprites)=> sprites.map(flagDeadForRemoval))
+          |> ((sprites)=> sprites.map(flashDead))
+          |> ((sprites)=> sprites.map(flagDeadForRemoval))
+
+        const newEffects = dead.map((deadSprite)=> ({
+          name: 'explosion',
+          duration: 10, // frames
+          progress: 0, // removed once progress reaches duration
+          id: uniqid(),
+          position: deadSprite.position
+        }))
 
         return {
           ...state,
           sprites: newSprites,
           freezeFrames: 5,
-          shake: true
+          shake: true,
+          effects: [...newEffects, ...effectsToKeep]
         }
       }
 
@@ -186,7 +200,7 @@ const gameReducer = (state = defaultState, action) => {
       // This allows for them to stay on screen in their flashed state for
       // the duration of the freezeFrames
 
-      const newSprites = spritesToKeep
+      const updatedSprites = spritesToKeep
         |> ((sprites)=> addNewState(sprites, stateToAdd))
         |> ((sprites)=> sprites.map(resetColliding))
         |> ((sprites)=> sprites.map(resetPositioning))
@@ -207,12 +221,18 @@ const gameReducer = (state = defaultState, action) => {
         |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
         |> ((sprites)=> sprites.map(roundToPixels))
         
+      const updatedEffects = effectsToKeep.map((effect)=> ({
+        ...effect,
+        progress: effect.progress + 1
+      }))
+
       return {
           ...state,
-          sprites: newSprites,
+          sprites: updatedSprites,
           stateTransitions,
           currentView: winners.length > 0 ? 'menu' : state.currentView,
-          shake: false
+          shake: false,
+          effects: updatedEffects
       }
     }
 

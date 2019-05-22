@@ -1,12 +1,12 @@
 import uniqid from 'uniqid';
-import {EMPTY_GAME} from '../ExamplesModal/exampleCode'
+import {EMPTY_GAME, examples} from '../ExamplesModal/exampleCode'
 import Plain from 'slate-plain-serializer'
 
 
 const createNewGame = ()=> ({
   name: 'UNTITILED GAME',
   id: uniqid(),
-  code: Plain.deserialize(EMPTY_GAME)
+  code: Plain.deserialize(examples.simple_platformer)
 })
 
 const initialGame = createNewGame()
