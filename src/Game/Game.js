@@ -27,10 +27,6 @@ const Game = ({
     {sprites.map((sprite)=>
       <Sprite
         key={sprite.id}
-        x={sprite.position.x}
-        y={sprite.position.y}
-        imageName={sprite.name}
-        letter={sprite.letter}
         imageMap={imageMap}
         availableImages={availableImages}
         
