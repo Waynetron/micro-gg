@@ -21,12 +21,6 @@ div[tabindex="-1"]:focus {
   outline: 0;
 }
 
-.main {
-  display: flex;
-  height: 100%;
-  background-color: var(--primary-color);
-}
-
 .left, .right {
   display: flex;
   flex-direction: column;
@@ -50,11 +44,7 @@ div[tabindex="-1"]:focus {
 
 }
 
-@media only screen and (max-width: 900px) {
-  .main {
-    flex-direction: column-reverse;
-  }
-  
+@media only screen and (max-width: 900px) {  
   /* react-hotkeys container */
   div[tabindex="-1"] {
     /* The default 100% height was killing the layout */
@@ -126,63 +116,4 @@ h1.logo {
   padding: 1rem;
   padding-top: 0;
   flex-direction: column;
-}
-
-.blanket {
-  height: 100%;
-  width: 100%;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  background-color: var(--dark-color);
-  overflow-x: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal {
-  width: 80%;
-  color: var(--dark-color);
-  background-color: var(--primary-color);
-  border-radius: 0.5rem;
-  padding: 2rem;
-  top: 10%;
-  position: absolute;
-  margin-bottom: 10%;
-
-  h2 {
-    margin-top: 1.5rem;
-    line-height: 2rem;
-  }
-
-  .columns {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
-  }
-
-  .example {
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    background-color: var(--dark-color);
-    border-radius: 0.5rem;
-  }
-
-  textarea {
-    background-color: transparent;
-    color: var(--primary-color);
-    padding: 0rem;
-    border: none;
-    overflow: hidden;
-    resize: none;
-    outline: none;
-    line-height: 1rem;
-    font-family: 'Fira Code';
-    font-size: 1rem;
-    width: 100%;
-    padding: 0;
-  }
 }

@@ -1,6 +1,5 @@
 import styled, {css} from 'styled-components'
 
-
 const alpha = '22' // hex
 
 const Button = styled.button`

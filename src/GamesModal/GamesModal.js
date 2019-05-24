@@ -2,28 +2,27 @@ import React, {useState} from 'react'
 import {connect} from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import Button from '../components/Button'
+import Modal from '../components/Modal'
 
-const ExamplesModal = ({colors, games, loadGame})=> {
+const GamesModal = ({colors, games, loadGame})=> {
   const [visible, setVisible] = useState(false)
 
   return visible 
   ?
-    <div className='blanket' onClick={()=> setVisible(false)}>
-      <div className='modal' onClick={(e)=> e.stopPropagation()}>
-        <h1>Games</h1>
-        {games.map(({name, id, code})=>
-          <div className='item' key={id}>
-            <h2>{name}</h2>
-            <Button secondary colors={colors} onClick={()=> {
-              loadGame(code)
-              setVisible(false)
-            }}>
-              Load
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+    <Modal colors={colors} onClose={()=> setVisible(false)}>
+      <h1>Games</h1>
+      {games.map(({name, id, code})=>
+        <div className='item' key={id}>
+          <h2>{name}</h2>
+          <Button secondary colors={colors} onClick={()=> {
+            loadGame(code)
+            setVisible(false)
+          }}>
+            Load
+          </Button>
+        </div>
+      )}
+    </Modal>
   :
     <Button colors={colors} onClick={()=> setVisible(true)}>
       Games
@@ -52,4 +51,4 @@ const mapDispatchToProps = (dispatch)=> ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ExamplesModal);
+)(GamesModal);

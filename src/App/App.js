@@ -19,6 +19,7 @@ import Button from '../components/Button'
 import IconButton from '../components/IconButton'
 
 import './App.scss'
+import styled from 'styled-components'
 import moon from '../icons/moon.svg'
 import sun from '../icons/sun.svg'
 import play from '../icons/play.svg'
@@ -30,6 +31,16 @@ import Keyboard from '../Keyboard/Keyboard'
 const providers = {
   google: new firebaseApp.auth.GoogleAuthProvider(),
 }
+
+const AppContainer = styled.div`
+  display: flex;
+  height: 100%;
+  background-color: ${props => props.colors.primary};
+
+  @media only screen and (max-width: 900px) {
+    flex-direction: column-reverse;
+  }
+`
 
 const App = ({
     name, code, compile, theme, imageMap, width, height,
@@ -47,7 +58,7 @@ const App = ({
       '--light-color': colors.light,
       '--hover-color': `${colors.primary}22`  // 22 is is the alpha in hex
     }}>
-      <div className="main">
+      <AppContainer colors={colors}>
         {user && <Persister />}
         <div className="left">
           <header>
@@ -117,7 +128,7 @@ const App = ({
             </div>
           </div>
         </Keyboard>
-      </div>
+      </AppContainer>
     </CustomProperties>
   );
 };
