@@ -5,34 +5,35 @@ import {getImageFilename} from '../Image/helper'
 import styled, {css} from 'styled-components'
 import {TILE_SIZE} from './constants'
 
-const SpriteContainer = styled.div`
+const SpriteContainer = styled.div.attrs(({ position, flash }) => ({
+  style: {
+    left: position.x,
+    top: position.y,
+    filter: flash ? 'brightness(2)' : 'none'
+  }
+}))
+`
   position: relative;
   width: 0;
   height: 0;
-  left: ${props => props.position.x}px;
-  top: ${props => props.position.y}px;
+`;
 
-  ${props => props.flash && css`
-    filter: brightness(2);
-  `}
+const Inner = styled.div.attrs(({ flip, mirror, rotation }) => ({
+  style: {
+    width: `${TILE_SIZE}px`,
+    height: `${TILE_SIZE}px`,
+    // transform: `${flip && 'transform: scaleY(-1)'} ${mirror && 'transform: scaleX(-1)'} ${rotation && `transform: rotation3d(0, 0, 1, ${rotation}deg)`}`
+  transform: `
+    ${flip ? 'scaleY(-1)' : ''}
+    ${mirror ? 'scaleX(-1)' : ''}
+    ${rotation ? `rotate3d(0, 0, 1, ${rotation}deg)` : ''}
+  `
+  }
+}))
 `
-
-const Inner = styled.div`
   width: ${TILE_SIZE}px;
   height: ${TILE_SIZE}px;
-
-  ${props => props.flip && css`
-    transform: scaleY(-1);
-  `}
-
-  ${props => props.mirror && css`
-    transform: scaleX(-1);
-  `}
-
-  ${props => props.rotation && css`
-    transform: rotate3d(0, 0, 1, ${props.rotation}deg);
-  `}
-`
+`;
 
 const Sprite = ({availableImages, imageMap, sprite, debug})=> {
   const {position, letter, name, flash, flip, mirror, rotation} = sprite

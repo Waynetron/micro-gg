@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
 import ImagePicker from '../ImagePicker/ImagePicker.js';
-import Plain from 'slate-plain-serializer'
 import firebase from '../firebase.js'
 
 const firestore = firebase.firestore()

@@ -18,7 +18,6 @@ const defaultState = {
   names: {},
   width_in_tiles: 0,
   height_in_tiles: 0,
-  active: false,
   debug: false,
   imageMap: {},
   rules: {
@@ -47,12 +46,6 @@ const removeComments = (code)=>
 
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case 'SET_ACTIVE':
-      return {
-        ...state,
-        active: action.active
-      }
-
     case 'TOGGLE_DEBUG': {
       return {
         ...state,

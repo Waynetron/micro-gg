@@ -128,7 +128,7 @@ const mapStateToProps = ({app, game})=> ({
   id: app.id,
   code: app.code,
   theme: app.theme,
-  isGameActive: game.active,
+  isGameActive: app.active,
   currentView: game.currentView,
   width: game.width,
   height: game.height

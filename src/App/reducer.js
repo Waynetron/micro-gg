@@ -1,12 +1,12 @@
 import uniqid from 'uniqid';
-import {EMPTY_GAME, examples} from '../ExamplesModal/exampleCode'
+import {EMPTY_GAME} from '../ExamplesModal/exampleCode'
 import Plain from 'slate-plain-serializer'
 
 
 const createNewGame = ()=> ({
   name: 'UNTITILED GAME',
   id: uniqid(),
-  code: Plain.deserialize(examples.simple_platformer)
+  code: Plain.deserialize(EMPTY_GAME)
 })
 
 const initialGame = createNewGame()
@@ -17,12 +17,18 @@ const defaultState = {
   id: initialGame.id,
   games: [initialGame],
   theme: 'dark',
-  user: null
+  user: null,
+  active: false
 }
 
 
 const appReducer = (state = defaultState, action) => {
   switch (action.type) {
+    case 'SET_ACTIVE':
+      return {
+        ...state,
+        active: action.active
+      }
     case 'TOGGLE_THEME': {
       return {
         ...state,

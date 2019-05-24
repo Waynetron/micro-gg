@@ -42,7 +42,6 @@ const Game = ({
 );
 
 const mapStateToProps = ({game})=> ({
-  isGameActive: game.active,
   width: game.width,
   height: game.height,
   sprites: game.sprites,
