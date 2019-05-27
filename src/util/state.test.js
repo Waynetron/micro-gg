@@ -30,6 +30,28 @@ describe('converts rule string to state', ()=> {
     );
   });
 
+  it('negative boolean - left side', ()=> {
+    const rule = '{ Player !FLIP } -> { Player FLIP }'
+
+    expect(ruleStringToState(rule, names)).toEqual(
+      [
+        { name: 'Player', flip: false },
+        { name: 'Player', flip: true }
+      ]
+    );
+  });
+
+  it('negative boolean - right side', ()=> {
+    const rule = '{ Player FLIP } -> { Player !FLIP }'
+
+    expect(ruleStringToState(rule, names)).toEqual(
+      [
+        { name: 'Player', flip: true },
+        { name: 'Player', flip: false }
+      ]
+    );
+  });
+
   it('adds custom friction state number', ()=> {
     const rule = '{ Player } -> { Player friction: 0.1 }'
 

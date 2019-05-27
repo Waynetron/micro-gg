@@ -57,7 +57,6 @@ const states = {
   SLOW_RIGHT: {acceleration: {x: 0.5}},
   JUMP: {velocity: {y: -150}},
   FLIP: {flip: true},
-  NOFLIP: {flip: false},
   MIRROR: {mirror: true},
   DEAD: {dead: true},
   STATIC: {static: true},
@@ -341,6 +340,15 @@ export const collisionRuleStringToState = (ruleString, names)=> {
   // return [pairA, pairB];
 }
 
+const negative = (state)=> {
+  const newState = {...state}
+  for (const key of Object.keys(newState)) {
+    newState[key] = !newState[key]
+  }
+
+  return newState
+}
+
 const wordsToState = (words, names)=> {
   /* Turn those words into arrays of key value objects
     [
@@ -364,6 +372,19 @@ const wordsToState = (words, names)=> {
       return ({
         ...states[word]
       })
+    }
+
+
+    // remove ! operator
+    // run wordToState on remaining word
+    // apply negative to resulting state
+    // return negative state
+    if (isOperator(word)) {
+      const [operator, right] = word.split('!')
+      
+      return negative(
+        wordsToState([right.trim()], names)
+      )
     }
 
     if (word.includes(':')) {
@@ -396,14 +417,23 @@ const wordsToState = (words, names)=> {
 
 const propertyRegex = /^\b[a-z_]+\b\s{0,1}[:]/i // property can't have space before colon
 // word can still match on ':', so must come after property
-const wordRegex = /^[<]{0,1}[a-z_]+[0-9a-z_]*[>]{0,1}/i
+const wordRegex = /^[<!]{0,1}[a-z_]+[0-9a-z_]*[>]{0,1}/i
 const objectRegex = /^\{/i // simply checks if string starts with '{'
 const numberRegex = /^[-]{0,1}[0-9]*[.]{0,1}[0-9]+/
+const operatorRegex = /^[!]{1}/ // only supports ! currently
 
 const isWord = (string)=> Boolean(string.match(wordRegex))
 const isProperty = (string)=> Boolean(string.match(propertyRegex))
 const isObject = (string)=> Boolean(string.match(objectRegex))
 const isNumberString = (string)=> Boolean(string.match(numberRegex))
+const isOperator = (string)=> Boolean(string.match(operatorRegex))
+
+const splitOnOperator = (string)=> {
+  const [operator] = string.match(operatorRegex)
+  const remainder = string.replace(operator, '').trim()
+  
+  return [operator, remainder]
+}
 
 const splitOnProperty = (string)=> {
   const [property] = string.match(propertyRegex)
@@ -481,6 +511,10 @@ const splitOnObject = (string)=> {
 
 const splitOnFirstWordGroup = (rawString)=> {
   const string = rawString.trim()
+
+  // if (isOperator(string)) {
+  //   return splitOnOperator(string)
+  // }
 
   if (isObject(string)) {
     return splitOnObject(string)

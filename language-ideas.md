@@ -151,3 +151,23 @@ settings: {
 { Player | Enemy } -> { Player FLASH | _ | Giblets }
 
 { Enemy DEAD } -> { Explosion }
+
+
+
+* ------------------------------------
+* Thoughts around removal of properties
+
+* Lack of prop name idea:
+
+{ <ACTION> Player FLIP } -> { Player }
+* New state would not have a FLIP property at all, (nor an <ACTION> input if we're consistent)
+* Could this work for everything?
+{ Player | Spike } -> { | Spike }
+* For the following rule, QuestionBrick would be removed and Player added, rather than simply changing the name like happens currently. Which is actually kind of nice.
+UP { Player | QuestionBrick } -> { Player | JUMP Player }
+* Could also replace the DEAD command
+* Perhaps the removal still happens with a dead flag though
+* Any of these could be valid
+UP { Player | Brick } -> { Player | _ }
+UP { Player | Brick } -> { Player | }
+UP { Player | Brick } -> { Player }

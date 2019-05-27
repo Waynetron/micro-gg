@@ -2,16 +2,16 @@ export const EMPTY_GAME =
 `#################
 #               #
 #               #
+#               #
+#               #
 #       P       #
-#               #
-#               #
 #################
 
 // Legend
 P = Player
 
 // Rules
-{ <MOVE> Player } -> { MOVE Player }
+{ <HORIZONTAL> Player } -> { HORIZONTAL Player }
 `
 
 export const examples = {
@@ -36,6 +36,34 @@ P = Player
 
 // Move sideways with <LEFT> and <RIGHT> arrow keys
 { <HORIZONTAL> Player } -> { HORIZONTAL Player }
+`,
+
+gravity_flip:
+`
+#################
+#               #
+#               #
+#               #
+#               #
+#  P    G    X  #
+#################
+
+// Legend
+P = Player
+G = Goomba
+X = Goal
+
+// Rules
+{ <HORIZONTAL> Player } -> { HORIZONTAL Player }
+DOWN { Player <ACTION> | Any } -> { Player FLIP | Any }
+UP { Player <ACTION> | Any } -> { Player !FLIP | Any }
+
+{ Player FLIP } -> { Player UP }
+{ Player !FLIP } -> { Player DOWN }
+
+{ Player | Goomba } -> { DEAD Player | Goomba }
+
+{ Player | Goal } -> { Player WIN | Goal }
 `,
 
 simple_platformer:
