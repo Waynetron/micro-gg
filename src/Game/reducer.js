@@ -86,24 +86,23 @@ const gameReducer = (state = defaultState, action) => {
         const legend = action.code |> serialize |> removeComments |> parseLegend
         const sprites = parseSprites(level, legend)
     
-      // Names is the legend mapped to have the values as keys. Used for fast name lookup.
-      // this used to use the legend before the random features were added.
-      // For this to work though, names needs to include all possible names, including those that might not be rendered onto
-      // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
-      // not also appear in the legend.
-      // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-      const namesArr = parseNames(action.code |> serialize);
-      const names = arrayToObject(namesArr);
-
-      const variables = parseVariables(action.code |> serialize);
-      
-      // const imageMap = {...state.imageMap};
-      // for (const name of namesArr) {
-      //   if (!imageMap[name]) {
-      //     const imageAvailable = state.images.includes(name)
-      //     imageMap[name] = imageAvailable ? name : 'player';
-      //   }
-      // }
+        // Names is the legend mapped to have the values as keys. Used for fast name lookup.
+        // this used to use the legend before the random features were added.
+        // For this to work though, names needs to include all possible names, including those that might not be rendered onto
+        // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
+        // not also appear in the legend.
+        // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
+        const namesArr = action.code |> serialize |> parseNames
+        const names = arrayToObject(namesArr);
+        const variables = action.code |> serialize |> parseVariables;
+        
+        // const imageMap = {...state.imageMap};
+        // for (const name of namesArr) {
+        //   if (!imageMap[name]) {
+        //     const imageAvailable = state.images.includes(name)
+        //     imageMap[name] = imageAvailable ? name : 'player';
+        //   }
+        // }
 
         // A rule consists of a before and an after state
         const rules = parseRules(
