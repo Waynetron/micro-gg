@@ -1,5 +1,5 @@
 import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
-  parseVariables, getLevelDimensions} from '../util/parse.js'
+  parseObjects, parseLists, getLevelDimensions} from '../util/parse.js'
 import {getStateTransitions, isAlive, getNewStateToAdd, addNewState,
   applyStateTransitions, flagDeadForRemoval, flashDead} from '../util/state.js'
 import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
@@ -93,16 +93,11 @@ const gameReducer = (state = defaultState, action) => {
         // not also appear in the legend.
         // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
         const namesArr = action.code |> serialize |> parseNames
-        const names = arrayToObject(namesArr);
-        const variables = action.code |> serialize |> parseVariables;
+        const names = arrayToObject(namesArr)
         
-        // const imageMap = {...state.imageMap};
-        // for (const name of namesArr) {
-        //   if (!imageMap[name]) {
-        //     const imageAvailable = state.images.includes(name)
-        //     imageMap[name] = imageAvailable ? name : 'player';
-        //   }
-        // }
+        const objects = action.code |> serialize |> parseObjects
+        const lists = action.code |> serialize |> parseLists
+        const variables = {...objects, ...lists}
 
         // A rule consists of a before and an after state
         const rules = parseRules(

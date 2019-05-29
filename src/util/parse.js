@@ -9,7 +9,8 @@ const isCollisionRule = (line)=>
 const isRule = (line)=> line.includes('->') && !isCollisionRule(line)
 const isLevel = (line)=> line.match(/#.+#/g)
 export const isLegend = (line)=> line.includes('=')
-const isVariable = (line)=> line.match(/=[ ]{0,1}\{/g)
+const isObject = (line)=> line.match(/=[ ]{0,1}\{/g)
+const isList = (line)=> line.match(/=[ ]{0,1}\[/g)
 
 export const parseLegend = (code)=> {
   let legend = {}
@@ -30,12 +31,12 @@ export const parseLegend = (code)=> {
   return legend
 };
 
-const removeEdges = (lines)=> (
+const removeLevelEdges = (lines)=> (
   lines.slice(1, -1).map((line)=> line.slice(1, -1))
 );
 
 export const parseLevel = (code)=> (
-  code.split('\n').filter(isLevel) |> removeEdges
+  code.split('\n').filter(isLevel) |> removeLevelEdges
 );
 
 export const parseNames = (code)=> {
@@ -50,19 +51,40 @@ export const parseNames = (code)=> {
   return flatten(names);
 };
 
-export const parseVariables = (code)=> {
-  const lines = code.split('\n').filter(isVariable)
+/*
+Takes a variable declaration line as input
+Returns an object with key as variable name and value as list containing the states/s
+for that variable
+Variable example:
+  'RIGHTIO: { velocity: { x: 1 } }'
+  {RIGHTIO: ['velocity: { x: 1 }']}
+List example:
+  'MY_LIST = [ Goomba Player Squid ]'
+  {MY_LIST: ['Goomba', 'Player', 'Squid']}
+
+*/
+export const parseObjects = (code)=> {
+  const lines = code.split('\n').filter(isObject)
 
   let results = {}
   for (const line of lines) {
     const [name, expansion] = line.split(' = ')
     
-    // {CUSTOM_TEST: ['velocity: { y: 6 }']}
-    // expansion sits inside array because that is how it is done with the 
-    // standardExpansions. Doesn't make a whole lot of sense here,
-    // but with the standardExpansions (DOWN, UP etc) they can have multiple expansions
-    // per name, so I just wanted to keep the implementation simple
     results[name] = [trimBrackets(expansion)]
+  }
+
+  return results
+}
+
+export const parseLists = (code)=> {
+  const lines = code.split('\n').filter(isList)
+
+  let results = {}
+  for (const line of lines) {
+    const [name, list] = line.split(' = ')
+    const expansions = trimBrackets(list).split(' ')
+    
+    results[name] = expansions
   }
 
   return results

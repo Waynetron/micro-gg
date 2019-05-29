@@ -1,4 +1,5 @@
-import {expandRules, standardExpansions, addImplicitKeywords} from './parse'
+import {expandRules, standardExpansions, addImplicitKeywords,
+  parseObjects, parseLists} from './parse'
 
 describe('expanding regular rules', ()=> {
   it('doesnt expand (regular rules should not contain ALL)', ()=> {
@@ -101,6 +102,24 @@ describe('expanding collision rules', ()=> {
       'DOWN { Player | Goomba } -> { LEFT DEAD Player | LEFT Goomba }',
       'DOWN { Player | Goomba } -> { RIGHT DEAD Player | RIGHT Goomba }',
     ]);
+  });
+});
+
+describe('parsing variable declarations', ()=> {
+  it('parses { nested variable declaration } -> { ... }', ()=> {
+    const declaration = 'RIGHTIO = { velocity: { x: 1 } }'
+
+    expect(parseObjects(declaration)).toEqual(
+      {RIGHTIO: ['velocity: { x: 1 }']},
+    );
+  });
+
+  it('parses { list declaration } -> { ... }', ()=> {
+    const declaration = 'MY_LIST = [ Goomba Player Squid ]'
+
+    expect(parseLists(declaration)).toEqual(
+      {MY_LIST: ['Goomba', 'Player', 'Squid']},
+    );
   });
 });
 

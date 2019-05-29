@@ -33,13 +33,25 @@ export const createNewSprite = (name, x, y, letter)=> ({
 // eg: '{ velocity: { y: -150 } }'   *could become*   ' velocity: { y: -150  }'
 export const trimBrackets = (rawString)=> {
   const string = rawString.trim()
-    if (!isObject(string)) {
-      return rawString
-    }
-    const openIndex = string.indexOf('{');
-    const closeIndex = string.lastIndexOf('}');
-    
-    return string.substr(openIndex + 1, closeIndex - 1).trim();
+  let leftBracket
+  let rightBracket
+
+  if (isObject(string)) {
+    leftBracket = '{'
+    rightBracket = '}'
+  }
+  else if (isList(string)) {
+    leftBracket = '['
+    rightBracket = ']'
+  }
+  else {
+    return rawString
+  }
+
+  const openIndex = string.indexOf(leftBracket);
+  const closeIndex = string.lastIndexOf(rightBracket);
+  
+  return string.substr(openIndex + 1, closeIndex - 1).trim();
 }
 
 const states = {
@@ -419,12 +431,14 @@ const propertyRegex = /^\b[a-z_]+\b\s{0,1}[:]/i // property can't have space bef
 // word can still match on ':', so must come after property
 const wordRegex = /^[<!]{0,1}[a-z_]+[0-9a-z_]*[>]{0,1}/i
 const objectRegex = /^\{/i // simply checks if string starts with '{'
+const listRegex = /^\[/i // simply checks if string starts with '{'
 const numberRegex = /^[-]{0,1}[0-9]*[.]{0,1}[0-9]+/
 const operatorRegex = /^[!]{1}/ // only supports ! currently
 
 const isWord = (string)=> Boolean(string.match(wordRegex))
 const isProperty = (string)=> Boolean(string.match(propertyRegex))
 const isObject = (string)=> Boolean(string.match(objectRegex))
+const isList = (string)=> Boolean(string.match(listRegex))
 const isNumberString = (string)=> Boolean(string.match(numberRegex))
 const isOperator = (string)=> Boolean(string.match(operatorRegex))
 
