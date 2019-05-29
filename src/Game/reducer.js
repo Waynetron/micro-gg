@@ -44,6 +44,14 @@ const removeComments = (code)=>
     (line)=> !line.includes('//')
   ).join('\n')
 
+const getNextView = (winners, losers)=> {
+  if (winners.length > 0 || losers.length > 0) {
+    return 'menu'
+  } 
+
+  return null
+}
+
 const gameReducer = (state = defaultState, action) => {
   switch (action.type) {
     case 'TOGGLE_DEBUG': {
@@ -181,6 +189,7 @@ const gameReducer = (state = defaultState, action) => {
       }
 
       const winners = spritesToKeep.filter((sprite)=> Boolean(sprite.win))
+      const losers = spritesToKeep.filter((sprite)=> Boolean(sprite.lose))
 
       // Dead sprites aren't removed right away, instead they are flashed
       // white then flagged for removal.
@@ -217,7 +226,7 @@ const gameReducer = (state = defaultState, action) => {
           ...state,
           sprites: updatedSprites,
           stateTransitions,
-          currentView: winners.length > 0 ? 'menu' : state.currentView,
+          currentView: getNextView(winners, losers) || state.currentView,
           shake: false,
           effects: updatedEffects
       }

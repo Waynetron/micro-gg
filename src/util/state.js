@@ -73,7 +73,8 @@ const states = {
   DEAD: {dead: true},
   STATIC: {static: true},
   STATIONARY: {velocity: {x: 0, y: 0}},
-  WIN: {win: true}
+  WIN: {win: true},
+  LOSE: {lose: true}
 };
 
 const inputs = {

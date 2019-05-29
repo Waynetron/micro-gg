@@ -123,6 +123,7 @@ const App = ({
                       setGameActive(true)
                     }}
                     colors={colors}
+                    currentView={currentView}
                   />
               }
             </div>
