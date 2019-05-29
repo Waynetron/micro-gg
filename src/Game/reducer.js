@@ -22,8 +22,8 @@ const defaultState = {
   imageMap: {},
   rules: {
     regular: [],
-    collisionCreate: [],
-    collisionModify: []
+    create: [],
+    modify: []
   },
   stateTransitions: {
     regular: {}
