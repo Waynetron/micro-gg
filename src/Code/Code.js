@@ -3,9 +3,6 @@ import {connect} from 'react-redux';
 import Prism from 'prismjs';
 import {Editor} from 'slate-react';
 import ImagePicker from '../ImagePicker/ImagePicker.js';
-import firebase from '../firebase.js'
-
-const firestore = firebase.firestore()
 
 const makeGrammar = ()=> {
   return {

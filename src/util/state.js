@@ -443,13 +443,6 @@ const isList = (string)=> Boolean(string.match(listRegex))
 const isNumberString = (string)=> Boolean(string.match(numberRegex))
 const isOperator = (string)=> Boolean(string.match(operatorRegex))
 
-const splitOnOperator = (string)=> {
-  const [operator] = string.match(operatorRegex)
-  const remainder = string.replace(operator, '').trim()
-  
-  return [operator, remainder]
-}
-
 const splitOnProperty = (string)=> {
   const [property] = string.match(propertyRegex)
   const name = property.trim().replace(':', '')

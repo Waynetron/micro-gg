@@ -2,7 +2,7 @@ import React from 'react';
 import {DebugColliding} from '../debug/DebugColliding.js';
 import LetterImage from '../Image/LetterImage'
 import {getImageFilename} from '../Image/helper'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {TILE_SIZE} from './constants'
 
 const SpriteContainer = styled.div.attrs(({ position, flash }) => ({
@@ -11,8 +11,7 @@ const SpriteContainer = styled.div.attrs(({ position, flash }) => ({
     top: position.y,
     filter: flash ? 'brightness(2)' : 'none'
   }
-}))
-`
+}))`
   position: relative;
   width: 0;
   height: 0;
@@ -29,8 +28,7 @@ const Inner = styled.div.attrs(({ flip, mirror, rotation }) => ({
     ${rotation ? `rotate3d(0, 0, 1, ${rotation}deg)` : ''}
   `
   }
-}))
-`
+}))`
   width: ${TILE_SIZE}px;
   height: ${TILE_SIZE}px;
 `;

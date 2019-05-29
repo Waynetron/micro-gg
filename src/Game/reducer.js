@@ -6,10 +6,10 @@ import {storePreviousPosition, applyAcceleration, applyVelocity, applyFriction,
   updateSpriteCollidingState, updateSpritePositioningState,
   applySpriteCollisions, applyWallCollisions, roundToPixels,
   resetColliding, resetPositioning
-} from './physics';
+} from './physics'
 import {TILE_SIZE} from '../Game/constants.js'
-import Plain from 'slate-plain-serializer';
-import uniqid from 'uniqid';
+import Plain from 'slate-plain-serializer'
+import uniqid from 'uniqid'
 
 const defaultState = {
   currentView: 'game',
@@ -155,7 +155,6 @@ const gameReducer = (state = defaultState, action) => {
         )
     
       // Freeze frames and add effects if something has died
-      const alive = spritesToKeep.filter(isAlive)
       const dead = spritesToKeep.filter((sprite)=> isAlive(sprite) === false)
     
       if (dead.length > 0) {

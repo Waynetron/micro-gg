@@ -1,8 +1,6 @@
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import Button from './Button'
 
-
-const alpha = '22' // hex
 
 const IconButton = styled(Button)`
   @keyframes grow {
