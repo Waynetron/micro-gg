@@ -71,6 +71,40 @@ UP { Player <ACTION> | Any } -> { Player !FLIP | Any }
 { Player | Goal } -> { Player WIN | Goal }
 `,
 
+sliding_puzzle:
+`
+###################
+#    #      #     #
+#                 #
+#                 #
+#                 #
+#   P    G  # x   #
+###################
+
+// Legend
+P = Player
+G = Goomba
+x = Goal
+# = Brick
+
+Flippable = [ Player Goomba ]
+
+{ <UP> STATIONARY Flippable } -> { Flippable gravity: 1 }
+{ <DOWN> STATIONARY Flippable } -> { Flippable gravity: 2 }
+{ <LEFT> STATIONARY Flippable } -> { Flippable gravity: 3 }
+{ <RIGHT> STATIONARY Flippable } -> { Flippable gravity: 4 }
+
+{ Flippable gravity: 1 } -> { Flippable UP rotation:180 }
+{ Flippable gravity: 2 } -> { Flippable DOWN rotation:0 }
+{ Flippable gravity: 3 } -> { Flippable LEFT rotation:90 }
+{ Flippable gravity: 4 } -> { Flippable RIGHT rotation:-90 }
+
+{ Goomba | Any } -> { Goomba | Goomba }
+
+// Win state
+{ Player | Goal } -> { Player WIN | Goal }
+`,
+
 simple_platformer:
 `
 ##################
