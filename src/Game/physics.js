@@ -277,32 +277,38 @@ export const applySpriteCollisions = (spriteA, sprites)=> {
 
 export const applyWallCollisions = (sprite, width, height)=> {
   if (sprite.static) {
-    return sprite;
+    return sprite
   }
 
-  const newPosition = {...sprite.position};
+  const newPosition = {...sprite.position}
+  const newVelocity = {...sprite.velocity}
 
   if (sprite.position.y > height - TILE_SIZE) {
-    newPosition.y = height - TILE_SIZE;
+    newPosition.y = height - TILE_SIZE
+    newVelocity.y = 0
   }
 
   if (sprite.position.y < 0) {
-    newPosition.y = 0;
+    newPosition.y = 0
+    newVelocity.y = 0
   }
 
   if (sprite.position.x > width - TILE_SIZE) {
-    newPosition.x = width - TILE_SIZE;
+    newPosition.x = width - TILE_SIZE
+    newVelocity.x = 0
   }
 
   if (sprite.position.x < 0) {
-    newPosition.x = 0;
+    newPosition.x = 0
+    newVelocity.x = 0
   }
   
   return {
     ...sprite,
-    position: newPosition
+    position: newPosition,
+    velocity: newVelocity
   }
-};
+}
 
 export const storePreviousPosition = (sprite)=> ({
   ...sprite,
@@ -347,6 +353,9 @@ export const applyFriction = (sprite)=> {
   const x = sprite.velocity.x * (1 - sprite.friction)
   const y = sprite.velocity.y * (1 - sprite.friction)
   
+  // console.log(snapNearZero(x))
+  // console.log(snapNearZero(y))
+
   return {
     ...sprite,
     velocity: {
