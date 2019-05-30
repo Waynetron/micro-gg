@@ -44,6 +44,12 @@ const removeComments = (code)=>
     (line)=> !line.includes('//')
   ).join('\n')
 
+const trimWhitespace = (code)=> {
+  return code.split('\n')
+    .map((line)=> line.trim())
+    .join('\n')
+}
+
 const getNextView = (winners, losers)=> {
   if (winners.length > 0 || losers.length > 0) {
     return 'menu'
@@ -89,9 +95,9 @@ const gameReducer = (state = defaultState, action) => {
     
     case 'COMPILE': {
       try {
-        const {serialize} = Plain
-        const level = action.code |> serialize |> removeComments |> parseLevel
-        const legend = action.code |> serialize |> removeComments |> parseLegend
+        const code = action.code |> Plain.serialize |> removeComments |> trimWhitespace
+        const level = code |> parseLevel
+        const legend = code |> parseLegend
         const sprites = parseSprites(level, legend)
     
         // Names is the legend mapped to have the values as keys. Used for fast name lookup.
@@ -100,16 +106,16 @@ const gameReducer = (state = defaultState, action) => {
         // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
         // not also appear in the legend.
         // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
-        const namesArr = action.code |> serialize |> parseNames
+        const namesArr = code |> parseNames
         const names = arrayToObject(namesArr)
         
-        const objects = action.code |> serialize |> parseObjects
-        const lists = action.code |> serialize |> parseLists
+        const objects = code |> parseObjects
+        const lists = code |> parseLists
         const variables = {...objects, ...lists}
 
         // A rule consists of a before and an after state
         const rules = parseRules(
-          action.code |> serialize |> removeComments,
+          code,
           names,
           variables
         )
