@@ -206,7 +206,6 @@ const gameReducer = (state = defaultState, action) => {
           sprite, spritesToKeep
         )))
         |> ((sprites)=> sprites.map(storePreviousPosition))
-        |> ((sprites)=> applyStateTransitions(stateTransitions.modify, sprites))
         |> ((sprites)=> sprites.map(applyFriction))
         |> ((sprites)=> sprites.map(applyAcceleration))
         |> ((sprites)=> sprites.map(applyVelocity))
@@ -215,6 +214,7 @@ const gameReducer = (state = defaultState, action) => {
         |> ((sprites)=> sprites.map((sprite)=> applySpriteCollisions(sprite, spritesToKeep, previousState)))
         |> ((sprites)=> sprites.map((sprite)=> applyWallCollisions(sprite, state.width, state.height)))
         |> ((sprites)=> sprites.map(roundToPixels))
+        |> ((sprites)=> applyStateTransitions(stateTransitions.modify, sprites))
         
       const updatedEffects = effectsToKeep.map((effect)=> ({
         ...effect,
