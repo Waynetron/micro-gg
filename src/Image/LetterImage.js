@@ -42,7 +42,7 @@ const LetterImage = (props)=> {
     <LetterImageContainer letter={letter} {...props}>
       <p>{letter}</p>
     </LetterImageContainer>
-  )
+  );
 }
 
 export default LetterImage

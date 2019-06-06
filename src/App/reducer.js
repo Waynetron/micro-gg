@@ -3,13 +3,11 @@ import {EMPTY_GAME, examples} from '../ExamplesModal/exampleCode'
 import Plain from 'slate-plain-serializer'
 
 
-const createNewGame = ()=> ({
+const initialGame = {
   name: 'UNTITILED GAME',
   id: uniqid(),
   code: Plain.deserialize(examples.gravity_flip)
-})
-
-const initialGame = createNewGame()
+}
 
 const defaultState = {
   name: initialGame.name,
