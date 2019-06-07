@@ -9,8 +9,11 @@ const grammar = {
   variableRandom: [
     {pattern: new RegExp('[^ ]{1} = (.+)or', 'i')}
   ],
+  list: [
+    {pattern: new RegExp('.+ = [[]{1}.+[]]{1}', 'i')}
+  ],
   variable: [
-    {pattern: new RegExp('[^ ]{1} = (.+)', 'i')}
+    {pattern: new RegExp('^[^ ]{1} = (.+)', 'i')}
   ]
 }
 
