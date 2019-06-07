@@ -1,18 +1,18 @@
 {
   "main.css": "/micro-gg/static/css/main.80c0095f.chunk.css",
-  "main.js": "/micro-gg/static/js/main.7b01045f.chunk.js",
-  "main.js.map": "/micro-gg/static/js/main.7b01045f.chunk.js.map",
+  "main.js": "/micro-gg/static/js/main.68056370.chunk.js",
+  "main.js.map": "/micro-gg/static/js/main.68056370.chunk.js.map",
   "static/js/1.a6434708.chunk.js": "/micro-gg/static/js/1.a6434708.chunk.js",
   "static/js/1.a6434708.chunk.js.map": "/micro-gg/static/js/1.a6434708.chunk.js.map",
   "runtime~main.js": "/micro-gg/static/js/runtime~main.e630c52e.js",
   "runtime~main.js.map": "/micro-gg/static/js/runtime~main.e630c52e.js.map",
-  "static/media/fira_code.css": "/micro-gg/static/media/FiraCode-Bold.8236190c.ttf",
+  "static/media/fira_code.css": "/micro-gg/static/media/FiraCode-Medium.010c2e55.ttf",
   "static/media/moon.svg": "/micro-gg/static/media/moon.5a53c948.svg",
   "static/media/play.svg": "/micro-gg/static/media/play.e5a8524f.svg",
   "static/media/stop.svg": "/micro-gg/static/media/stop.f437901f.svg",
   "static/media/sun.svg": "/micro-gg/static/media/sun.a78e8514.svg",
   "static/css/main.80c0095f.chunk.css.map": "/micro-gg/static/css/main.80c0095f.chunk.css.map",
   "index.html": "/micro-gg/index.html",
-  "precache-manifest.a4bb4b2b05081f9862a9b57c209ba8fe.js": "/micro-gg/precache-manifest.a4bb4b2b05081f9862a9b57c209ba8fe.js",
+  "precache-manifest.2ab8cdce291f22b4f539f08db1b8b553.js": "/micro-gg/precache-manifest.2ab8cdce291f22b4f539f08db1b8b553.js",
   "service-worker.js": "/micro-gg/service-worker.js"
 }
