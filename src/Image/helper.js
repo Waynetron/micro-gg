@@ -1,17 +1,22 @@
 
-export const getImageFilename = (imageName, imageMap, availableImages)=> {
+export const getImageFilename = (spriteName, imageMap, availableImages)=> {
   // User selected image
-  if (imageMap[imageName]) {
-    return imageMap[imageName]
+  if (imageMap[spriteName] && imageMap[spriteName].type === 'image' ) {
+    return imageMap[spriteName].imageName
   }
 
+  // User selected ascii
+  if (imageMap[spriteName] && imageMap[spriteName].type === 'ascii' ) {
+    return null
+  }
+  
   // Fallback image for certain variable names (Player, Goomba etc)
   // A null in the imageMap means the user intentionally selected ascii, so
   // we check for undefined here specifically
-  if (imageMap[imageName] === undefined && availableImages.includes(imageName)) {
-    return imageName
+  if (availableImages.includes(spriteName)) {
+    return spriteName
   }
 
-  // Either no fallback image or user specifically selected ascii
+  // User has made no selected and no fallback image. So falls back to ascii.
   return null
 }

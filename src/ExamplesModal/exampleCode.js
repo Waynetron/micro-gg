@@ -51,7 +51,8 @@ gravity_flip:
 // Legend
 P = Player
 G = Goomba
-X = Goal
+g = Goal
+X = Goal or Goomba
 
 // Horizontal input move player horizontally
 { <HORIZONTAL> Player } -> { HORIZONTAL Player }

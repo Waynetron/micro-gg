@@ -34,7 +34,7 @@ const Inner = styled.div.attrs(({ flip, mirror, rotation }) => ({
 `;
 
 const Sprite = ({availableImages, imageMap, sprite, debug})=> {
-  const {position, letter, name, flash, flip, mirror, rotation} = sprite
+  const {position, name, flash, flip, mirror, rotation} = sprite
   const imageFilename = getImageFilename(name, imageMap, availableImages)
 
   return <SpriteContainer
@@ -52,7 +52,7 @@ const Sprite = ({availableImages, imageMap, sprite, debug})=> {
             src={require(`../Game/images/${imageFilename}.png`)}
           />
         : <LetterImage
-            letter={letter}
+            letter={imageMap[name].letter}
           />
       }
       {debug && <DebugColliding sprite={sprite} />}

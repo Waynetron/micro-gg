@@ -4,21 +4,15 @@ import Prism from 'prismjs';
 import {Editor} from 'slate-react';
 import ImagePicker from '../ImagePicker/ImagePicker.js';
 
-const makeGrammar = ()=> {
-  return {
-    comment: /\/\/.*/,
-    variable: [
-      {
-        pattern: new RegExp('[^ ]{1} = ([A-Z]+)', 'i')
-      },
-      // {
-      //   pattern: new RegExp('or (.+)\\b', 'i'),
-      // }
-    ]
-  }
+const grammar = {
+  comment: /\/\/.*/,
+  variableRandom: [
+    {pattern: new RegExp('[^ ]{1} = (.+)or', 'i')}
+  ],
+  variable: [
+    {pattern: new RegExp('[^ ]{1} = (.+)', 'i')}
+  ]
 }
-
-const grammar = makeGrammar();
 
 const getContent = (token)=> {
   if (typeof token == 'string') {
@@ -35,12 +29,14 @@ const decorateNode = (node, editor, next)=> {
   const texts = node.getTexts().toArray()
   const string = texts.map(t => t.text).join('\n')
 
+  // first node will contain the text for every line
+  // exit early for that one
   if (texts.length !== 1) {
     return others;
   }
 
   const tokens = Prism.tokenize(string, grammar)
-  const decorations = []
+  let decorations = []
   let startText = texts.shift()
   let endText = startText
   let startOffset = 0
@@ -68,8 +64,8 @@ const decorateNode = (node, editor, next)=> {
       endOffset = remaining
     }
 
-    if (typeof token != 'string') {
-      const dec = {
+    if (typeof token == 'object') {
+      decorations.push ({
         anchor: {
           key: startText.key,
           offset: startOffset,
@@ -80,10 +76,8 @@ const decorateNode = (node, editor, next)=> {
         },
         mark: {
           type: token.type,
-        },
-      }
-
-      decorations.push(dec)
+        }
+      })
     }
 
     start = end
@@ -93,36 +87,25 @@ const decorateNode = (node, editor, next)=> {
 }
 
 const renderMark = (props, editor, next) => {
-  const { children, attributes, node } = props
+  const {children, attributes, node} = props
 
   switch (props.mark.type) {
     case 'variable':
       const [key, right] = node.text.split('=').map((str)=> str.trim())
-      const names = right.split(' or ')
 
       return <span {...attributes}>
           {children}
-          <ImagePicker letter={key} variableName={names[0]} />
+          <ImagePicker letter={key} variableName={right}/>
         </span>
 
     case 'comment': 
-      return (
-        <span {...attributes} style={{ opacity: '0.33' }}>
-          {children}
-        </span>
-      )
-    case 'keyword':
-      return (
-        <span {...attributes} style={{ fontWeight: 'bold' }}>
-          {children}
-        </span>
-      )
+      return <span className='comment' {...attributes}>{children}</span>
     default:
       return next()
   }
 }
 
-const Code = ({user, name, id, code, imageMap, setCode, save, compile})=> {
+const Code = ({code, setCode, compile})=> {
   // manually trigger code change on first load
   useEffect(() => {
     compile(code);
@@ -136,22 +119,16 @@ const Code = ({user, name, id, code, imageMap, setCode, save, compile})=> {
         setCode(value)
       }}
       decorateNode={decorateNode}
-      renderMark={(props, editor, next)=>
-        renderMark(props, editor, next, imageMap)
-      }
+      renderMark={renderMark}
       spellCheck={false}
     />
   )
 };
 
 const mapStateToProps = ({app, game})=> ({
-  user: app.user,
-  name: app.name,
-  id: app.id,
   code: app.code,
   width: game.width, 
-  height: game.height,
-  imageMap: game.imageMap
+  height: game.height
 })
 
 const mapDispatchToProps = (dispatch)=> ({

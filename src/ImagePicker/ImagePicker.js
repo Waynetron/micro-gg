@@ -9,7 +9,7 @@ const PickerContainer = styled.div`
   position: absolute;
   display: inline-flex;
   cursor: pointer;
-  margin-top: -0.5rem;
+  height: 0;
 `
 
 const PickerBox = styled.div`
@@ -18,8 +18,9 @@ const PickerBox = styled.div`
   border: solid 1px #555;
   border-radius: .5rem;
   padding: 0.5rem;
-  margin-top: -0.5rem;
+  margin-top: -1rem;
   z-index: 1;
+  height: 32px;
 
   div, img {
     margin-right: 0.5rem;
@@ -30,8 +31,9 @@ const PickerBox = styled.div`
   }
 `
 
-const ImagePicker = ({letter, variableName, imageMap, availableImages, onSetImage, onSetNoImage})=> {
+const ImagePicker = ({letter, variableName, imageMap, availableImages, onSetImage, onSetLetterImage})=> {
   const imageFilename = getImageFilename(variableName, imageMap, availableImages)
+  
   const [open, setOpen] = useState(false)
 
   return (
@@ -51,7 +53,7 @@ const ImagePicker = ({letter, variableName, imageMap, availableImages, onSetImag
           <PickerBox>
             <LetterImage
               letter={letter}
-              onClick={()=> onSetNoImage(variableName)}
+              onClick={()=> onSetLetterImage(variableName, letter)}
             />
             {availableImages.map((imageName)=> (
               <img
@@ -80,10 +82,11 @@ const mapDispatchToProps = (dispatch)=> ({
       imageName
     });
   },
-  onSetNoImage: (variableName)=> {
+  onSetLetterImage: (variableName, letter)=> {
     dispatch({
-      type: 'SET_NO_IMAGE',
+      type: 'SET_LETTER_IMAGE',
       variableName,
+      letter
     });
   }
 });

@@ -4,31 +4,50 @@ import {TILE_SIZE} from '../Game/constants.js'
 import uniqid from 'uniqid'
 import {ruleStringToState, collisionRuleStringToState, isCreateNewState} from '../util/state.js'
 
-const isCollisionRule = (line)=>
+export const isCollisionRule = (line)=>
   line.includes('|') || line.includes(' >') || line.includes(' <')
-const isRule = (line)=> line.includes('->') && !isCollisionRule(line)
-const isLevel = (line)=> line.match(/#.+#/g)
-export const isLegend = (line)=> line.includes('=')
-const isObject = (line)=> line.match(/=[ ]{0,1}\{/g)
-const isList = (line)=> line.match(/=[ ]{0,1}\[/g)
+export const isRule = (line)=> line.includes('->') && !isCollisionRule(line)
+export const isLevel = (line)=> line.match(/#.+#/g)
+export const isVariable = (line)=> line.includes('=') && !line.includes(' or ')
+export const isMultiVariable = (line)=> line.includes('=') && line.includes(' or ')
+export const isObject = (line)=> line.match(/=[ ]{0,1}\{/g)
+export const isList = (line)=> line.match(/=[ ]{0,1}\[/g)
+export const isComment = (line)=> line.match(/\/\/.*/)
 
-export const parseLegend = (code)=> {
-  let legend = {}
+export const parseVariables = (code)=> {
+  let variables = {}
 
   code.split('\n')
-    .filter(isLegend)
+    .filter(isVariable)
     .forEach((line)=> {
-      const [symbol, right] = line.split('=').map((str)=> str.trim());
+      const [letter, name] = line.split('=').map((str)=> str.trim());
+      // this is a function simply to keep it the same as the multiVariable random getName function
+      // even though it always returns the same name
+      variables[letter] = ()=> {
+        return name
+      }
+    });
+
+  return variables
+};
+
+export const parseMultiVariables = (code)=> {
+  let variables = {}
+
+  code.split('\n')
+    .filter(isMultiVariable)
+    .forEach((line)=> {
+      const [letter, right] = line.split('=').map((str)=> str.trim());
       const names = right.split(' or ')
       // this is a function to allow returning a random name in the case of:
       // G = Goomba or Tree or Brick
-      legend[symbol] = ()=> {
+      variables[letter] = ()=> {
         const randIndex = Math.floor(Math.random() * names.length)
         return names[randIndex]
       }
     });
 
-  return legend
+  return variables
 };
 
 const removeLevelEdges = (lines)=> (
@@ -40,7 +59,7 @@ export const parseLevel = (code)=> (
 );
 
 export const parseNames = (code)=> {
-  const lines = code.split('\n').filter(isLegend);
+  const lines = code.split('\n').filter(isVariable);
   const names = lines.map((line)=> {
     const [, right] = line.split(' = ');
     const words = right.split(' or ');
@@ -102,12 +121,14 @@ export const parseSprites = (level, legend)=> {
   level.map((line, row)=> line.split('').forEach((char, col)=> {
     const getName = legend[char];
     if (getName && getName() !== 'Empty') {
+      const name = getName()
       const x = col * TILE_SIZE;
       const y = row * TILE_SIZE;
+
       sprites.push(
         {
           id: uniqid(),
-          ...createNewSprite(getName(), x, y, char)
+          ...createNewSprite(name, x, y)
         }
       );
     }

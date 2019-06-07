@@ -1,4 +1,4 @@
-import {parseRules, parseSprites, parseLegend, parseLevel, parseNames,
+import {parseRules, parseSprites, parseVariables, parseMultiVariables, parseLevel, parseNames,
   parseObjects, parseLists, getLevelDimensions} from '../util/parse.js'
 import {getStateTransitions, isAlive, getNewStateToAdd, addNewState,
   applyStateTransitions, flagDeadForRemoval, flashDead} from '../util/state.js'
@@ -70,7 +70,7 @@ const gameReducer = (state = defaultState, action) => {
     case 'SET_IMAGE': {
       const imageMap = {...state.imageMap}
       const {variableName, imageName} = action
-      imageMap[variableName] = imageName
+      imageMap[variableName] = {type: 'image', imageName}
       
       return {
         ...state,
@@ -78,10 +78,10 @@ const gameReducer = (state = defaultState, action) => {
       }
     }
     
-    case 'SET_NO_IMAGE': {
+    case 'SET_LETTER_IMAGE': {
       const imageMap = {...state.imageMap}
-      const {variableName} = action
-      imageMap[variableName] = null
+      const {variableName, letter} = action
+      imageMap[variableName] = {type: 'ascii', letter}
       // null means the user intended to use ascii
       // whereas undefined is a lack of choice - we do not know what the user wants
       // So we can switch on undefined in places to show default images for some
@@ -97,27 +97,39 @@ const gameReducer = (state = defaultState, action) => {
       try {
         const code = action.code |> Plain.serialize |> removeComments |> trimWhitespace
         const level = code |> parseLevel
-        const legend = code |> parseLegend
-        const sprites = parseSprites(level, legend)
+        const variables = code |> parseVariables
+        const multiVariables = code |> parseMultiVariables
+
+        let newImageMap = {...state.imageMap}
+        for (const [letter, getName] of Object.entries(variables)) {
+          const name = getName()
+          // Reset ascii characters on compile, because user may have changed the Letter but kept the name
+          // We don't want to reset for images, because it's annoying to have that reset on compile
+          if (!newImageMap[name] || newImageMap[name].type === 'ascii') {
+            newImageMap[name] = {type: 'ascii', letter}
+          }
+        }
+        
+        const sprites = parseSprites(level, {...variables, ...multiVariables})
     
-        // Names is the legend mapped to have the values as keys. Used for fast name lookup.
-        // this used to use the legend before the random features were added.
-        // For this to work though, names needs to include all possible names, including those that might not be rendered onto
-        // the map the first time it is loaded. I suppose later on this should also include things spawned within rules that may
-        // not also appear in the legend.
+        // Names is the variables mapped to have the values as keys. Used for fast name lookup.
+        // this used to use the variables before the random features were added.
+        // For this to work though, names needs to include all possible names, including those that might
+        // not be rendered onto the map the first time it is loaded.
+        // I suppose later on this should also include things spawned within rules that may not also
+        // appear in the variables.
         // Ideally, I could refactor out this names object entirely. It seems like that should be possible.
         const namesArr = code |> parseNames
         const names = arrayToObject(namesArr)
         
         const objects = code |> parseObjects
         const lists = code |> parseLists
-        const variables = {...objects, ...lists}
 
         // A rule consists of a before and an after state
         const rules = parseRules(
           code,
           names,
-          variables
+          {...objects, ...lists}
         )
 
         const [width_in_tiles, height_in_tiles] = getLevelDimensions(level);
@@ -129,8 +141,7 @@ const gameReducer = (state = defaultState, action) => {
           width: width_in_tiles * TILE_SIZE,
           height: height_in_tiles * TILE_SIZE,
           names,
-          imageMap: {...state.imageMap}
-          // imageMap
+          imageMap: newImageMap
         }
       }
       catch(err) {

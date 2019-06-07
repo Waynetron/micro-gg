@@ -91,6 +91,10 @@ h1.logo {
   .rule:hover {
     background-color: var(--hover-color);
   }
+
+  span.comment {
+    opacity: 0.5;
+  }
 }
 
 .error {
