@@ -6,7 +6,7 @@ import Plain from 'slate-plain-serializer'
 const initialGame = {
   name: 'UNTITILED GAME',
   id: uniqid(),
-  code: Plain.deserialize(examples.gravity_flip)
+  code: Plain.deserialize(examples.simple_platformer)
 }
 
 const defaultState = {
