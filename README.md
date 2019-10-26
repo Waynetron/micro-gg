@@ -3,6 +3,7 @@
 Micro gg is a simple rules based language for making games
 Use it online here: <https://waynetron.github.io/micro-gg>
 
+![alt text](gifs/simple-platformer-example.gif "Simple platformer example")
 
 ## How does it work?
 
