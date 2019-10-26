@@ -1,6 +1,7 @@
 # Micro gg
 
 Micro gg is a simple rules based language for making games
+Use it online here: <https://waynetron.github.io/micro-gg>
 
 
 ## How does it work?
