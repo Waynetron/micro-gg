@@ -8,54 +8,44 @@ Use it online here: <https://waynetron.github.io/micro-gg>
 
 ## How does it work?
 
-Levels can be drawn with ascii
-```
-#######################
-#                     #
-#                     #
-#          @          #
-#     BBB?BBB         #
-#                     #
-#    P                #
-###############^^^^####
-```
+Let's break down a super simple example
 
-Create things simply naming them in the legend
+![alt text](gifs/simple-game-screenshot.png "Micro gg screenshot")
+
+# Level
+```
+###############
+#             #
+#             #
+#  P       X  #
+###############
+```
+Levels are drawn with ascii.
+
+
+# Legend
 ```
 P = Player
-? = QuestionBrick
-B = Brick
-# = SolidBrick
-^ = Spike
-@ = Goomba or Bird or Banana    // chooses one of these randomly
+X = Goal
 ```
 
-### Apply gravity to Player
-This will apply a downward acceleration to any player, regardless of any other attributes
-
-```[ Player ] -> [ DOWN Player ]```
-
-Contrast that to something like this, which would only apply to the player if it wasn't already moving
-
-```[ STATIONARY Player ] -> [ DOWN Player ]```
+This lets the game know which keywords map to which ascii characters in our level above
+The ascii characters and keywords you use aren't limited to those in the examples and could be anything. Eg:: ```! = NicolasCage```
 
 
-### Apply gravity to both Player and Goomba
+# Rules
+Rules define how the game world works. They consist of a left state and a right state separated by an arrow.
+If the state on the left is matched, it is replaced with the state on the right.
 
-```ListOfThings = [Player, Goomba]```
-```[ ListOfThings ] -> [ DOWN ListOfThings ]```
+``` { <RIGHT> Player } -> { RIGHT Player } ```
 
+```<RIGHT>``` (with the brackets) is an input and ```RIGHT``` (without the brackets) is a movement.
+So what this rule is saying is: If the game sees the <RIGHT> key is pressed and also a Player, then move that Player to the right.
 
-### Break brick with head
+```
+{ Player | Goal } -> { Player WIN | Goal }
+```
+The pipe character ```|``` represents touching
+What this rule is saying is: If a Player is touching a Goal. Then that Player wins.
 
-```UP [ Player | Brick ] -> [ Player ]```
-
-
-### Hit question brick and spawn mushroom
-
-```UP [ Player | QuestionBrick ] -> [ Player | SolidBrick | Mushroom ]```
-
-
-### Win condition
-
-```[ Player | Goal ] -> [ Player | Goal ] WIN```
+That's close to the simplest possible thing you can make with Micro gg. For more involved examples, check the example code from within the app.
