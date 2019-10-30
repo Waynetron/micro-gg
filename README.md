@@ -54,3 +54,5 @@ What this rule is saying is: If a Player is touching a Goal. Then that Player wi
 That's close to the simplest possible thing you can make with Micro gg.
 
 There are a bunch of examples within the app under the 'examples' menu. This is really the only way to explore the various language features and learn what is possible at this time.
+
+<https://waynetron.github.io/micro-gg>
