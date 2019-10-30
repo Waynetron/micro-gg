@@ -185,10 +185,10 @@ P = Player
 G = Goomba
 
 { <MOVE> Player } -> { MOVE Player }
-UP { Bro > Player } -> { SLOW_UP Bro > Player }
-DOWN { Bro > Player } -> { SLOW_DOWN Bro > Player }
-LEFT { Bro > Player } -> { SLOW_LEFT Bro > Player }
-RIGHT { Bro > Player } -> { SLOW_RIGHT Bro > Player }
+UP { Goomba > Player } -> { SLOW_UP Goomba > Player }
+DOWN { Goomba > Player } -> { SLOW_DOWN Goomba > Player }
+LEFT { Goomba > Player } -> { SLOW_LEFT Goomba > Player }
+RIGHT { Goomba > Player } -> { SLOW_RIGHT Goomba > Player }
 
 `
 }
